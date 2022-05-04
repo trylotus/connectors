@@ -25,11 +25,12 @@ jobs:
       matrix: ${{ steps.matrix.outputs.value }}
     steps:
       - uses: actions/checkout@v3
-
         # Run jobs.build for every directory
       - id: matrix
         run: |
-          echo "::set-output name=value::$(ls | jq -R -s -c 'split("\n")[:-1]'))" # ls only directories that changed
+          # can't only build by git diff because failed build means next commit won't have the right diffs
+          CONNS=$(find . -type f -name 'manifest.yaml' | cut -d "/" -f 2) #has manifest.yaml
+          echo "::set-output name=value::$(echo $CONNS | jq -R -s -c 'split("\n")[:-1]'))" # ls only directories that changed
 
   build:
     needs: [ setup ] # test
@@ -44,9 +45,6 @@ jobs:
       id-token: 'write'
 
     steps:
-    - run: |
-        echo "${{ matrix.value }}"
-
     - uses: actions/checkout@v3
 
     - name: Set up Docker Buildx
@@ -63,7 +61,7 @@ jobs:
       id: meta
       uses: docker/metadata-action@v3
       with:
-        images: ${{ secrets.DOCKER_REPO }}/${{ matrix.value }}
+        images: ${{ secrets.DOCKER_REPO }}/${{ matrix.value }}-connector
         tags: |
           type=ref,event=branch
           type=ref,event=pr
@@ -74,7 +72,7 @@ jobs:
           # disabled if major zero
           type=semver,pattern={{major}},enable=${{ !startsWith(steps.yaml-data.outputs.data, '0.') }}
         labels: |
-          org.opencontainers.image.title=${{ matrix.value }}
+          org.opencontainers.image.title=${{ matrix.value }}-connector
           org.opencontainers.image.description=
 
     - name: Authenticate to Google Cloud
@@ -122,44 +120,3 @@ jobs:
       env:
         SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
 
-  #deploy:
-    #needs: build
-    #runs-on: 'ubuntu-latest'
-    #steps:
-    #- uses: actions/checkout@v1
-
-    #- name: Lint Helm
-      #uses: WyriHaximus/github-action-helm3@v2
-      #with:
-        #exec: helm lint devops/k8s/helm-charts/analytics
-
-    #- name: Install doctl
-      #uses: digitalocean/action-doctl@v2
-      #with:
-        #token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
-
-    #- name: Save DigitalOcean kubeconfig
-      #run: doctl kubernetes cluster kubeconfig save ${{ secrets.K8S_CLUSTER_NAME }}
-
-    #- name: Set kubectl namespace
-      #if: github.ref == 'refs/heads/master'
-      #run: |
-        #kubectl config set-context --current --namespace=prod
-
-    #- name: Set kubectl namespace
-      #if: github.ref == 'refs/heads/staging'
-      #run: |
-        #kubectl config set-context --current --namespace=staging
-
-    ##- name: Rollout updated image
-      ##run: |
-        ##kubectl rollout restart $(kubectl get deployments --selector "app=analytics-client" --output=name)
-
-    #- name: Send Telegram notification
-      #uses: appleboy/telegram-action@master
-      #with:
-        #to: ${{ secrets.TELEGRAM_TO }}
-        #token: ${{ secrets.TELEGRAM_TOKEN }}
-        #message: |
-          #Github action ${{ github.workflow }} (${{github.job}}) finished.
-          #More information at https://github.com/blep-ai/blep/actions/runs/${{github.run_id}}.
