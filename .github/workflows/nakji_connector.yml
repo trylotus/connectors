@@ -3,29 +3,33 @@ name: Nakji Connector
 on:
   workflow_dispatch:
   push:
-    branches: [ staging, master ]
+    branches: [ main ]
     paths:
-      - 'data/**'
+      - '**'
       - '.github/workflows/nakji_connector.yml'
   pull_request:
     branches: [ none ]
     paths:
-      - 'data/**'
+      - '**'
 
 defaults:
   run:
     shell: bash
 
 jobs:
+
+  # https://tomasvotruba.com/blog/2020/11/16/how-to-make-dynamic-matrix-in-github-actions/
   setup:
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.matrix.outputs.value }}
     steps:
       - uses: actions/checkout@v3
+
+        # Run jobs.build for every directory
       - id: matrix
         run: |
-          echo '::set-output name=value::$(ls)'
+          echo "::set-output name=value::$(ls | jq -R -s -c 'split("\n")[:-1]'))" # TODO: ls only directories that changed
 
   build:
     needs: [ setup ] # test
@@ -38,10 +42,6 @@ jobs:
     permissions:
       contents: 'read'
       id-token: 'write'
-
-    env:
-      GCR_HOST: ${{ secrets.GCR_HOST }}
-      GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
 
     steps:
     - run: |
@@ -56,7 +56,7 @@ jobs:
       id: meta
       uses: docker/metadata-action@v3
       with:
-        images: ${{ secrets.GCR_HOST }}/${{ secrets.GCP_PROJECT_ID }}/${{ matrix.value }}
+        images: ${{ secrets.DOCKER_REPO }}/${{ matrix.value }}
         tags: |
           type=ref,event=branch
           type=ref,event=pr
@@ -73,13 +73,13 @@ jobs:
 
     - uses: 'docker/login-action@v1'
       with:
-        registry:  ${{ secrets.GCR_HOST }}
+        registry:  ${{ secrets.DOCKER_REPO }}
         username: 'oauth2accesstoken'
         password: '${{ steps.auth.outputs.access_token }}'
 
     - name: Login to google Container Registry
       run: |-
-        echo '${{ steps.auth.outputs.access_token }}' | docker login -u oauth2accesstoken --password-stdin ${{ secrets.GCR_HOST }}
+        echo '${{ steps.auth.outputs.access_token }}' | docker login -u oauth2accesstoken --password-stdin ${{ secrets.DOCKER_REPO }}
 
     - name: Build and push
       uses: docker/build-push-action@v2
@@ -89,7 +89,7 @@ jobs:
         build-args: |
           VERSION=${{ github.sha }} # TODO: change to manifest.yaml version
           BUILD=${{ github.sha }}
-        context: ./data
+        context: ${{ matrix.value }}
         push: ${{ github.event_name != 'pull_request' }}
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
