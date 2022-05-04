@@ -17,7 +17,6 @@ defaults:
     shell: bash
 
 jobs:
-
   # https://tomasvotruba.com/blog/2020/11/16/how-to-make-dynamic-matrix-in-github-actions/
   setup:
     runs-on: ubuntu-latest
@@ -32,8 +31,55 @@ jobs:
           CONNS=$(find . -type f -name 'manifest.yaml' | cut -d "/" -f 2) #has manifest.yaml
           echo "::set-output name=value::$(echo $CONNS | jq -R -s -c 'split("\n")[:-1]'))" # ls only directories that changed
 
+  test:
+    name: Testing Packages
+    needs: [ setup ]
+
+    strategy:
+      matrix:
+        go-version: [1.17.x]
+        os: [ubuntu-latest]
+        value: ${{fromJson(needs.setup.outputs.matrix)}}
+
+    runs-on: ${{ matrix.os }}
+            
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: ${{ matrix.go-version }}
+
+      - uses: actions/cache@v2
+        with:
+          # In order:
+          # * Module download cache
+          # * Build cache (Linux)
+          # * Build cache (Mac)
+          # * Build cache (Windows)
+          path: |
+            ~/go/pkg/mod
+            ~/.cache/go-build
+            ~/Library/Caches/go-build
+            ~\AppData\Local\go-build
+          key: ${{ runner.os }}-go-${{ matrix.go-version }}-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-${{ matrix.go-version }}-
+
+      - name: Go Mod
+        working-directory: ${{ matrix.value }}
+        run: |
+          go mod tidy -compat=1.17
+
+      - name: Tests
+        working-directory: ${{ matrix.value }}
+        run: |
+          go test ./...
+
   build:
-    needs: [ setup ] # test
+    needs: [ setup, test ]
     runs-on: ubuntu-latest
     strategy:
       matrix:
