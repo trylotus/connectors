@@ -29,7 +29,7 @@ jobs:
         # Run jobs.build for every directory
       - id: matrix
         run: |
-          echo "::set-output name=value::$(ls | jq -R -s -c 'split("\n")[:-1]'))" # TODO: ls only directories that changed
+          echo "::set-output name=value::$(ls | jq -R -s -c 'split("\n")[:-1]'))" # ls only directories that changed
 
   build:
     needs: [ setup ] # test
@@ -74,7 +74,6 @@ jobs:
           # disabled if major zero
           type=semver,pattern={{major}},enable=${{ !startsWith(steps.yaml-data.outputs.data, '0.') }}
         labels: |
-          maintainer=CrazyMax
           org.opencontainers.image.title=${{ matrix.value }}
           org.opencontainers.image.description=
 
@@ -119,7 +118,7 @@ jobs:
         # See also: https://api.slack.com/methods/chat.postMessage#channels
         channel-id: 'C03DL2A73SB' #devops-alerts
         # For posting a simple plain text message
-        slack-message: "GitHub build result: ${{ job.status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}\n${{ steps.meta.outputs.tags }}"
+        slack-message: "GitHub Action build result: *${{ job.status }}* <${{ github.event.pull_request.html_url || github.event.head_commit.url }}|${{ github.sha }}>\n---\n\n${{ steps.meta.outputs.tags }}"
       env:
         SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
 
