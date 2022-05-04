@@ -1,0 +1,3 @@
+[submodule "nft-connector/smart-contracts"]
+	path = nft-connector/smart-contracts
+	url = https://github.com/OpenZeppelin/openzeppelin-contracts.git

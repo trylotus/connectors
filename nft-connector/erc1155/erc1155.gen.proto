@@ -1,0 +1,40 @@
+// Code generated - DO NOT EDIT.
+// This file is a generated protobuf definition and any manual changes will be lost.
+
+syntax = "proto3";
+package erc1155;
+
+import "google/protobuf/timestamp.proto";
+option go_package = "github.com/nakji-network/ethnft-connector/erc1155";
+
+
+message ApprovalForAll {
+	google.protobuf.Timestamp ts = 1;
+	bytes account = 2; 
+	bytes operator = 3; 
+	bool approved = 4; 
+}
+
+message TransferBatch {
+	google.protobuf.Timestamp ts = 1;
+	bytes operator = 2; 
+	bytes from = 3; 
+	bytes to = 4; 
+	repeated bytes ids = 5; // uint256
+	repeated bytes values = 6; // uint256
+}
+
+message TransferSingle {
+	google.protobuf.Timestamp ts = 1;
+	bytes operator = 2; 
+	bytes from = 3; 
+	bytes to = 4; 
+	bytes id = 5; // uint256
+	bytes value = 6; // uint256
+}
+
+message URI {
+	google.protobuf.Timestamp ts = 1;
+	string value = 2; 
+	bytes id = 3; // uint256
+}
