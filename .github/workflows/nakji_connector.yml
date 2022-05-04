@@ -96,37 +96,17 @@ jobs:
         cache-from: type=gha
         cache-to: type=gha,mode=max
 
-
-
-
-    #- name: Push to AWS ECR
-      #id: ecr1
-      #uses: blep-ai/gh-ecr-push@1.1
-      #with:
-        #access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        #secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        #region: ${{ secrets.AWS_REGION }}
-        #images: analytics
-        #tag: :${{ github.sha }}
-
-    #- name: Push to AWS ECR
-      #id: ecr2
-      #uses: blep-ai/gh-ecr-push@1.1
-      #with:
-        #access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        #secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        #region: ${{ secrets.AWS_REGION }}
-        #images: analytics
-        #tag: :${{ env.GITHUB_REF_SLUG }}
-
-    - name: Send Telegram notification
-      uses: appleboy/telegram-action@master
+    - name: Post to a Slack channel
+      id: slack
+      uses: slackapi/slack-github-action@v1.19.0
       with:
-        to: ${{ secrets.TELEGRAM_TO }}
-        token: ${{ secrets.TELEGRAM_TOKEN }}
-        message: |
-          Github action ${{ github.workflow }} (${{github.job}}) finished.
-          More information at https://github.com/blep-ai/blep/actions/runs/${{github.run_id}}.
+        # Slack channel id, channel name, or user id to post message.
+        # See also: https://api.slack.com/methods/chat.postMessage#channels
+        channel-id: 'C03DL2A73SB' #devops-alerts
+        # For posting a simple plain text message
+        slack-message: "GitHub build result: ${{ job.status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}\n${{ steps.meta.outputs.tags }}"
+      env:
+        SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
 
   #deploy:
     #needs: build
