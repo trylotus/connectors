@@ -28,8 +28,8 @@ jobs:
       - id: matrix
         run: |
           # can't only build by git diff because failed build means next commit won't have the right diffs
-          CONNS=$(find . -type f -name 'manifest.yaml' | cut -d "/" -f 2) #has manifest.yaml
-          echo "::set-output name=value::$(echo $CONNS | jq -R -s -c 'split("\n")[:-1]'))" # ls only directories that changed
+          # has manifest.yaml
+          echo "::set-output name=value::$(find . -type f -name 'manifest.yaml' | cut -d "/" -f 2 | jq -R -s -c 'split("\n")[:-1]'))" # ls only directories that changed
 
   test:
     name: Testing Packages
@@ -37,11 +37,9 @@ jobs:
 
     strategy:
       matrix:
-        go-version: [1.17.x]
-        os: [ubuntu-latest]
         value: ${{fromJson(needs.setup.outputs.matrix)}}
 
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
 
     # Add "id-token" with the intended permissions. Required with google-github-actions/auth.
     permissions:
@@ -74,7 +72,7 @@ jobs:
 
 
   build:
-    needs: [ setup, test ]
+    needs: [ setup , test ]
     runs-on: ubuntu-latest
     strategy:
       matrix:
