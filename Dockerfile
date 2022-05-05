@@ -13,7 +13,7 @@ COPY . .
 # build protobufs
 RUN protoc --proto_path=. \
                 --go_out=. --go_opt=paths=source_relative \
-                --go-grpc_out=. --go-grpc_opt=paths=source_relative --experimental_allow_proto3_optional **/*.proto
+                --go-grpc_out=. --go-grpc_opt=paths=source_relative --experimental_allow_proto3_optional $(find . -iname "*.proto")
 
 FROM base as build
 # build. CGO_ENABLED=1 required for conflient-kafka-go
