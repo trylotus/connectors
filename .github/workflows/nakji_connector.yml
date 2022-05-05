@@ -63,7 +63,6 @@ jobs:
       with:
         context: ${{ matrix.value }}
         push: false
-        tags: ${{ matrix.value }}-tester:latest
         cache-from: type=gha
         cache-to: type=gha,mode=max
         target: test
@@ -71,7 +70,7 @@ jobs:
 
     - name: Test
       run: |
-        docker run ${{ matrix.value }}-tester:latest #${{ steps.build-tester.outputs.imageid }}
+        docker run ${{ steps.build-tester.outputs.imageid }}
 
 
   build:
