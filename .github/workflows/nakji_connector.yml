@@ -32,7 +32,7 @@ jobs:
           echo "::set-output name=value::$(find . -type f -name 'manifest.yaml' | cut -d "/" -f 2 | jq -R -s -c 'split("\n")[:-1]'))" # ls only directories that changed
 
   test:
-    name: Testing Packages
+    name: Test and Build
     needs: [ setup ]
 
     strategy:
@@ -59,6 +59,7 @@ jobs:
       env:
         BRANCH: ${{ env.GITHUB_REF_SLUG }}
       with:
+        file: Dockerfile
         context: ${{ matrix.value }}
         push: false
         cache-from: type=gha
@@ -70,8 +71,8 @@ jobs:
       run: |
         docker run ${{ steps.build-tester.outputs.imageid }}
 
-
   build:
+    name: Build+Push Docker Image
     needs: [ setup , test ]
     runs-on: ubuntu-latest
     strategy:
@@ -140,6 +141,7 @@ jobs:
         build-args: |
           VERSION=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
           BUILD=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.revision'] }}
+        file: Dockerfile
         context: ${{ matrix.value }}
         push: ${{ github.event_name != 'pull_request' }}
         tags: ${{ steps.meta.outputs.tags }}
