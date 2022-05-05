@@ -3,23 +3,20 @@ package bitcoin
 import (
 	"context"
 	"fmt"
-	"path/filepath"
-	"runtime"
 
 	"github.com/btcsuite/btcd/btcjson"
 	"github.com/btcsuite/btcd/chaincfg/chainhash"
+	"github.com/btcsuite/btcd/rpcclient"
 	"github.com/btcsuite/btcd/wire"
 	"github.com/btcsuite/btcutil"
 	"github.com/nakji-network/connector"
-	"github.com/nakji-network/connector/kafkautils"
 	"github.com/rs/zerolog/log"
 )
 
 type BitcoinConnector struct {
 	*connector.Connector // embed Nakji connector.Connector into your custom connector to get access to all its methods
 	client               BTCClient
-	blockTopic           kafkautils.Topic
-	txTopic              kafkautils.Topic
+	hashChan             chan chainhash.Hash
 	callback             func()
 }
 
@@ -30,25 +27,45 @@ type BTCClient interface {
 	GetRawTransactionVerbose(*chainhash.Hash) (*btcjson.TxRawResult, error)
 	Shutdown()
 	WaitForShutdown()
+	NotifyBlocks() error
+	GetBlockCount() (int64, error)
 }
 
 const Namespace = "bitcoin"
 
-func NewConnector(client BTCClient, blockTopic, txTopic kafkautils.Topic, callback func()) *BitcoinConnector {
-	_, filename, _, _ := runtime.Caller(0)
-	path := filepath.Join(filepath.Dir(filename), "manifest.yaml")
-	c := connector.NewConnector(path)
+// NewConnector creates new BitcoinConnector and connects to the bitcoin RPC
+func NewConnector(callback func()) *BitcoinConnector {
+	c := connector.NewConnector()
+
+	hashChan := make(chan chainhash.Hash, 100)
+
+	ntfnHandlers := rpcclient.NotificationHandlers{
+		OnFilteredBlockConnected: func(height int32, header *wire.BlockHeader, txns []*btcutil.Tx) {
+			hashChan <- header.BlockHash()
+		},
+	}
 
 	return &BitcoinConnector{
-		Connector:  c,
-		client:     client,
-		blockTopic: blockTopic,
-		txTopic:    txTopic,
-		callback:   callback,
+		Connector: c,
+		hashChan:  hashChan,
+		client:    c.ChainClients.Bitcoin(&ntfnHandlers),
+		callback:  callback,
 	}
 }
 
-func (c BitcoinConnector) Start(ctx context.Context, hashChan <-chan chainhash.Hash) {
+func (c *BitcoinConnector) Start(ctx context.Context) {
+	// Get the current block count.
+	blockCount, err := c.client.GetBlockCount()
+	if err != nil {
+		log.Fatal().Err(err).Msg("BTC: Get Block Count error")
+	}
+	log.Info().Int64("count", blockCount).Msg("block count")
+
+	if err := c.client.NotifyBlocks(); err != nil {
+		log.Fatal().Err(err).Msg("Block Notifications Register failed")
+	}
+	log.Info().Msg("BTC: NotifyBlocks: Registration Complete")
+
 	for {
 		select {
 		case <-ctx.Done():
@@ -56,7 +73,7 @@ func (c BitcoinConnector) Start(ctx context.Context, hashChan <-chan chainhash.H
 			c.client.Shutdown()
 			return
 
-		case hash := <-hashChan:
+		case hash := <-c.hashChan:
 			log.Info().Str("blockHash", hash.String()).Msg("BTC: writing block to Kafka")
 			wireBlock, err := c.client.GetBlock(&hash)
 			if err != nil {
