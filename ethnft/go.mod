@@ -1,4 +1,4 @@
-module github.com/nakji-network/ethnft-connector
+module github.com/nakji-network/connectors/ethnft
 
 go 1.17
 

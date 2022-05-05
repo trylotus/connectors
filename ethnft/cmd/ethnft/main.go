@@ -7,13 +7,13 @@ import (
 
 	"github.com/nakji-network/connector"
 
-	nft "github.com/nakji-network/ethnft-connector"
+	"github.com/nakji-network/connectors/ethnft"
 )
 
 func main() {
 	c := connector.NewConnector()
 
-	connector := nft.NewConnector(
+	connector := ethnft.NewConnector(
 		c,
 	)
 

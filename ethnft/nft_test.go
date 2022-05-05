@@ -1,4 +1,5 @@
-package nft
+package ethnft
+
 /*
 
 import (
