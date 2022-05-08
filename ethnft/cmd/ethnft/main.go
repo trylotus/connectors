@@ -8,6 +8,8 @@ import (
 	"github.com/nakji-network/connector"
 
 	"github.com/nakji-network/connectors/ethnft"
+	"github.com/nakji-network/connectors/ethnft/erc1155"
+	"github.com/nakji-network/connectors/ethnft/erc721"
 )
 
 func main() {
@@ -15,6 +17,17 @@ func main() {
 
 	connector := ethnft.NewConnector(
 		c,
+	)
+
+	// Register topic and protobuf type mappings
+	c.RegisterProtos(
+		&erc1155.ApprovalForAll{},
+		&erc1155.TransferBatch{},
+		&erc1155.TransferSingle{},
+		&erc1155.URI{},
+		&erc721.ApprovalForAll{},
+		&erc721.Approval{},
+		&erc721.Transfer{},
 	)
 
 	connector.Start(context.Background()) //, c.Config.GetUint64("nft.backfillNumBlocks"))

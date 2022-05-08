@@ -535,6 +535,8 @@ github.com/nakji-network/connector v0.0.0-20220506005459-634e648c05d6 h1:e2oXONE
 github.com/nakji-network/connector v0.0.0-20220506005459-634e648c05d6/go.mod h1:ONpB6mQRI+q6ZL/5bx95c4UiLYREU7I0N3/9ojY1FFc=
 github.com/nakji-network/connector v0.0.0-20220506012631-f7b673220b1d h1:f5U7wYgBRwCWGD17VuQbqyIlTDka2Es17/gLuEXjIrY=
 github.com/nakji-network/connector v0.0.0-20220506012631-f7b673220b1d/go.mod h1:sZWlfnqbHWZerVLQ2TWBCMAHjSeRu7dcpLiUhHgjtq0=
+github.com/nakji-network/connector v0.0.0-20220506083019-a0b12fbdb1d2 h1:4Y3Sp5CUFtctD+T3zeFTkzw57fCbik72UhXHwfafA5M=
+github.com/nakji-network/connector v0.0.0-20220506083019-a0b12fbdb1d2/go.mod h1:sZWlfnqbHWZerVLQ2TWBCMAHjSeRu7dcpLiUhHgjtq0=
 github.com/naoina/go-stringutil v0.1.0/go.mod h1:XJ2SJL9jCtBh+P9q5btrd/Ylo8XwT/h1USek5+NqSA0=
 github.com/naoina/toml v0.1.2-0.20170918210437-9fafd6967416/go.mod h1:NBIhNtsFMo3G2szEBne+bO4gS192HuIYRqfvOWb4i1E=
 github.com/nxadm/tail v1.4.4/go.mod h1:kenIhsEOeOJmVchQTgglprH7qJGnHDVpk1VPCcaMI8A=
@@ -739,6 +741,8 @@ golang.org/x/crypto v0.0.0-20211215165025-cf75a172585e h1:1SzTfNOXwIS2oWiMF+6qu0
 golang.org/x/crypto v0.0.0-20211215165025-cf75a172585e/go.mod h1:P+XmwS30IXTQdn5tA2iutPOUgjI07+tq3H3K9MVA1s8=
 golang.org/x/crypto v0.0.0-20220427172511-eb4f295cb31f h1:OeJjE6G4dgCY4PIXvIRQbE8+RX+uXZyGhUy/ksMGJoc=
 golang.org/x/crypto v0.0.0-20220427172511-eb4f295cb31f/go.mod h1:IxCIyHEi3zRg3s0A5j5BB6A9Jmi73HwBIUl50j+osU4=
+golang.org/x/crypto v0.0.0-20220507011949-2cf3adece122 h1:NvGWuYG8dkDHFSKksI1P9faiVJ9rayE6l0+ouWVIDs8=
+golang.org/x/crypto v0.0.0-20220507011949-2cf3adece122/go.mod h1:IxCIyHEi3zRg3s0A5j5BB6A9Jmi73HwBIUl50j+osU4=
 golang.org/x/exp v0.0.0-20180321215751-8460e604b9de/go.mod h1:CJ0aWSM057203Lf6IL+f9T1iT9GByDxfZKAQTCR3kQA=
 golang.org/x/exp v0.0.0-20180807140117-3d87b88a115f/go.mod h1:CJ0aWSM057203Lf6IL+f9T1iT9GByDxfZKAQTCR3kQA=
 golang.org/x/exp v0.0.0-20190121172915-509febef88a4/go.mod h1:CJ0aWSM057203Lf6IL+f9T1iT9GByDxfZKAQTCR3kQA=
