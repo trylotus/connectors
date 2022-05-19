@@ -99,7 +99,7 @@ jobs:
 
     - id: connector-name
       run: |
-        echo "::set-output name=value::$(dirname ${{ matrix.dir }})" # ls only directories that changed
+        echo "::set-output name=value::$(basename ${{ matrix.dir }})" # ls only directories that changed
 
     - name: Docker meta
       id: meta
