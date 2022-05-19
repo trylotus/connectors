@@ -21,7 +21,7 @@ jobs:
   setup:
     runs-on: ubuntu-latest
     outputs:
-      matrix: ${{ steps.matrix.outputs.value }}
+      dirs: ${{ steps.matrix.outputs.dirs }}
     steps:
       - uses: actions/checkout@v3
         # Run jobs.build for every directory
@@ -29,7 +29,7 @@ jobs:
         run: |
           # can't only build by git diff because failed build means next commit won't have the right diffs
           # has manifest.yaml
-          echo "::set-output name=value::$(find . -type f -name 'manifest.yaml' | cut -d "/" -f 2 | jq -R -s -c 'split("\n")[:-1]'))" # ls only directories that changed
+          echo "::set-output name=dirs::$(find . -type f -name 'manifest.yaml' | xargs dirname | jq -R -s -c 'split("\n")[:-1]'))" # ls only directories that changed
 
   test:
     name: Test and Build
@@ -37,7 +37,7 @@ jobs:
 
     strategy:
       matrix:
-        value: ${{fromJson(needs.setup.outputs.matrix)}}
+        dir: ${{fromJson(needs.setup.outputs.dirs)}}
 
     runs-on: ubuntu-latest
 
@@ -60,7 +60,7 @@ jobs:
         BRANCH: ${{ env.GITHUB_REF_SLUG }}
       with:
         file: Dockerfile
-        context: ${{ matrix.value }}
+        context: ${{ matrix.dir }}
         push: false
         cache-from: type=gha
         cache-to: type=gha,mode=max
@@ -77,7 +77,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        value: ${{fromJson(needs.setup.outputs.matrix)}}
+        dir: ${{fromJson(needs.setup.outputs.matrix)}}
 
     # Add "id-token" with the intended permissions. Required with google-github-actions/auth.
     permissions:
@@ -94,14 +94,18 @@ jobs:
       id: yaml-data
       uses: KJ002/read-yaml@main      # You may wish to replace main with a version tag such as '1.6' etc.
       with:
-        file: '${{matrix.value}}/manifest.yaml'          # File to read from
+        file: '${{matrix.dir}}/manifest.yaml'          # File to read from
         key-path: '["version"]' # Access the runs key then the using key and retuns the value.
+
+    - id: connector-name
+      run: |
+        echo "::set-output name=value::$(dirname ${{ matrix.dir }})" # ls only directories that changed
 
     - name: Docker meta
       id: meta
       uses: docker/metadata-action@v3
       with:
-        images: ${{ secrets.DOCKER_REPO }}/${{ matrix.value }}-connector
+        images: ${{ secrets.DOCKER_REPO }}/${{ steps.connector-name.outputs.value }}-connector
         tags: |
           type=ref,event=branch
           type=ref,event=pr
@@ -112,7 +116,7 @@ jobs:
           # disabled if major zero
           type=semver,pattern={{major}},enable=${{ !startsWith(steps.yaml-data.outputs.data, '0.') }}
         labels: |
-          org.opencontainers.image.title=${{ matrix.value }}-connector
+          org.opencontainers.image.title=${{ steps.connector-name.outputs.value }}-connector
           org.opencontainers.image.description=
 
     - name: Authenticate to Google Cloud
@@ -142,7 +146,7 @@ jobs:
           VERSION=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
           BUILD=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.revision'] }}
         file: Dockerfile
-        context: ${{ matrix.value }}
+        context: ${{ matrix.dir }}
         push: ${{ github.event_name != 'pull_request' }}
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
