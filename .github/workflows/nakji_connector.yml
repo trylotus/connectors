@@ -77,7 +77,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        dir: ${{fromJson(needs.setup.outputs.matrix)}}
+        dir: ${{fromJson(needs.setup.outputs.dirs)}}
 
     # Add "id-token" with the intended permissions. Required with google-github-actions/auth.
     permissions:
