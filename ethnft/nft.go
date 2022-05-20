@@ -92,6 +92,7 @@ func (c *NftConnector) Start(ctx context.Context) { //, backfillNumBlocks uint64
 	erc721Logs, sub1 := c.startListener(ctx, erc721Abi, erc721EventNames)
 
 	errorSubs := []<-chan error{sub0.Err(), sub1.Err(), sub.Err()}
+	out := common.MergeErrChans(errorSubs...)
 
 	//var once sync.Once
 	for {
@@ -106,7 +107,7 @@ func (c *NftConnector) Start(ctx context.Context) { //, backfillNumBlocks uint64
 		//Msg("header received")
 
 		//ethclient.CacheBlockTimestamp(header.Hash(), header.Time)
-		case err := <-common.MergeErrChans(errorSubs...):
+		case err = <-out:
 			log.Error().Err(err).Msg("Event listener failed")
 			return
 		case header := <-headers:
