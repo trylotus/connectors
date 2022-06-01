@@ -37,7 +37,7 @@ COPY --from=build /src/manifest.yaml /
 # Copy .proto files
 COPY --from=build /src /${PACKAGE}
 RUN find ./${PACKAGE} -type f -not -iname "*.proto" -delete
-RUN mkdir proto
-RUN mv ./${PACKAGE} ./proto
+RUN mkdir proto-tmp
+RUN mv ./${PACKAGE} ./proto-tmp
 
 CMD ["ash"]
