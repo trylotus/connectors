@@ -145,6 +145,7 @@ jobs:
         build-args: |
           VERSION=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
           BUILD=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.revision'] }}
+          PACKAGE=${{ matrix.dir }}
         file: Dockerfile
         context: ${{ matrix.dir }}
         push: ${{ github.event_name != 'pull_request' }}
