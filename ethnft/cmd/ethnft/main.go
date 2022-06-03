@@ -6,10 +6,11 @@ import (
 	"context"
 
 	"github.com/nakji-network/connector"
-
 	"github.com/nakji-network/connectors/ethnft"
 	"github.com/nakji-network/connectors/ethnft/erc1155"
 	"github.com/nakji-network/connectors/ethnft/erc721"
+
+	_ "go.uber.org/automaxprocs"
 )
 
 func main() {

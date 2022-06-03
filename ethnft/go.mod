@@ -1,13 +1,13 @@
 module github.com/nakji-network/connectors/ethnft
 
-go 1.17
+go 1.18
 
 require (
 	github.com/ethereum/go-ethereum v1.10.17
-	github.com/golang/protobuf v1.5.2
 	github.com/nakji-network/connector v0.0.0-20220506083019-a0b12fbdb1d2
 	github.com/rs/zerolog v1.26.1
 	google.golang.org/protobuf v1.28.0
+	go.uber.org/automaxprocs v1.5.1
 )
 
 require (
@@ -27,6 +27,7 @@ require (
 	github.com/fsnotify/fsnotify v1.5.4 // indirect
 	github.com/go-ole/go-ole v1.2.6 // indirect
 	github.com/go-stack/stack v1.8.1 // indirect
+	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
