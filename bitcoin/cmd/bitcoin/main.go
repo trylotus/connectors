@@ -4,6 +4,8 @@ import (
 	"context"
 
 	"github.com/nakji-network/connectors/bitcoin"
+
+	_ "go.uber.org/automaxprocs"
 )
 
 func main() {

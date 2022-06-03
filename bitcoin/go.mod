@@ -1,6 +1,6 @@
 module github.com/nakji-network/connectors/bitcoin
 
-go 1.17
+go 1.18
 
 require (
 	github.com/btcsuite/btcd v0.22.1
@@ -8,13 +8,14 @@ require (
 	github.com/btcsuite/btcutil v1.0.3-0.20201208143702-a53e38424cce
 	github.com/golang/mock v1.6.0
 	github.com/golang/protobuf v1.5.2
+	github.com/nakji-network/connector v0.0.0-20220506083019-a0b12fbdb1d2
 	github.com/rs/zerolog v1.26.1
 	google.golang.org/protobuf v1.28.0
+	go.uber.org/automaxprocs v1.5.1
 )
 
 require (
 	github.com/Masterminds/semver v1.5.0 // indirect
-	github.com/StackExchange/wmi v1.2.1 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/btcsuite/btcd/btcec/v2 v2.2.0 // indirect
 	github.com/btcsuite/btclog v0.0.0-20170628155309-84c8d2346e9f // indirect
@@ -35,7 +36,6 @@ require (
 	github.com/magiconair/properties v1.8.6 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.1 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
-	github.com/nakji-network/connector v0.0.0-20220506083019-a0b12fbdb1d2 // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.0 // indirect
 	github.com/prometheus/client_golang v1.12.1 // indirect
