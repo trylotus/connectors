@@ -10,8 +10,8 @@ require (
 	github.com/golang/protobuf v1.5.2
 	github.com/nakji-network/connector v0.0.0-20220506083019-a0b12fbdb1d2
 	github.com/rs/zerolog v1.26.1
-	google.golang.org/protobuf v1.28.0
 	go.uber.org/automaxprocs v1.5.1
+	google.golang.org/protobuf v1.28.0
 )
 
 require (
