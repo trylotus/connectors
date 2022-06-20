@@ -91,9 +91,6 @@ func (c *NftConnector) Start(ctx context.Context) { //, backfillNumBlocks uint64
 	erc1155Logs, sub0 := c.startListener(ctx, erc1155Abi, erc1155EventNames)
 	erc721Logs, sub1 := c.startListener(ctx, erc721Abi, erc721EventNames)
 
-	errorSubs := []<-chan error{sub0.Err(), sub1.Err(), sub.Err()}
-	out := common.MergeErrChans(errorSubs...)
-
 	// Setup separate goroutine to consume messages from Subscription Channel.
 	// This is to prevent "subscription queue overflow" errors from being too slow at reading subscription
 	// messages.
@@ -133,6 +130,12 @@ func (c *NftConnector) Start(ctx context.Context) { //, backfillNumBlocks uint64
 		}
 	}()
 
+	go func() {
+		for header := range headers {
+			log.Info().Uint64("header", header.Number.Uint64()).Msg("")
+		}
+	}()
+
 	//var once sync.Once
 	for {
 		select {
@@ -146,11 +149,15 @@ func (c *NftConnector) Start(ctx context.Context) { //, backfillNumBlocks uint64
 		//Msg("header received")
 
 		//ethclient.CacheBlockTimestamp(header.Hash(), header.Time)
-		case err = <-out:
-			log.Error().Err(err).Msg("Event listener failed")
+		case err = <-sub0.Err():
+			log.Error().Err(err).Msg("ERC1155 listener failed")
 			return
-		case header := <-headers:
-			log.Info().Uint64("header", header.Number.Uint64()).Msg("")
+		case err = <-sub1.Err():
+			log.Error().Err(err).Msg("ERC721 listener failed")
+			return
+		case err = <-sub.Err():
+			log.Error().Err(err).Msg("Headers listener failed")
+			return
 		}
 	}
 }
