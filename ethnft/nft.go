@@ -94,6 +94,45 @@ func (c *NftConnector) Start(ctx context.Context) { //, backfillNumBlocks uint64
 	errorSubs := []<-chan error{sub0.Err(), sub1.Err(), sub.Err()}
 	out := common.MergeErrChans(errorSubs...)
 
+	// Setup separate goroutine to consume messages from Subscription Channel.
+	// This is to prevent "subscription queue overflow" errors from being too slow at reading subscription
+	// messages.
+	go func() {
+		for evLog := range erc1155Logs {
+			if evLog.Removed {
+				continue
+			}
+
+			//go once.Do(func() {
+			//c.backfill(sink, evLog.BlockNumber, backfillNumBlocks, "erc1155", c.Erc1155LogToMsg)
+			//})
+
+			c.Erc1155LogToMsg(evLog, erc1155Abi)
+
+			//if msg != nil {
+			//sink <- msg
+			//}
+		}
+	}()
+
+	// Setup separate goroutine to consume messages from Subscription Channel.
+	// This is to prevent "subscription queue overflow" errors from being too slow at reading subscription
+	// messages.
+	go func() {
+		for evLog := range erc721Logs {
+			if evLog.Removed {
+				continue
+			}
+			//log.Info().Uint64("log", evLog.BlockNumber).Msg("")
+
+			//go once.Do(func() {
+			//c.backfill(sink, evLog.BlockNumber, backfillNumBlocks, "erc721", c.Erc721LogToMsg)
+			//})
+
+			c.Erc721LogToMsg(evLog, erc721Abi)
+		}
+	}()
+
 	//var once sync.Once
 	for {
 		select {
@@ -112,31 +151,6 @@ func (c *NftConnector) Start(ctx context.Context) { //, backfillNumBlocks uint64
 			return
 		case header := <-headers:
 			log.Info().Uint64("header", header.Number.Uint64()).Msg("")
-		case evLog := <-erc1155Logs:
-			if evLog.Removed {
-				continue
-			}
-
-			//go once.Do(func() {
-			//c.backfill(sink, evLog.BlockNumber, backfillNumBlocks, "erc1155", c.Erc1155LogToMsg)
-			//})
-
-			c.Erc1155LogToMsg(evLog, erc1155Abi)
-
-			//if msg != nil {
-			//sink <- msg
-			//}
-		case evLog := <-erc721Logs:
-			if evLog.Removed {
-				continue
-			}
-			//log.Info().Uint64("log", evLog.BlockNumber).Msg("")
-
-			//go once.Do(func() {
-			//c.backfill(sink, evLog.BlockNumber, backfillNumBlocks, "erc721", c.Erc721LogToMsg)
-			//})
-
-			c.Erc721LogToMsg(evLog, erc721Abi)
 		}
 	}
 }
