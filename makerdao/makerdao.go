@@ -8,6 +8,7 @@ import (
 	"github.com/nakji-network/connector/common"
 	"github.com/nakji-network/connectors/makerdao/ARBITRUM_DAI_BRIDGE"
 	"github.com/nakji-network/connectors/makerdao/ARBITRUM_GOV_RELAY"
+	"github.com/nakji-network/connectors/makerdao/ARBITRUM_L2_DAI"
 	"github.com/nakji-network/connectors/makerdao/ARBITRUM_L2_DAI_GATEWAY"
 	"github.com/nakji-network/connectors/makerdao/ARBITRUM_L2_GOV_RELAY"
 	"github.com/nakji-network/connectors/makerdao/BAL"
@@ -41,6 +42,7 @@ import (
 	"github.com/nakji-network/connectors/makerdao/MCD_VEST_MKR_TREASURY"
 	"github.com/nakji-network/connectors/makerdao/MIP21_LIQUIDATION_ORACLE"
 	"github.com/nakji-network/connectors/makerdao/OPTIMISM_DAI_BRIDGE"
+	"github.com/nakji-network/connectors/makerdao/OPTIMISM_L2_DAI"
 	"github.com/nakji-network/connectors/makerdao/OPTIMISM_L2_DAI_TOKEN_BRIDGE"
 	"github.com/nakji-network/connectors/makerdao/OPTIMISM_L2_GOVERNANCE_RELAY"
 	"github.com/nakji-network/connectors/makerdao/RWA"
@@ -174,6 +176,8 @@ func getContract(contractType string) ISmartContract {
 	// 	return &ARBITRUM_ESCROW.SmartContract{}
 	case "ARBITRUM_GOV_RELAY":
 		return &ARBITRUM_GOV_RELAY.SmartContract{}
+	case "ARBITRUM_L2_DAI":
+		return &ARBITRUM_L2_DAI.SmartContract{}
 	case "ARBITRUM_L2_DAI_GATEWAY":
 		return &ARBITRUM_L2_DAI_GATEWAY.SmartContract{}
 	case "ARBITRUM_L2_GOV_RELAY":
@@ -284,10 +288,12 @@ func getContract(contractType string) ISmartContract {
 		return &MIP21_LIQUIDATION_ORACLE.SmartContract{}
 	case "OPTIMISM_DAI_BRIDGE":
 		return &OPTIMISM_DAI_BRIDGE.SmartContract{}
-	// case "OPTIMISM_ESCROW":
-	// 	return &OPTIMISM_ESCROW.SmartContract{}
-	// case "OPTIMISM_GOV_RELAY":
-	// 	return &OPTIMISM_GOV_RELAY.SmartContract{}
+		// case "OPTIMISM_ESCROW":
+		// 	return &OPTIMISM_ESCROW.SmartContract{}
+		// case "OPTIMISM_GOV_RELAY":
+		// 	return &OPTIMISM_GOV_RELAY.SmartContract{}
+	case "OPTIMISM_L2_DAI":
+		return &OPTIMISM_L2_DAI.SmartContract{}
 	case "OPTIMISM_L2_DAI_TOKEN_BRIDGE":
 		return &OPTIMISM_L2_DAI_TOKEN_BRIDGE.SmartContract{}
 	case "OPTIMISM_L2_GOVERNANCE_RELAY":
