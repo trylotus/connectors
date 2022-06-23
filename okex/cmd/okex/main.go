@@ -4,11 +4,16 @@ import (
 	"github.com/nakji-network/connector"
 	"github.com/nakji-network/connectors/market"
 	"github.com/nakji-network/connectors/okex"
+
+	"github.com/rs/zerolog/log"
 )
 
 func main() {
 
-	connector := connector.NewConnector()
+	c, err := connector.NewProducerConnector()
+	if err != nil {
+		log.Fatal().Err(err).Msg("failed to instantiate connector")
+	}
 
 	// Register topic and protobuf type mappings
 	connector.RegisterProtos(
