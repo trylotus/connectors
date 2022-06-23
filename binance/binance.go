@@ -50,11 +50,17 @@ func (c *BinanceConnector) Start() {
 				ts := common.UnixToTimestampPb(msInt)
 
 				// write to Kafka
-				c.ProduceAndCommitMessage(exchange, symbol, &market.OpenInterest{
+				if err := c.ProduceAndCommitMessage(exchange, symbol, &market.OpenInterest{
 					Ts:                ts,
 					OpenInterest:      val.Get("sumOpenInterest").Float(),
 					OpenInterestValue: val.Get("sumOpenInterestValue").Float(),
-				})
+				}); err != nil {
+					log.Error().
+						Err(err).
+						Str("symbol", symbol).
+						Msg("failed to produce and commit message")
+				}
+
 			})
 		}(s)
 	}

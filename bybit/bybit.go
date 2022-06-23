@@ -37,7 +37,7 @@ const (
 	bybitEndpointInstruments = "/v2/public/tickers"
 )
 
-func (b *BybitConnector) Start() {
+func (c *BybitConnector) Start() {
 	// gocryptotrader setup
 	exch := new(BybitConnector)
 	err := exch.SetDefaults()
@@ -67,11 +67,16 @@ func (b *BybitConnector) Start() {
 				}
 
 				// write to Kafka
-				b.ProduceAndCommitMessage(exch.Name, d.Symbol, &market.OpenInterest{
+				if err := c.ProduceAndCommitMessage(exch.Name, d.Symbol, &market.OpenInterest{
 					Ts:                timestamppb.New(ts),
 					OpenInterest:      d.OpenInterest,
 					OpenInterestValue: ov,
-				})
+				}); err != nil {
+					log.Error().
+						Err(err).
+						Str("symbol", d.Symbol).
+						Msg("failed to produce and commit message")
+				}
 
 				log.Info().
 					Float64("oi", d.OpenInterest).

@@ -65,12 +65,14 @@ func (c *BitfinexConnector) Start() {
 				cache[inst.Pair] = UpdateData{inst.LastUpdated, inst.DerivStatus.OpenInterest}
 
 				// write to Kafka
-				c.ProduceAndCommitMessage(exch.Name, inst.Pair.String(), &market.OpenInterest{
+				if err = c.ProduceAndCommitMessage(exch.Name, inst.Pair.String(), &market.OpenInterest{
 					Ts:           timestamppb.New(inst.LastUpdated),
 					OpenInterest: inst.DerivStatus.OpenInterest,
-				})
-				if err != nil {
-					log.Error().Err(err)
+				}); err != nil {
+					log.Error().
+						Err(err).
+						Str("symbol", inst.Pair.String()).
+						Msg("failed to produce and commit message")
 				}
 
 				log.Info().

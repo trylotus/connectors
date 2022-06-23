@@ -93,7 +93,12 @@ func (c *BitcoinConnector) Start(ctx context.Context) {
 
 			var blockData Block
 			blockData.UnmarshalBTCBlock(verboseBlock)
-			c.ProduceAndCommitMessage(Namespace, verboseBlock.Hash, &blockData)
+			if err := c.ProduceAndCommitMessage(Namespace, verboseBlock.Hash, &blockData); err != nil {
+				log.Error().
+					Err(err).
+					Str("symbol", inst.Pair.String()).
+					Msg("failed to produce and commit message")
+			}
 
 			block := btcutil.NewBlock(wireBlock)
 			for _, tx := range block.Transactions() {

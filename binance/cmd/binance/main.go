@@ -16,13 +16,13 @@ func main() {
 	}
 
 	// Register topic and protobuf type mappings
-	connector.RegisterProtos(
+	c.RegisterProtos(
 		&market.OpenInterest{},
 	)
 
-	c := binance.BinanceConnector{
-		Connector: connector,
+	connector := binance.BinanceConnector{
+		Connector: c,
 	}
 
-	c.Start()
+	connector.Start()
 }

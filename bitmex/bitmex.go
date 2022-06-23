@@ -61,11 +61,17 @@ func (c *BitmexConnector) Start() {
 					Str("sym", inst.Pair.String()).
 					Msg("Update")
 
-				c.ProduceAndCommitMessage(exch.Name, inst.Pair.String(), &market.OpenInterest{
+				if err := c.ProduceAndCommitMessage(exch.Name, inst.Pair.String(), &market.OpenInterest{
 					Ts:           timestamppb.New(inst.LastUpdated),
 					OpenInterest: inst.OpenInterest,
-				})
+				}); err != nil {
+					log.Error().
+						Err(err).
+						Str("symbol", inst.Pair.String()).
+						Msg("failed to produce and commit message")
+				}
 			}
+
 		default:
 		}
 	}

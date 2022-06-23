@@ -60,11 +60,16 @@ func (c *HuobiConnector) Start() {
 			if d.Amount != cache[p].OpenInterest && d.Amount != 0 {
 				cache[p] = UpdateData{LastUpdated: ts, OpenInterest: d.Amount}
 
-				c.ProduceAndCommitMessage(exch.Name, p.String(), &market.OpenInterest{
+				if err := c.ProduceAndCommitMessage(exch.Name, p.String(), &market.OpenInterest{
 					Ts:                timestamppb.New(ts),
 					OpenInterest:      d.Volume,
 					OpenInterestValue: d.Amount,
-				})
+				}); err != nil {
+					log.Error().
+						Err(err).
+						Str("symbol", p.String()).
+						Msg("failed to produce and commit message")
+				}
 
 				log.Info().
 					Float64("oi", d.Volume). // in usd

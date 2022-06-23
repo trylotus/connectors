@@ -84,10 +84,15 @@ func (c *FTXConnector) Start() {
 				cache[f] = UpdateData{LastUpdated: ts, OpenInterest: futureStatsData.OpenInterest}
 
 				// write to Kafka
-				c.ProduceAndCommitMessage(exch.Name, f, &market.OpenInterest{
+				if err := c.ProduceAndCommitMessage(exch.Name, f, &market.OpenInterest{
 					Ts:           timestamppb.New(ts),
 					OpenInterest: futureStatsData.OpenInterest,
-				})
+				}); err != nil {
+					log.Error().
+						Err(err).
+						Str("symbol", f).
+						Msg("failed to produce and commit message")
+				}
 
 				// key := kafkautils.NewKey(exch.Name, f)
 				// err = kp.WriteAndCommit(oiTopic, key.Bytes(), &market.OpenInterest{
