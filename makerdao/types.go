@@ -6,6 +6,7 @@ import (
 	"github.com/nakji-network/connectors/makerdao/ARBITRUM_DAI_BRIDGE"
 	"github.com/nakji-network/connectors/makerdao/ARBITRUM_ESCROW"
 	"github.com/nakji-network/connectors/makerdao/ARBITRUM_GOV_RELAY"
+	"github.com/nakji-network/connectors/makerdao/ARBITRUM_L2_DAI"
 	"github.com/nakji-network/connectors/makerdao/ARBITRUM_L2_DAI_GATEWAY"
 	"github.com/nakji-network/connectors/makerdao/ARBITRUM_L2_GOV_RELAY"
 	"github.com/nakji-network/connectors/makerdao/BAL"
@@ -63,6 +64,7 @@ import (
 	"github.com/nakji-network/connectors/makerdao/OPTIMISM_DAI_BRIDGE"
 	"github.com/nakji-network/connectors/makerdao/OPTIMISM_ESCROW"
 	"github.com/nakji-network/connectors/makerdao/OPTIMISM_GOV_RELAY"
+	"github.com/nakji-network/connectors/makerdao/OPTIMISM_L2_DAI"
 	"github.com/nakji-network/connectors/makerdao/OPTIMISM_L2_DAI_TOKEN_BRIDGE"
 	"github.com/nakji-network/connectors/makerdao/OPTIMISM_L2_GOVERNANCE_RELAY"
 	"github.com/nakji-network/connectors/makerdao/OSM_MOM"
@@ -456,6 +458,7 @@ var ABIs = map[string]string{
 	"ARBITRUM_DAI_BRIDGE":          ARBITRUM_DAI_BRIDGE.ARBITRUMDAIBRIDGEABI,
 	"ARBITRUM_ESCROW":              ARBITRUM_ESCROW.ARBITRUMESCROWABI,
 	"ARBITRUM_GOV_RELAY":           ARBITRUM_GOV_RELAY.ARBITRUMGOVRELAYABI,
+	"ARBITRUM_L2_DAI":              ARBITRUM_L2_DAI.ARBITRUML2DAIABI,
 	"ARBITRUM_L2_DAI_GATEWAY":      ARBITRUM_L2_DAI_GATEWAY.ARBITRUML2DAIGATEWAYABI,
 	"ARBITRUM_L2_GOV_RELAY":        ARBITRUM_L2_GOV_RELAY.ARBITRUML2GOVRELAYABI,
 	"BAL":                          BAL.BALABI,
@@ -513,6 +516,7 @@ var ABIs = map[string]string{
 	"OPTIMISM_DAI_BRIDGE":          OPTIMISM_DAI_BRIDGE.OPTIMISMDAIBRIDGEABI,
 	"OPTIMISM_ESCROW":              OPTIMISM_ESCROW.OPTIMISMESCROWABI,
 	"OPTIMISM_GOV_RELAY":           OPTIMISM_GOV_RELAY.OPTIMISMGOVRELAYABI,
+	"OPTIMISM_L2_DAI":              OPTIMISM_L2_DAI.OPTIMISML2DAIABI,
 	"OPTIMISM_L2_DAI_TOKEN_BRIDGE": OPTIMISM_L2_DAI_TOKEN_BRIDGE.OPTIMISML2DAITOKENBRIDGEABI,
 	"OPTIMISM_L2_GOVERNANCE_RELAY": OPTIMISM_L2_GOVERNANCE_RELAY.OPTIMISML2GOVERNANCERELAYABI,
 	"OSM_MOM":                      OSM_MOM.OSMMOMABI,
