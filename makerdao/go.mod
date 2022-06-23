@@ -6,7 +6,7 @@ replace github.com/nakji-network/connectors => ../
 
 require (
 	github.com/ethereum/go-ethereum v1.10.19
-	github.com/nakji-network/connector v0.0.1-beta.1.0.20220622211848-0eb8574eb93d
+	github.com/nakji-network/connector v0.0.1-beta.1.0.20220623141451-79a7cb0e4d8e
 	github.com/rs/zerolog v1.27.0
 	github.com/spf13/pflag v1.0.5
 	go.uber.org/automaxprocs v1.5.1

@@ -10,11 +10,15 @@ import (
 	"github.com/nakji-network/connectors/ethnft/erc1155"
 	"github.com/nakji-network/connectors/ethnft/erc721"
 
+	"github.com/rs/zerolog/log"
 	_ "go.uber.org/automaxprocs"
 )
 
 func main() {
-	c := connector.NewConnector()
+	c, err := connector.NewProducerConnector()
+	if err != nil {
+		log.Fatal().Err(err).Msg("failed to instantiate connector")
+	}
 
 	connector := ethnft.NewConnector(
 		c,

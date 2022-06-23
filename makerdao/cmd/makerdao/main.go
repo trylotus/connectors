@@ -15,7 +15,10 @@ import (
 )
 
 func main() {
-	c := connector.NewConnector()
+	c, err := connector.NewProducerConnector()
+	if err != nil {
+		log.Fatal().Err(err).Msg("failed to instantiate connector")
+	}
 
 	c.Config.SetDefault("contracts.url", "https://changelog.makerdao.com/releases/mainnet/active/contracts.json")
 	c.Config.SetDefault("makerdao.author", "nakji")

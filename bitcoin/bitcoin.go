@@ -4,12 +4,13 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/nakji-network/connector"
+
 	"github.com/btcsuite/btcd/btcjson"
 	"github.com/btcsuite/btcd/chaincfg/chainhash"
 	"github.com/btcsuite/btcd/rpcclient"
 	"github.com/btcsuite/btcd/wire"
 	"github.com/btcsuite/btcutil"
-	"github.com/nakji-network/connector"
 	"github.com/rs/zerolog/log"
 )
 
@@ -35,7 +36,10 @@ const Namespace = "bitcoin"
 
 // NewConnector creates new BitcoinConnector and connects to the bitcoin RPC
 func NewConnector(callback func()) *BitcoinConnector {
-	c := connector.NewConnector()
+	c, err := connector.NewProducerConnector()
+	if err != nil {
+		log.Fatal().Err(err).Msg("failed to instantiate connector")
+	}
 
 	hashChan := make(chan chainhash.Hash, 100)
 
