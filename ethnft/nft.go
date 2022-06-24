@@ -9,7 +9,6 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	ethcommon "github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/ethereum/go-ethereum/event"
@@ -48,13 +47,6 @@ func NewConnector(
 
 func (c *NftConnector) Start(ctx context.Context) { //, backfillNumBlocks uint64) {
 	c.Client = c.Connector.ChainClients.Ethereum(context.Background())
-
-	// Subscribe to headers to get timestamps for logs
-	headers := make(chan *types.Header)
-	sub, err := c.Client.SubscribeNewHead(context.Background(), headers)
-	if err != nil {
-		log.Fatal().Err(err)
-	}
 
 	erc721Abi, err := erc721.ERC721MetaData.GetAbi()
 	if err != nil {
@@ -99,33 +91,16 @@ func (c *NftConnector) Start(ctx context.Context) { //, backfillNumBlocks uint64
 	go c.consumeLogs(erc1155Logs, erc1155Abi, c.Erc1155LogToMsg)
 	go c.consumeLogs(erc721Logs, erc721Abi, c.Erc721LogToMsg)
 
-	go func() {
-		for header := range headers {
-			log.Info().Uint64("header", header.Number.Uint64()).Msg("")
-		}
-	}()
-
-	//var once sync.Once
 	for {
 		select {
 		case <-ctx.Done():
 			log.Info().Msg("worker cancelled and shutting down")
 			return
-		//case header := <-headers:
-		//log.Debug().
-		//Str("block", header.Number.String()).
-		//Uint64("ts", header.Time).
-		//Msg("header received")
-
-		//ethclient.CacheBlockTimestamp(header.Hash(), header.Time)
 		case err = <-sub0.Err():
 			log.Error().Err(err).Msg("ERC1155 listener failed")
 			return
 		case err = <-sub1.Err():
 			log.Error().Err(err).Msg("ERC721 listener failed")
-			return
-		case err = <-sub.Err():
-			log.Error().Err(err).Msg("Headers listener failed")
 			return
 		}
 	}
@@ -134,6 +109,7 @@ func (c *NftConnector) Start(ctx context.Context) { //, backfillNumBlocks uint64
 func (c *NftConnector) consumeLogs(logs <-chan ethtypes.Log, contractAbi *abi.ABI, processLog func(evLog ethtypes.Log, a *abi.ABI) error) {
 	pool := pond.New(100, 200_000)
 
+	//var once sync.Once
 	for evLog := range logs {
 		pool.Submit(func() {
 			if evLog.Removed {
