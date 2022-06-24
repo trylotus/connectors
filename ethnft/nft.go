@@ -4,6 +4,7 @@ package ethnft
 import (
 	"context"
 
+	"github.com/alitto/pond"
 	geth "github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -91,54 +92,12 @@ func (c *NftConnector) Start(ctx context.Context) { //, backfillNumBlocks uint64
 	erc1155Logs, sub0 := c.startListener(ctx, erc1155Abi, erc1155EventNames)
 	erc721Logs, sub1 := c.startListener(ctx, erc721Abi, erc721EventNames)
 
-	// Setup separate goroutine to consume messages from Subscription Channel.
-	// This is to prevent "subscription queue overflow" errors from being too slow at reading subscription
-	// messages.
-	go func() {
-		for evLog := range erc1155Logs {
-			if evLog.Removed {
-				continue
-			}
-
-			//go once.Do(func() {
-			//c.backfill(sink, evLog.BlockNumber, backfillNumBlocks, "erc1155", c.Erc1155LogToMsg)
-			//})
-
-			if err := c.Erc1155LogToMsg(evLog, erc1155Abi); err != nil {
-				log.Error().
-					Err(err).
-					Str("symbol", evLog.).
-					Msg("failed to produce and commit message")
-			}
-
-			//if msg != nil {
-			//sink <- msg
-			//}
-		}
-	}()
-
-	// Setup separate goroutine to consume messages from Subscription Channel.
-	// This is to prevent "subscription queue overflow" errors from being too slow at reading subscription
-	// messages.
-	go func() {
-		for evLog := range erc721Logs {
-			if evLog.Removed {
-				continue
-			}
-			//log.Info().Uint64("log", evLog.BlockNumber).Msg("")
-
-			//go once.Do(func() {
-			//c.backfill(sink, evLog.BlockNumber, backfillNumBlocks, "erc721", c.Erc721LogToMsg)
-			//})
-
-			if err := c.Erc721LogToMsg(evLog, erc721Abi)err != nil {
-				log.Error().
-					Err(err).
-					Str("symbol", evLog.).
-					Msg("failed to produce and commit message")
-			}
-		}
-	}()
+	// To address subscription queue overflow errors, we use the buffered queue in the worker pool.
+	// We immediately consume messages in the subscription channel and place them in the worker
+	// pool queue. Otherwise, when we receive a burst of notifications from our geth rpc node, we
+	// will get a subscription queue overflow error.
+	go c.consumeLogs(erc1155Logs, erc1155Abi, c.Erc1155LogToMsg)
+	go c.consumeLogs(erc721Logs, erc721Abi, c.Erc721LogToMsg)
 
 	go func() {
 		for header := range headers {
@@ -169,6 +128,29 @@ func (c *NftConnector) Start(ctx context.Context) { //, backfillNumBlocks uint64
 			log.Error().Err(err).Msg("Headers listener failed")
 			return
 		}
+	}
+}
+
+func (c *NftConnector) consumeLogs(logs <-chan ethtypes.Log, contractAbi *abi.ABI, processLog func(evLog ethtypes.Log, a *abi.ABI) error) {
+	pool := pond.New(100, 200_000)
+
+	for evLog := range logs {
+		pool.Submit(func() {
+			if evLog.Removed {
+				return
+			}
+
+			//go once.Do(func() {
+			//c.backfill(sink, evLog.BlockNumber, backfillNumBlocks, "erc1155", c.Erc1155LogToMsg)
+			//})
+
+			if err := processLog(evLog, contractAbi); err != nil {
+				log.Error().
+					Err(err).
+					Interface("log", evLog).
+					Msg("failed to produce and commit message")
+			}
+		})
 	}
 }
 
