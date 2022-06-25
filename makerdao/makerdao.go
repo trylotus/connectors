@@ -126,7 +126,7 @@ func (c *Connector) listen() {
 			if msg := c.parse(vLog); msg != nil {
 				err := c.Connector.ProduceAndCommitMessage(c.ConnectorName, vLog.Address.String(), msg)
 				if err != nil {
-					log.Warn().
+					log.Error().
 						Str("namespace", c.ConnectorName).
 						Str("subject", vLog.Address.String()).
 						Err(err).Msg("failed to commit message")

@@ -104,7 +104,12 @@ func (c *NftConnector) Start(ctx context.Context) { //, backfillNumBlocks uint64
 			//c.backfill(sink, evLog.BlockNumber, backfillNumBlocks, "erc1155", c.Erc1155LogToMsg)
 			//})
 
-			c.Erc1155LogToMsg(evLog, erc1155Abi)
+			if err := c.Erc1155LogToMsg(evLog, erc1155Abi); err != nil {
+				log.Error().
+					Err(err).
+					Str("symbol", evLog.).
+					Msg("failed to produce and commit message")
+			}
 
 			//if msg != nil {
 			//sink <- msg
@@ -126,7 +131,12 @@ func (c *NftConnector) Start(ctx context.Context) { //, backfillNumBlocks uint64
 			//c.backfill(sink, evLog.BlockNumber, backfillNumBlocks, "erc721", c.Erc721LogToMsg)
 			//})
 
-			c.Erc721LogToMsg(evLog, erc721Abi)
+			if err := c.Erc721LogToMsg(evLog, erc721Abi)err != nil {
+				log.Error().
+					Err(err).
+					Str("symbol", evLog.).
+					Msg("failed to produce and commit message")
+			}
 		}
 	}()
 
