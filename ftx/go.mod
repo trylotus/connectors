@@ -2,12 +2,10 @@ module github.com/nakji-network/connectors/ftx
 
 go 1.18
 
-replace github.com/nakji-network/connectors/market => ../market
-
 replace github.com/thrasher-corp/gocryptotrader => ../gocryptotrader
 
 require (
-	github.com/nakji-network/connector v0.0.1-beta.1.0.20220623141451-79a7cb0e4d8e
+	github.com/nakji-network/connector v0.0.1-beta.1.0.20220624162352-5e9f35e2e4c4
 	github.com/nakji-network/connectors/market v0.0.0-00010101000000-000000000000
 	github.com/rs/zerolog v1.27.0
 	github.com/thrasher-corp/gocryptotrader v0.0.0-20220606054133-1e5afb7ec140
