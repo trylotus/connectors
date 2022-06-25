@@ -2,8 +2,6 @@ module github.com/nakji-network/connectors/okex
 
 go 1.18
 
-replace github.com/nakji-network/connectors/market => ../market
-
 replace github.com/thrasher-corp/gocryptotrader => ../gocryptotrader
 
 require (
