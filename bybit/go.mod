@@ -6,7 +6,7 @@ replace github.com/thrasher-corp/gocryptotrader => ../gocryptotrader
 
 require (
 	github.com/nakji-network/connector v0.0.1-beta.1.0.20220624162352-5e9f35e2e4c4
-	github.com/nakji-network/connectors/market v0.0.0-00010101000000-000000000000
+	github.com/nakji-network/connectors/market v0.0.0-20220625085937-2ffccf341bf0
 	github.com/rs/zerolog v1.27.0
 	github.com/thrasher-corp/gocryptotrader v0.0.0-20210914011031-068b375867c0
 	google.golang.org/protobuf v1.28.0
