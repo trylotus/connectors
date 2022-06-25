@@ -27,42 +27,39 @@ var (
 
 func (c *BinanceConnector) Start() {
 	// Timed fetch
-	for _, s := range symbols {
-		go func(symbol string) {
-			params := url.Values{}
-			params.Add("limit", "5")
-			params.Add("symbol", symbol)
-			params.Add("period", period)
+	for _, symbol := range symbols {
+		params := url.Values{}
+		params.Add("limit", "5")
+		params.Add("symbol", symbol)
+		params.Add("period", period)
 
-			tfOptions := TimedFetchOptions{
-				Interval: 5 * 60 * 1000, // 5 minutes
-				Margin:   550,
-				Delay:    4 * 60 * 1000, // 4 minutes
-				Decay:    6,
+		tfOptions := TimedFetchOptions{
+			Interval: 5 * 60 * 1000, // 5 minutes
+			Margin:   550,
+			Delay:    4 * 60 * 1000, // 4 minutes
+			Decay:    6,
+		}
+
+		TimedFetch(baseURL, params, tfOptions, func(val *gjson.Result, err error) {
+			if err != nil {
+				log.Fatal().Err(err).Msg("")
 			}
 
-			TimedFetch(baseURL, params, tfOptions, func(val *gjson.Result, err error) {
-				if err != nil {
-					log.Fatal().Err(err).Msg("")
-				}
+			msInt := val.Get("timestamp").Int()
+			ts := common.UnixToTimestampPb(msInt)
 
-				msInt := val.Get("timestamp").Int()
-				ts := common.UnixToTimestampPb(msInt)
-
-				// write to Kafka
-				if err := c.ProduceAndCommitMessage(exchange, symbol, &market.OpenInterest{
-					Ts:                ts,
-					OpenInterest:      val.Get("sumOpenInterest").Float(),
-					OpenInterestValue: val.Get("sumOpenInterestValue").Float(),
-				}); err != nil {
-					log.Error().
-						Err(err).
-						Str("symbol", symbol).
-						Msg("failed to produce and commit message")
-				}
-
-			})
-		}(s)
+			// write to Kafka
+			if err := c.ProduceAndCommitMessage(exchange, symbol, &market.OpenInterest{
+				Ts:                ts,
+				OpenInterest:      val.Get("sumOpenInterest").Float(),
+				OpenInterestValue: val.Get("sumOpenInterestValue").Float(),
+			}); err != nil {
+				log.Error().
+					Err(err).
+					Str("symbol", symbol).
+					Msg("failed to produce and commit message")
+			}
+		})
 	}
 
 	select {}
