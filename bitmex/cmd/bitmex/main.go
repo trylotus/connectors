@@ -10,18 +10,18 @@ import (
 
 func main() {
 
-	c, err := connector.NewProducerConnector()
+	conn, err := connector.NewProducerConnector()
 	if err != nil {
 		log.Fatal().Err(err).Msg("failed to instantiate connector")
 	}
 
 	// Register topic and protobuf type mappings
-	connector.RegisterProtos(
+	conn.RegisterProtos(
 		&market.OpenInterest{},
 	)
 
 	c := bitmex.BitmexConnector{
-		Connector: connector,
+		Connector: conn,
 	}
 
 	c.Start()

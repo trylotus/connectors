@@ -10,19 +10,19 @@ import (
 
 func main() {
 
-	c, err := connector.NewProducerConnector()
+	conn, err := connector.NewProducerConnector()
 	if err != nil {
 		log.Fatal().Err(err).Msg("failed to instantiate connector")
 	}
 
 	// Register topic and protobuf type mappings
-	c.RegisterProtos(
+	conn.RegisterProtos(
 		&market.OpenInterest{},
 	)
 
-	connector := binance.BinanceConnector{
-		Connector: c,
+	c := binance.BinanceConnector{
+		Connector: conn,
 	}
 
-	connector.Start()
+	c.Start()
 }
