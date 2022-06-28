@@ -3,6 +3,7 @@ module github.com/nakji-network/connectors/ethnft
 go 1.18
 
 require (
+	github.com/alitto/pond v1.8.0
 	github.com/ethereum/go-ethereum v1.10.17
 	github.com/nakji-network/connector v0.0.1-beta.1.0.20220624162352-5e9f35e2e4c4
 	github.com/rs/zerolog v1.26.1
@@ -13,7 +14,6 @@ require (
 	contrib.go.opencensus.io/exporter/stackdriver v0.13.4 // indirect
 	filippo.io/edwards25519 v1.0.0-rc.1 // indirect
 	github.com/Masterminds/semver v1.5.0 // indirect
-	github.com/alitto/pond v1.8.0 // indirect
 	github.com/andres-erbsen/clock v0.0.0-20160526145045-9e14626cd129 // indirect
 	github.com/aybabtme/rgbterm v0.0.0-20170906152045-cc83f3b3ce59 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
