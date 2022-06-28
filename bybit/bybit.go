@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/nakji-network/connector"
-	"github.com/nakji-network/connectors/market"
+	"github.com/nakji-network/connectors/bybit/market"
 
 	"github.com/rs/zerolog/log"
 	"github.com/thrasher-corp/gocryptotrader/common"

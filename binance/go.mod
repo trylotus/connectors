@@ -4,12 +4,14 @@ go 1.18
 
 replace github.com/thrasher-corp/gocryptotrader => ../gocryptotrader
 
+replace github.com/nakji-network/connectors/binance/market => ./market
+
 require (
 	github.com/nakji-network/connector v0.0.1-beta.1.0.20220623141451-79a7cb0e4d8e
-	github.com/nakji-network/connectors/market v0.0.0-20220625085937-2ffccf341bf0
 	github.com/rs/zerolog v1.27.0
 	github.com/tidwall/gjson v1.14.1
 	go.uber.org/automaxprocs v1.5.1
+	google.golang.org/protobuf v1.28.0
 )
 
 require (
@@ -89,7 +91,6 @@ require (
 	golang.org/x/term v0.0.0-20201210144234-2321bbc49cbf // indirect
 	golang.org/x/text v0.3.7 // indirect
 	google.golang.org/genproto v0.0.0-20211208223120-3a66f561d7aa // indirect
-	google.golang.org/protobuf v1.28.0 // indirect
 	gopkg.in/ini.v1 v1.66.2 // indirect
 	gopkg.in/natefinch/npipe.v2 v2.0.0-20160621034901-c1b8fa8bdcce // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect

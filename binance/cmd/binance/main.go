@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/nakji-network/connector"
 	"github.com/nakji-network/connectors/binance"
-	"github.com/nakji-network/connectors/market"
+	"github.com/nakji-network/connectors/binance/market"
 
 	"github.com/rs/zerolog/log"
 )

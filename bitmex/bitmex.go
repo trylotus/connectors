@@ -2,7 +2,7 @@ package bitmex
 
 import (
 	"github.com/nakji-network/connector"
-	"github.com/nakji-network/connectors/market"
+	"github.com/nakji-network/connectors/bitmex/market"
 
 	"github.com/rs/zerolog/log"
 	gctconfig "github.com/thrasher-corp/gocryptotrader/config"

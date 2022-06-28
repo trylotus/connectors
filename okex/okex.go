@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/nakji-network/connector"
-	"github.com/nakji-network/connectors/market"
+	"github.com/nakji-network/connectors/okex/market"
 
 	"github.com/rs/zerolog/log"
 	gctconfig "github.com/thrasher-corp/gocryptotrader/config"
