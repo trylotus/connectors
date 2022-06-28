@@ -1,9 +1,0 @@
-fmt := import("fmt")
-exch := import("exchange")
-
-load := func() {
-  info := exch.ordercancel("binance","13371337", "btc-usdt", "spot")
-  fmt.println(info)
-}
-
-load()
