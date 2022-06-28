@@ -4,11 +4,11 @@ package ethnft
 import (
 	"context"
 
+	"github.com/alitto/pond"
 	geth "github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	ethcommon "github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/ethereum/go-ethereum/event"
@@ -48,13 +48,6 @@ func NewConnector(
 func (c *NftConnector) Start(ctx context.Context) { //, backfillNumBlocks uint64) {
 	c.Client = c.Connector.ChainClients.Ethereum(context.Background())
 
-	// Subscribe to headers to get timestamps for logs
-	headers := make(chan *types.Header)
-	sub, err := c.Client.SubscribeNewHead(context.Background(), headers)
-	if err != nil {
-		log.Fatal().Err(err)
-	}
-
 	erc721Abi, err := erc721.ERC721MetaData.GetAbi()
 	if err != nil {
 		log.Fatal().Err(err).Msg("Unable to get ABI")
@@ -91,84 +84,49 @@ func (c *NftConnector) Start(ctx context.Context) { //, backfillNumBlocks uint64
 	erc1155Logs, sub0 := c.startListener(ctx, erc1155Abi, erc1155EventNames)
 	erc721Logs, sub1 := c.startListener(ctx, erc721Abi, erc721EventNames)
 
-	// Setup separate goroutine to consume messages from Subscription Channel.
-	// This is to prevent "subscription queue overflow" errors from being too slow at reading subscription
-	// messages.
-	go func() {
-		for evLog := range erc1155Logs {
-			if evLog.Removed {
-				continue
-			}
+	// To address subscription queue overflow errors, we use the buffered queue in the worker pool.
+	// We immediately consume messages in the subscription channel and place them in the worker
+	// pool queue. Otherwise, when we receive a burst of notifications from our geth rpc node, we
+	// will get a subscription queue overflow error.
+	go c.consumeLogs(erc1155Logs, erc1155Abi, c.Erc1155LogToMsg)
+	go c.consumeLogs(erc721Logs, erc721Abi, c.Erc721LogToMsg)
 
-			//go once.Do(func() {
-			//c.backfill(sink, evLog.BlockNumber, backfillNumBlocks, "erc1155", c.Erc1155LogToMsg)
-			//})
-
-			if err := c.Erc1155LogToMsg(evLog, erc1155Abi); err != nil {
-				log.Error().
-					Err(err).
-					Str("symbol", evLog.).
-					Msg("failed to produce and commit message")
-			}
-
-			//if msg != nil {
-			//sink <- msg
-			//}
-		}
-	}()
-
-	// Setup separate goroutine to consume messages from Subscription Channel.
-	// This is to prevent "subscription queue overflow" errors from being too slow at reading subscription
-	// messages.
-	go func() {
-		for evLog := range erc721Logs {
-			if evLog.Removed {
-				continue
-			}
-			//log.Info().Uint64("log", evLog.BlockNumber).Msg("")
-
-			//go once.Do(func() {
-			//c.backfill(sink, evLog.BlockNumber, backfillNumBlocks, "erc721", c.Erc721LogToMsg)
-			//})
-
-			if err := c.Erc721LogToMsg(evLog, erc721Abi)err != nil {
-				log.Error().
-					Err(err).
-					Str("symbol", evLog.).
-					Msg("failed to produce and commit message")
-			}
-		}
-	}()
-
-	go func() {
-		for header := range headers {
-			log.Info().Uint64("header", header.Number.Uint64()).Msg("")
-		}
-	}()
-
-	//var once sync.Once
 	for {
 		select {
 		case <-ctx.Done():
 			log.Info().Msg("worker cancelled and shutting down")
 			return
-		//case header := <-headers:
-		//log.Debug().
-		//Str("block", header.Number.String()).
-		//Uint64("ts", header.Time).
-		//Msg("header received")
-
-		//ethclient.CacheBlockTimestamp(header.Hash(), header.Time)
 		case err = <-sub0.Err():
 			log.Error().Err(err).Msg("ERC1155 listener failed")
 			return
 		case err = <-sub1.Err():
 			log.Error().Err(err).Msg("ERC721 listener failed")
 			return
-		case err = <-sub.Err():
-			log.Error().Err(err).Msg("Headers listener failed")
-			return
 		}
+	}
+}
+
+func (c *NftConnector) consumeLogs(logs <-chan ethtypes.Log, contractAbi *abi.ABI, processLog func(evLog ethtypes.Log, a *abi.ABI) error) {
+	pool := pond.New(100, 200_000)
+
+	//var once sync.Once
+	for evLog := range logs {
+		pool.Submit(func() {
+			if evLog.Removed {
+				return
+			}
+
+			//go once.Do(func() {
+			//c.backfill(sink, evLog.BlockNumber, backfillNumBlocks, "erc1155", c.Erc1155LogToMsg)
+			//})
+
+			if err := processLog(evLog, contractAbi); err != nil {
+				log.Error().
+					Err(err).
+					Interface("log", evLog).
+					Msg("failed to produce and commit message")
+			}
+		})
 	}
 }
 
