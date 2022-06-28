@@ -96,7 +96,7 @@ func (c *BitcoinConnector) Start(ctx context.Context) {
 			if err := c.ProduceAndCommitMessage(Namespace, verboseBlock.Hash, &blockData); err != nil {
 				log.Error().
 					Err(err).
-					Str("symbol", inst.Pair.String()).
+					Str("block hash", verboseBlock.Hash).
 					Msg("failed to produce and commit message")
 			}
 
