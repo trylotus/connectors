@@ -107,7 +107,9 @@ func (c *NftConnector) Start(ctx context.Context) { //, backfillNumBlocks uint64
 }
 
 func (c *NftConnector) consumeLogs(logs <-chan ethtypes.Log, contractAbi *abi.ABI, processLog func(evLog ethtypes.Log, a *abi.ABI) error) {
-	pool := pond.New(100, 200_000)
+	// We want only 1 worker since we want to process each log synchronously. Processing them concurrently will fail because
+	// we are using a transactional producer. Worker Pool here is used only for its buffer.
+	pool := pond.New(1, 300_000)
 
 	//var once sync.Once
 	for evLog := range logs {
