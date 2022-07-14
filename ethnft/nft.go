@@ -3,50 +3,60 @@ package ethnft
 
 import (
 	"context"
+	"fmt"
+	"time"
 
 	"github.com/alitto/pond"
 	geth "github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
-	ethcommon "github.com/ethereum/go-ethereum/common"
-	ethtypes "github.com/ethereum/go-ethereum/core/types"
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/ethereum/go-ethereum/event"
-	"github.com/rs/zerolog/log"
 
 	"github.com/nakji-network/connector"
-	"github.com/nakji-network/connector/common"
+	nakjicommon "github.com/nakji-network/connector/common"
 	"github.com/nakji-network/connectors/ethnft/erc1155"
 	"github.com/nakji-network/connectors/ethnft/erc721"
+	"github.com/rs/zerolog/log"
 )
 
 const (
-	Namespace      = "nft"
+	// It's not meaningful to have a namespace for ethnft
+	Namespace      = ""
 	TokenNamespace = "ethereum"
+	network        = "ethereum"
 )
 
 //{ "startBlock": 5806610, "module": "erc721"  },
 //{ "startBlock": 6930510, "module": "erc1155" }
 
-type NftConnector struct {
+type Connector struct {
 	*connector.Connector
-	Client     *ethclient.Client
-	blockCache map[uint64]uint64
+	Client *ethclient.Client
+	sub    connector.ISubscription
 }
 
-func NewConnector(
-	c *connector.Connector,
-) *NftConnector {
-	var blockCache map[uint64]uint64
-
-	return &NftConnector{
-		Connector:  c,
-		blockCache: blockCache,
+func NewConnector(c *connector.Connector) *Connector {
+	return &Connector{
+		Connector: c,
 	}
 }
 
-func (c *NftConnector) Start(ctx context.Context) { //, backfillNumBlocks uint64) {
+func (c *Connector) setup() {
+	ctx := context.Background()
+
+	sub, err := connector.NewSubscription(ctx, c.Connector, network, nil, 0, 0)
+	c.sub = sub
+	if err != nil {
+		log.Fatal().Err(err).Msg(fmt.Sprintf("%s connection error", network))
+	}
 	c.Client = c.Connector.ChainClients.Ethereum(context.Background())
+}
+
+func (c *Connector) Start(ctx context.Context) { //, backfillNumBlocks uint64) {
+	c.setup()
 
 	erc721Abi, err := erc721.ERC721MetaData.GetAbi()
 	if err != nil {
@@ -106,7 +116,7 @@ func (c *NftConnector) Start(ctx context.Context) { //, backfillNumBlocks uint64
 	}
 }
 
-func (c *NftConnector) consumeLogs(logs <-chan ethtypes.Log, contractAbi *abi.ABI, processLog func(evLog ethtypes.Log, a *abi.ABI) error) {
+func (c *Connector) consumeLogs(logs <-chan types.Log, contractAbi *abi.ABI, processLog func(evLog types.Log, a *abi.ABI) error) {
 	// We want only 1 worker since we want to process each log synchronously. Processing them concurrently will fail because
 	// we are using a transactional producer. Worker Pool here is used only for its buffer.
 	pool := pond.New(1, 300_000)
@@ -132,8 +142,8 @@ func (c *NftConnector) consumeLogs(logs <-chan ethtypes.Log, contractAbi *abi.AB
 	}
 }
 
-func (c *NftConnector) startListener(ctx context.Context, abi *abi.ABI, eventNames []string) (chan ethtypes.Log, event.Subscription) {
-	events := make([]ethcommon.Hash, len(eventNames))
+func (c *Connector) startListener(ctx context.Context, abi *abi.ABI, eventNames []string) (chan types.Log, event.Subscription) {
+	events := make([]common.Hash, len(eventNames))
 	for i, name := range eventNames {
 		ev, ok := abi.Events[name]
 		if !ok {
@@ -146,9 +156,9 @@ func (c *NftConnector) startListener(ctx context.Context, abi *abi.ABI, eventNam
 	}
 
 	query := geth.FilterQuery{
-		Topics: [][]ethcommon.Hash{events},
+		Topics: [][]common.Hash{events},
 	}
-	eventLogs := make(chan ethtypes.Log)
+	eventLogs := make(chan types.Log)
 	sub, err := c.Client.SubscribeFilterLogs(ctx, query, eventLogs)
 	if err != nil {
 		log.Fatal().Err(err).
@@ -162,7 +172,31 @@ func (c *NftConnector) startListener(ctx context.Context, abi *abi.ABI, eventNam
 	return eventLogs, sub
 }
 
-func (c *NftConnector) Erc1155LogToMsg(evLog ethtypes.Log, a *abi.ABI) error {
+func (c *Connector) getTimestamp(vLog types.Log) uint64 {
+	tWait := time.Second
+	tMin := time.Second
+	tMax := time.Second * 16
+
+	ts, err := c.sub.GetBlockTime(vLog)
+	for err != nil {
+		log.Debug().Uint64("block", vLog.BlockNumber).Str("network", network).Msg("waiting for block timestamp")
+		time.Sleep(tWait)
+		tWait *= 2
+		ts, err = c.sub.GetBlockTime(vLog)
+		if err == nil {
+			break
+		}
+		if tWait > tMax {
+			log.Warn().Uint64("block", vLog.BlockNumber).Str("network", network).Msg("block timestamp not available")
+			return uint64(time.Now().Unix())
+		}
+	}
+	tWait = tMin
+
+	return ts
+}
+
+func (c *Connector) Erc1155LogToMsg(evLog types.Log, a *abi.ABI) error {
 	//ts, err := c.Client.GetLogTimestamp(evLog, c.blockCache)
 	//if err != nil {
 	//log.Error().Err(err).
@@ -186,6 +220,8 @@ func (c *NftConnector) Erc1155LogToMsg(evLog ethtypes.Log, a *abi.ABI) error {
 		return nil
 	}
 
+	ts := c.getTimestamp(evLog)
+
 	switch ev.Name {
 	case "ApprovalForAll":
 		event := new(erc1155.IERC1155ApprovalForAll)
@@ -195,7 +231,7 @@ func (c *NftConnector) Erc1155LogToMsg(evLog ethtypes.Log, a *abi.ABI) error {
 		}
 
 		return c.Connector.ProduceAndCommitMessage(Namespace, evLog.Address.Hex(), &erc1155.ApprovalForAll{
-			//Ts:       common.UnixToTimestampPb(int64(ts * 1000)),
+			Ts:       nakjicommon.UnixToTimestampPb(int64(ts * 1000)),
 			Account:  event.Account.Bytes(),
 			Operator: event.Operator.Bytes(),
 			Approved: event.Approved,
@@ -208,12 +244,12 @@ func (c *NftConnector) Erc1155LogToMsg(evLog ethtypes.Log, a *abi.ABI) error {
 		}
 
 		return c.Connector.ProduceAndCommitMessage(Namespace, evLog.Address.Hex(), &erc1155.TransferBatch{
-			//Ts:       common.UnixToTimestampPb(int64(ts * 1000)),
+			Ts:       nakjicommon.UnixToTimestampPb(int64(ts * 1000)),
 			Operator: event.Operator.Bytes(),
 			From:     event.From.Bytes(),
 			To:       event.To.Bytes(),
-			Ids:      common.DecodeBigIntArray(event.Ids),
-			Values:   common.DecodeBigIntArray(event.Values),
+			Ids:      nakjicommon.DecodeBigIntArray(event.Ids),
+			Values:   nakjicommon.DecodeBigIntArray(event.Values),
 		})
 	case "TransferSingle":
 		event := new(erc1155.IERC1155TransferSingle)
@@ -223,7 +259,7 @@ func (c *NftConnector) Erc1155LogToMsg(evLog ethtypes.Log, a *abi.ABI) error {
 		}
 
 		return c.Connector.ProduceAndCommitMessage(Namespace, evLog.Address.Hex(), &erc1155.TransferSingle{
-			//Ts:       common.UnixToTimestampPb(int64(ts * 1000)),
+			Ts:       nakjicommon.UnixToTimestampPb(int64(ts * 1000)),
 			Operator: event.Operator.Bytes(),
 			From:     event.From.Bytes(),
 			To:       event.To.Bytes(),
@@ -238,7 +274,7 @@ func (c *NftConnector) Erc1155LogToMsg(evLog ethtypes.Log, a *abi.ABI) error {
 		}
 
 		return c.Connector.ProduceAndCommitMessage(Namespace, evLog.Address.Hex(), &erc1155.URI{
-			//Ts:    common.UnixToTimestampPb(int64(ts * 1000)),
+			Ts:    nakjicommon.UnixToTimestampPb(int64(ts * 1000)),
 			Value: event.Value,
 			Id:    event.Id.Bytes(),
 		})
@@ -247,7 +283,7 @@ func (c *NftConnector) Erc1155LogToMsg(evLog ethtypes.Log, a *abi.ABI) error {
 	return nil
 }
 
-func (c *NftConnector) Erc721LogToMsg(evLog ethtypes.Log, a *abi.ABI) error {
+func (c *Connector) Erc721LogToMsg(evLog types.Log, a *abi.ABI) error {
 	//ts, err := c.Client.GetLogTimestamp(evLog, c.blockCache)
 	//if err != nil {
 	//log.Error().Err(err).
@@ -271,6 +307,8 @@ func (c *NftConnector) Erc721LogToMsg(evLog ethtypes.Log, a *abi.ABI) error {
 		return nil
 	}
 
+	ts := c.getTimestamp(evLog)
+
 	switch ev.Name {
 	case "Approval":
 		event := new(erc721.IERC721Approval)
@@ -281,7 +319,7 @@ func (c *NftConnector) Erc721LogToMsg(evLog ethtypes.Log, a *abi.ABI) error {
 
 		// TODO: subject should be contract address? or contract_tokenid
 		return c.Connector.ProduceAndCommitMessage(Namespace, evLog.Address.Hex(), &erc721.Approval{
-			//Ts:       common.UnixToTimestampPb(int64(ts * 1000)),
+			Ts:       nakjicommon.UnixToTimestampPb(int64(ts * 1000)),
 			Owner:    event.Owner.Bytes(),
 			Approved: event.Approved.Bytes(),
 			TokenId:  event.TokenId.Bytes(),
@@ -295,7 +333,7 @@ func (c *NftConnector) Erc721LogToMsg(evLog ethtypes.Log, a *abi.ABI) error {
 		}
 
 		return c.Connector.ProduceAndCommitMessage(Namespace, evLog.Address.Hex(), &erc721.ApprovalForAll{
-			//Ts:       common.UnixToTimestampPb(int64(ts * 1000)),
+			Ts:       nakjicommon.UnixToTimestampPb(int64(ts * 1000)),
 			Owner:    event.Owner.Bytes(),
 			Operator: event.Operator.Bytes(),
 			Approved: event.Approved,
@@ -309,7 +347,7 @@ func (c *NftConnector) Erc721LogToMsg(evLog ethtypes.Log, a *abi.ABI) error {
 		}
 
 		return c.Connector.ProduceAndCommitMessage(Namespace, evLog.Address.Hex(), &erc721.Transfer{
-			//Ts:      common.UnixToTimestampPb(int64(ts * 1000)),
+			Ts:      nakjicommon.UnixToTimestampPb(int64(ts * 1000)),
 			From:    event.From.Bytes(),
 			To:      event.To.Bytes(),
 			TokenId: event.TokenId.Bytes(),
@@ -322,14 +360,14 @@ func (c *NftConnector) Erc721LogToMsg(evLog ethtypes.Log, a *abi.ABI) error {
 
 /*
 // Backfill last 100 blocks
-func (c *NftConnector) backfill(out chan<- *kafkautils.Message, latestBlockNumber, backfillNumBlocks uint64, contract string, logToMsg func(ethtypes.Log) *kafkautils.Message) {
+func (c *Connector) backfill(out chan<- *kafkautils.Message, latestBlockNumber, backfillNumBlocks uint64, contract string, logToMsg func(types.Log) *kafkautils.Message) {
 	filterQuery := geth.FilterQuery{
 		FromBlock: big.NewInt(int64(latestBlockNumber - backfillNumBlocks)),
 		ToBlock:   big.NewInt(int64(latestBlockNumber)),
 		Addresses: c.addresses[contract],
 	}
 
-	logchan := make(chan ethtypes.Log)
+	logchan := make(chan types.Log)
 	errchan := make(chan error)
 
 	go c.Client.ChunkedFilterLogs(context.Background(), filterQuery, 100, 1, logchan, errchan)
@@ -346,7 +384,7 @@ func (c *NftConnector) backfill(out chan<- *kafkautils.Message, latestBlockNumbe
 				log.Error().Err(err).Msg("Failed to acquire semaaphor")
 			}
 
-			go func(evLog ethtypes.Log) {
+			go func(evLog types.Log) {
 				defer sem.Release(1)
 
 				// Writes to out chan
