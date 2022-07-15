@@ -28,7 +28,7 @@ message UpdateIPFS {
 	string Ipfs = 2;		//	string
 }
 
-message UpdateSha256sum {
+message UpdateSha256Sum {
 	google.protobuf.Timestamp ts = 1;
 	string Sha256sum = 2;		//	string
 }
