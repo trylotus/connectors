@@ -52,8 +52,6 @@ func main() {
 	c.RegisterProtos(protos...)
 
 	conf := &woofi.Config{
-		// ContractsUrl:   c.Config.GetString("contracts.url"),
-		// FactoryAddress: c.Config.GetString("makerdao.factoryAddress"),
 		ConnectorName:  "woofi-" + networkName,
 		NetworkName:    networkName,
 		FromBlock:      c.Config.GetUint64("from-block"),

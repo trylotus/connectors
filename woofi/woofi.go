@@ -14,8 +14,6 @@ import (
 )
 
 type Config struct {
-	// ContractsUrl   string
-	// FactoryAddress string
 	ConnectorName  string
 	NetworkName    string
 	FromBlock      uint64
@@ -55,11 +53,6 @@ func (c *Connector) setup() {
 	} else {
 		log.Fatal().Err(err).Msg(fmt.Sprintf("%s connection error", c.NetworkName))
 	}
-
-	//	Check whether local file is up-to-date
-	// if c.NetworkName == "ethereum" {
-	// 	go CheckLatestAddresses(c.ChainClients.Ethereum(ctx), c.ContractsUrl, c.FactoryAddress, ContractAddresses["ethereum"])
-	// }
 }
 
 func (c *Connector) listen() {
@@ -79,7 +72,6 @@ func (c *Connector) listen() {
 		//	Listen to event logs
 		case vLog := <-c.sub.Logs():
 			if msg := c.parse(vLog); msg != nil {
-				fmt.Println(msg)
 				c.sink <- msg
 			}
 		}
@@ -109,9 +101,6 @@ func (c *Connector) parse(vLog types.Log) protoreflect.ProtoMessage {
 	timestamp := common.UnixToTimestampPb(int64(time * 1000))
 
 	if smartContract := getContract(contractType); smartContract != nil {
-		fmt.Println("GOT CONTRACT")
-		fmt.Println(abiEvent.Name)
-		fmt.Println(timestamp)
 		return smartContract.Message(abiEvent.Name, &contractAbi, vLog, timestamp)
 	}
 	return nil
@@ -119,12 +108,6 @@ func (c *Connector) parse(vLog types.Log) protoreflect.ProtoMessage {
 
 func getContract(contractType string) ISmartContract {
 	switch contractType {
-	// case "AAVE":
-	// 	return &AAVE.SmartContract{}
-	// case "ADAI":
-	// 	return &ADAI.SmartContract{}
-	// case "ARBITRUM_DAI_BRIDGE":
-	// 	return &ARBITRUM_DAI_BRIDGE.SmartContract{}
 	case "WOOPP":
 		return &WOOPP.SmartContract{}
 	}
