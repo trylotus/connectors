@@ -5,9 +5,6 @@
 		},
 		{
 			"path": "."
-		},
-		{
-			"path": "../../../blep-ai/blep/data/connectors/source/woofi/woopp"
 		}
 	],
 	"settings": {
