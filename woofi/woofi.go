@@ -43,8 +43,8 @@ func (c *Connector) Start() {
 }
 
 func (c *Connector) setup() {
-	addresses := GetAddresses(ContractAddresses[c.NetworkName])
-	c.contracts = GetContracts(ContractAddresses[c.NetworkName])
+	addresses := GetAddresses(ContractAddresses)
+	c.contracts = GetContracts(ContractAddresses)
 
 	ctx := context.Background()
 
