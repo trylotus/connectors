@@ -1,0 +1,82 @@
+// Code generated - DO NOT EDIT.
+// This file is a generated protobuf definition and any manual changes will be lost.
+
+syntax = "proto3";
+package WOOPP;
+
+import "google/protobuf/timestamp.proto";
+option go_package = "github.com/nakji-network/connectors/woofi/WOOPP";
+
+
+message Paused {
+	google.protobuf.Timestamp ts = 1;
+	bytes account = 2; 
+}
+
+message OwnershipTransferred {
+	google.protobuf.Timestamp ts = 1;
+	bytes previousOwner = 2; 
+	bytes newOwner = 3; 
+}
+
+message ParametersUpdated {
+	google.protobuf.Timestamp ts = 1;
+	bytes baseToken = 2; 
+	bytes newThreshold = 3; // uint256
+	bytes newR = 4; // uint256
+}
+
+message FeeManagerUpdated {
+	google.protobuf.Timestamp ts = 1;
+	bytes newFeeManager = 2; 
+}
+
+message RewardManagerUpdated {
+	google.protobuf.Timestamp ts = 1;
+	bytes newRewardManager = 2; 
+}
+
+message Unpaused {
+	google.protobuf.Timestamp ts = 1;
+	bytes account = 2; 
+}
+
+message WooGuardianUpdated {
+	google.protobuf.Timestamp ts = 1;
+	bytes newWooGuardian = 2; 
+}
+
+message WooSwap {
+	google.protobuf.Timestamp ts = 1;
+	bytes fromToken = 2; 
+	bytes toToken = 3; 
+	bytes fromAmount = 4; // uint256
+	bytes toAmount = 5; // uint256
+	bytes from = 6; 
+	bytes to = 7; 
+	bytes rebateTo = 8; 
+}
+
+message OwnershipTransferPrepared {
+	google.protobuf.Timestamp ts = 1;
+	bytes previousOwner = 2; 
+	bytes newOwner = 3; 
+}
+
+message WooracleUpdated {
+	google.protobuf.Timestamp ts = 1;
+	bytes newWooracle = 2; 
+}
+
+message StrategistUpdated {
+	google.protobuf.Timestamp ts = 1;
+	bytes strategist = 2; 
+	bool flag = 3; 
+}
+
+message Withdraw {
+	google.protobuf.Timestamp ts = 1;
+	bytes token = 2; 
+	bytes to = 3; 
+	bytes amount = 4; // uint256
+}
