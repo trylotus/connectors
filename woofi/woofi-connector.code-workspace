@@ -1,0 +1,16 @@
+{
+	"folders": [
+		{
+			"path": "../makerdao"
+		},
+		{
+			"path": "."
+		},
+		{
+			"path": "../../../blep-ai/blep/data/connectors/source/woofi/woopp"
+		}
+	],
+	"settings": {
+		"git.ignoreLimitWarning": true
+	}
+}
