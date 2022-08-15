@@ -23,8 +23,8 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 
 		return &Paused{
 				Ts:   timestamp,
-				BlockNumber: e.Raw.BlockNumber,
-				TxHash: e.Raw.TxHash.Bytes(),
+				BlockNumber: vLog.BlockNumber,
+				TxHash: vLog.TxHash.Bytes(),
 				Account:  e.Account.Bytes(),
 		}
 	case "OwnershipTransferred":
@@ -36,8 +36,8 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 
 		return &OwnershipTransferred{
 				Ts:   timestamp,
-				BlockNumber: e.Raw.BlockNumber,
-				TxHash: e.Raw.TxHash.Bytes(),
+				BlockNumber: vLog.BlockNumber,
+				TxHash: vLog.TxHash.Bytes(),
 				PreviousOwner:  e.PreviousOwner.Bytes(),
 				NewOwner:  e.NewOwner.Bytes(),
 		}
@@ -50,8 +50,8 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 
 		return &ParametersUpdated{
 				Ts:   timestamp,
-				BlockNumber: e.Raw.BlockNumber,
-				TxHash: e.Raw.TxHash.Bytes(),
+				BlockNumber: vLog.BlockNumber,
+				TxHash: vLog.TxHash.Bytes(),
 				BaseToken:  e.BaseToken.Bytes(),
 				NewThreshold:  e.NewThreshold.Bytes(),
 				NewR: e.NewR.Bytes(),
@@ -65,8 +65,8 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 
 		return &FeeManagerUpdated{
 				Ts:   timestamp,
-				BlockNumber: e.Raw.BlockNumber,
-				TxHash: e.Raw.TxHash.Bytes(),
+				BlockNumber: vLog.BlockNumber,
+				TxHash: vLog.TxHash.Bytes(),
 				NewFeeManager:  e.NewFeeManager.Bytes(),
 		}
 	case "RewardManagerUpdated":
@@ -78,8 +78,8 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 
 		return &RewardManagerUpdated{
 				Ts:   timestamp,
-				BlockNumber: e.Raw.BlockNumber,
-				TxHash: e.Raw.TxHash.Bytes(),
+				BlockNumber: vLog.BlockNumber,
+				TxHash: vLog.TxHash.Bytes(),
 				NewRewardManager:  e.NewRewardManager.Bytes(),
 		}
 	case "Unpaused":
@@ -91,8 +91,8 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 
 		return &Unpaused{
 				Ts:   timestamp,
-				BlockNumber: e.Raw.BlockNumber,
-				TxHash: e.Raw.TxHash.Bytes(),
+				BlockNumber: vLog.BlockNumber,
+				TxHash: vLog.TxHash.Bytes(),
 				Account:  e.Account.Bytes(),
 		}
 	case "WooGuardianUpdated":
@@ -104,8 +104,8 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 
 		return &WooGuardianUpdated{
 				Ts:   timestamp,
-				BlockNumber: e.Raw.BlockNumber,
-				TxHash: e.Raw.TxHash.Bytes(),
+				BlockNumber: vLog.BlockNumber,
+				TxHash: vLog.TxHash.Bytes(),
 				NewWooGuardian:  e.NewWooGuardian.Bytes(),
 		}
 	case "WooSwap":
@@ -117,8 +117,8 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 
 		return &WooSwap{
 				Ts:   timestamp,
-				BlockNumber: e.Raw.BlockNumber,
-				TxHash: e.Raw.TxHash.Bytes(),
+				BlockNumber: vLog.BlockNumber,
+				TxHash: vLog.TxHash.Bytes(),
 				FromToken:  e.FromToken.Bytes(),
 				ToToken:  e.ToToken.Bytes(),
 				FromAmount:  e.FromAmount.Bytes(),
@@ -136,8 +136,8 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 
 		return &OwnershipTransferPrepared{
 				Ts:   timestamp,
-				BlockNumber: e.Raw.BlockNumber,
-				TxHash: e.Raw.TxHash.Bytes(),
+				BlockNumber: vLog.BlockNumber,
+				TxHash: vLog.TxHash.Bytes(),
 				PreviousOwner: e.PreviousOwner.Bytes(),
 				NewOwner: e.NewOwner.Bytes(),
 		}
@@ -150,8 +150,8 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 
 		return &WooracleUpdated{
 				Ts:   timestamp,
-				BlockNumber: e.Raw.BlockNumber,
-				TxHash: e.Raw.TxHash.Bytes(),
+				BlockNumber: vLog.BlockNumber,
+				TxHash: vLog.TxHash.Bytes(),
 				NewWooracle: e.NewWooracle.Bytes(),
 		}
 	case "StrategistUpdated":
@@ -163,8 +163,8 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 
 		return &StrategistUpdated{
 				Ts:   timestamp,
-				BlockNumber: e.Raw.BlockNumber,
-				TxHash: e.Raw.TxHash.Bytes(),
+				BlockNumber: vLog.BlockNumber,
+				TxHash: vLog.TxHash.Bytes(),
 				Strategist: e.Strategist.Bytes(),
 				Flag: e.Flag,
 		}
@@ -177,8 +177,8 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 
 		return &Withdraw{
 				Ts:   timestamp,
-				BlockNumber: e.Raw.BlockNumber,
-				TxHash: e.Raw.TxHash.Bytes(),
+				BlockNumber: vLog.BlockNumber,
+				TxHash: vLog.TxHash.Bytes(),
 				Token: e.Token.Bytes(),
 				To: e.To.Bytes(),
 				Amount: e.Amount.Bytes(),
