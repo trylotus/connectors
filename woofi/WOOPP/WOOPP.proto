@@ -14,7 +14,7 @@ option go_package = "github.com/nakji-network/connectors/woofi/WOOPP";
 message Paused {
 	google.protobuf.Timestamp ts = 1;
 	uint64 blockNumber = 2;
-	uint64 txIndex = 3;
+	uint64 index = 3;
 	bytes txHash = 4;
 	bytes account = 5; 
 }
@@ -22,7 +22,7 @@ message Paused {
 message OwnershipTransferred {
 	google.protobuf.Timestamp ts = 1;
 	uint64 blockNumber = 2;
-	uint64 txIndex = 3;
+	uint64 index = 3;
 	bytes txHash = 4;
 	bytes previousOwner = 5; 
 	bytes newOwner = 6; 
@@ -31,7 +31,7 @@ message OwnershipTransferred {
 message ParametersUpdated {
 	google.protobuf.Timestamp ts = 1;
 	uint64 blockNumber = 2;
-	uint64 txIndex = 3;
+	uint64 index = 3;
 	bytes txHash = 4;
 	bytes baseToken = 5; 
 	bytes newThreshold = 6; // uint256
@@ -41,7 +41,7 @@ message ParametersUpdated {
 message FeeManagerUpdated {
 	google.protobuf.Timestamp ts = 1;
 	uint64 blockNumber = 2;
-	uint64 txIndex = 3;
+	uint64 index = 3;
 	bytes txHash = 4;
 	bytes newFeeManager = 5; 
 }
@@ -49,7 +49,7 @@ message FeeManagerUpdated {
 message RewardManagerUpdated {
 	google.protobuf.Timestamp ts = 1;
 	uint64 blockNumber = 2;
-	uint64 txIndex = 3;
+	uint64 index = 3;
 	bytes txHash = 4;
 	bytes newRewardManager = 5; 
 }
@@ -57,7 +57,7 @@ message RewardManagerUpdated {
 message Unpaused {
 	google.protobuf.Timestamp ts = 1;
 	uint64 blockNumber = 2;
-	uint64 txIndex = 3;
+	uint64 index = 3;
 	bytes txHash = 4;
 	bytes account = 5; 
 }
@@ -65,7 +65,7 @@ message Unpaused {
 message WooGuardianUpdated {
 	google.protobuf.Timestamp ts = 1;
 	uint64 blockNumber = 2;
-	uint64 txIndex = 3;
+	uint64 index = 3;
 	bytes txHash = 4;
 	bytes newWooGuardian = 5; 
 }
@@ -73,7 +73,7 @@ message WooGuardianUpdated {
 message WooSwap {
 	google.protobuf.Timestamp ts = 1;
 	uint64 blockNumber = 2;
-	uint64 txIndex = 3;
+	uint64 index = 3;
 	bytes txHash = 4;
 	bytes fromToken = 5; 
 	bytes toToken = 6; 
@@ -87,7 +87,7 @@ message WooSwap {
 message OwnershipTransferPrepared {
 	google.protobuf.Timestamp ts = 1;
 	uint64 blockNumber = 2;
-	uint64 txIndex = 3;
+	uint64 index = 3;
 	bytes txHash = 4;
 	bytes previousOwner = 5; 
 	bytes newOwner = 6; 
@@ -96,7 +96,7 @@ message OwnershipTransferPrepared {
 message WooracleUpdated {
 	google.protobuf.Timestamp ts = 1;
 	uint64 blockNumber = 2;
-	uint64 txIndex = 3;
+	uint64 index = 3;
 	bytes txHash = 4;
 	bytes newWooracle = 5; 
 }
@@ -104,7 +104,7 @@ message WooracleUpdated {
 message StrategistUpdated {
 	google.protobuf.Timestamp ts = 1;
 	uint64 blockNumber = 2;
-	uint64 txIndex = 3;
+	uint64 index = 3;
 	bytes txHash = 4;
 	bytes strategist = 5; 
 	bool flag = 6; 
@@ -113,7 +113,7 @@ message StrategistUpdated {
 message Withdraw {
 	google.protobuf.Timestamp ts = 1;
 	uint64 blockNumber = 2;
-	uint64 txIndex = 3;
+	uint64 index = 3;
 	bytes txHash = 4;
 	bytes token = 5; 
 	bytes to = 6; 
