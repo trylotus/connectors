@@ -29,7 +29,7 @@ CMD ["go", "test", "./..."]
 #FROM scratch AS final
 # can't use scratch for confluent-kafka-go
 FROM alpine:3.15 AS final
-RUN apk add --no-cache rsync ca-certificates
+RUN apk add --no-cache protoc protobuf-dev
 
 ARG PACKAGE=./usr/local
 RUN echo ${PACKAGE}
@@ -39,7 +39,7 @@ COPY --from=build /src/manifest.yaml /
 # Copy .proto files
 COPY --from=build /src ${PACKAGE}
 RUN find ${PACKAGE} -type f -not -iname "*.proto" -delete
-RUN mkdir proto-tmp
-RUN mv ${PACKAGE} ./proto-tmp
+RUN mkdir proto
+RUN mv ${PACKAGE} ./proto
 
 CMD ["ash"]
