@@ -40,7 +40,7 @@ COPY --from=build /src/manifest.yaml /
 COPY --from=build /src ${PACKAGE}
 RUN find ${PACKAGE} -type f -not -iname "*.proto" -delete \
  && find ${PACKAGE} -type f -iname "*.proto" -exec sh -c 'mv "$1" "${1%.proto}.proto.tmp"' _ {} \; \
- && mkdir ./proto-tmp \
- && mv ${PACKAGE} ./proto-tmp
+ && mkdir proto \
+ && mv ${PACKAGE} ./proto
 
 CMD ["ash"]
