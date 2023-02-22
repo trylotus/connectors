@@ -1,6 +1,6 @@
 module github.com/nakji-network/connectors/ethnft
 
-go 1.18
+go 1.20
 
 require (
 	github.com/alitto/pond v1.8.0

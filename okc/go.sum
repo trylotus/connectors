@@ -415,15 +415,8 @@ github.com/modern-go/reflect2 v1.0.1/go.mod h1:bx2lNnkwVCuqBIxFjflWJWanXIb3Rllmb
 github.com/mschoch/smat v0.0.0-20160514031455-90eadee771ae/go.mod h1:qAyveg+e4CE+eKJXWVjKXM4ck2QobLqTDytGJbLLhJg=
 github.com/mwitkow/go-conntrack v0.0.0-20161129095857-cc309e4a2223/go.mod h1:qRWi+5nqEBWmkhHvq77mSJWrCKwh8bxhgT7d/eI7P4U=
 github.com/mwitkow/go-conntrack v0.0.0-20190716064945-2f068394615f/go.mod h1:qRWi+5nqEBWmkhHvq77mSJWrCKwh8bxhgT7d/eI7P4U=
-github.com/nakji-network/connector v0.0.1-beta.1.0.20230206153725-f9ebed1e2ab9 h1:EJ5Gl9n0WnEylJ7zpSXllMu5AQ9i8bwvJflyfyJsgvs=
-github.com/nakji-network/connector v0.0.1-beta.1.0.20230206153725-f9ebed1e2ab9/go.mod h1:ekJuAgX4zb6to7uugoyv8f5X4lEFfD01j3fxA1g7Fg4=
-github.com/nakji-network/connector v0.0.1-beta.1.0.20230207060922-ce853be34233 h1:x+/TrvjCiDlT7UueqxG+/Ko+83khDbOwdFg+xs1V1no=
-github.com/nakji-network/connector v0.0.1-beta.1.0.20230207060922-ce853be34233/go.mod h1:ekJuAgX4zb6to7uugoyv8f5X4lEFfD01j3fxA1g7Fg4=
 github.com/nakji-network/connector v0.0.1-beta.1.0.20230209072658-cca8c63761df h1:U1QH/v4Ld07c8iUUVxe5KZXUKPagL+U4VSCFHF+hi5c=
 github.com/nakji-network/connector v0.0.1-beta.1.0.20230209072658-cca8c63761df/go.mod h1:ekJuAgX4zb6to7uugoyv8f5X4lEFfD01j3fxA1g7Fg4=
-github.com/nakji-network/connector/chain/ethereum v0.0.0-20230206153725-f9ebed1e2ab9/go.mod h1:BIbnTPPMULgpANm1u/YQfrz/79CWwZEAGg2x9Y/j/Jg=
-github.com/nakji-network/connector/chain/ethereum v0.0.0-20230207060922-ce853be34233 h1:HnuTYKYNqVx+Z2x0W0JVFEGBnOmxqnRi2B+EtyNrr5k=
-github.com/nakji-network/connector/chain/ethereum v0.0.0-20230207060922-ce853be34233/go.mod h1:BIbnTPPMULgpANm1u/YQfrz/79CWwZEAGg2x9Y/j/Jg=
 github.com/nakji-network/connector/chain/ethereum v0.0.0-20230209072658-cca8c63761df h1:LmQOFUD5ReHlZBdBXV2g0ixLrwi89wb0stmAwggFnBA=
 github.com/nakji-network/connector/chain/ethereum v0.0.0-20230209072658-cca8c63761df/go.mod h1:BIbnTPPMULgpANm1u/YQfrz/79CWwZEAGg2x9Y/j/Jg=
 github.com/naoina/go-stringutil v0.1.0/go.mod h1:XJ2SJL9jCtBh+P9q5btrd/Ylo8XwT/h1USek5+NqSA0=

@@ -1,6 +1,6 @@
 module github.com/nakji-network/connectors/woofi_arbi
 
-go 1.18
+go 1.20
 
 require (
 	github.com/nakji-network/woofi-connectors/woofi v0.0.0-20230206071951-6fa749de2c27

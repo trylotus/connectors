@@ -1,6 +1,6 @@
 module github.com/nakji-network/connectors/test
 
-go 1.18
+go 1.20
 
 require (
 	github.com/hugjobk/go-benchmark v0.0.0-20221007105059-ccb02b037c3c

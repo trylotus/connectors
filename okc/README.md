@@ -6,7 +6,7 @@ Listen events from OKC smart contracts
 
 ## Prerequisites
 
-1. Golang 1.18+
+1. Golang 1.20+
 2. Docker
 3. protoc
 4. protoc-gen-go

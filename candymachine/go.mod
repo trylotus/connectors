@@ -1,6 +1,6 @@
 module github.com/nakji-network/connectors/candymachine
 
-go 1.18
+go 1.20
 
 require (
 	github.com/gagliardetto/metaplex-go v0.2.0
