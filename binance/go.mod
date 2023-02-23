@@ -1,6 +1,6 @@
 module github.com/nakji-network/connectors/binance
 
-go 1.18
+go 1.20
 
 replace github.com/thrasher-corp/gocryptotrader => ../gocryptotrader
 

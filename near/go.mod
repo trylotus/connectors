@@ -1,6 +1,6 @@
 module github.com/nakji-network/connectors/near
 
-go 1.18
+go 1.20
 
 require (
 	github.com/gorilla/websocket v1.4.2

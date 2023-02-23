@@ -1,6 +1,6 @@
 module github.com/nakji-network/connectors/deribit
 
-go 1.18
+go 1.20
 
 replace github.com/nakji-network/connectors/deribit/market => ./market
 
