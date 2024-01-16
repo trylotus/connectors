@@ -1,8 +1,7 @@
-
 package WBTC
 
 import (
-	"github.com/nakji-network/connector/common"
+	"github.com/trylotus/connector/common"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -23,10 +22,10 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Approval{
-				Ts:   timestamp,
-				Owner:  e.Owner.Bytes(),
-				Spender:  e.Spender.Bytes(),
-				Value:  e.Value.Bytes(),
+			Ts:      timestamp,
+			Owner:   e.Owner.Bytes(),
+			Spender: e.Spender.Bytes(),
+			Value:   e.Value.Bytes(),
 		}
 	case "Burn":
 		e := new(WBTCBurn)
@@ -36,9 +35,9 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Burn{
-				Ts:   timestamp,
-				Burner:  e.Burner.Bytes(),
-				Value:  e.Value.Bytes(),
+			Ts:     timestamp,
+			Burner: e.Burner.Bytes(),
+			Value:  e.Value.Bytes(),
 		}
 	case "Mint":
 		e := new(WBTCMint)
@@ -48,9 +47,9 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Mint{
-				Ts:   timestamp,
-				To:  e.To.Bytes(),
-				Amount:  e.Amount.Bytes(),
+			Ts:     timestamp,
+			To:     e.To.Bytes(),
+			Amount: e.Amount.Bytes(),
 		}
 	case "MintFinished":
 		e := new(WBTCMintFinished)
@@ -60,7 +59,7 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &MintFinished{
-				Ts:   timestamp,
+			Ts: timestamp,
 		}
 	case "OwnershipRenounced":
 		e := new(WBTCOwnershipRenounced)
@@ -70,8 +69,8 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &OwnershipRenounced{
-				Ts:   timestamp,
-				PreviousOwner:  e.PreviousOwner.Bytes(),
+			Ts:            timestamp,
+			PreviousOwner: e.PreviousOwner.Bytes(),
 		}
 	case "OwnershipTransferred":
 		e := new(WBTCOwnershipTransferred)
@@ -81,9 +80,9 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &OwnershipTransferred{
-				Ts:   timestamp,
-				PreviousOwner:  e.PreviousOwner.Bytes(),
-				NewOwner:  e.NewOwner.Bytes(),
+			Ts:            timestamp,
+			PreviousOwner: e.PreviousOwner.Bytes(),
+			NewOwner:      e.NewOwner.Bytes(),
 		}
 	case "Pause":
 		e := new(WBTCPause)
@@ -93,7 +92,7 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Pause{
-				Ts:   timestamp,
+			Ts: timestamp,
 		}
 	case "Transfer":
 		e := new(WBTCTransfer)
@@ -103,10 +102,10 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Transfer{
-				Ts:   timestamp,
-				From:  e.From.Bytes(),
-				To:  e.To.Bytes(),
-				Value:  e.Value.Bytes(),
+			Ts:    timestamp,
+			From:  e.From.Bytes(),
+			To:    e.To.Bytes(),
+			Value: e.Value.Bytes(),
 		}
 	case "Unpause":
 		e := new(WBTCUnpause)
@@ -116,7 +115,7 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Unpause{
-				Ts:   timestamp,
+			Ts: timestamp,
 		}
 	}
 	return nil

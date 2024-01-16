@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/nakji-network/connector"
-	"github.com/nakji-network/connector/config"
-	"github.com/nakji-network/connectors/woofi"
+	"github.com/trylotus/connector"
+	"github.com/trylotus/connector/config"
+	"github.com/trylotus/connectors/woofi"
 
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/pflag"
@@ -20,7 +20,7 @@ func main() {
 		log.Fatal().Err(err).Msg("failed to instantiate connector")
 	}
 
-	c.Config.SetDefault("woofi.author", "nakji")
+	c.Config.SetDefault("woofi.author", "lotus")
 	c.Config.SetDefault("woofi.version", "0_0_0")
 	c.Config.SetDefault("blockTime", 15*time.Second)
 	c.Config.SetDefault("waitBlocks", 4)

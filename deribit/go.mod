@@ -1,14 +1,14 @@
-module github.com/nakji-network/connectors/deribit
+module github.com/trylotus/connectors/deribit
 
 go 1.20
 
-replace github.com/nakji-network/connectors/deribit/market => ./market
+replace github.com/trylotus/connectors/deribit/market => ./market
 
 replace github.com/thrasher-corp/gocryptotrader => github.com/blep-ai/gocryptotrader v0.0.0-20210824033446-5f39de372417
 
 require (
 	github.com/golang/protobuf v1.5.2
-	github.com/nakji-network/connector v0.0.1-beta.1.0.20220928122513-c51982adda53
+	github.com/trylotus/connector v0.0.1-beta.1.0.20220928122513-c51982adda53
 	github.com/rs/zerolog v1.27.0
 	github.com/thrasher-corp/gocryptotrader v0.0.0-00010101000000-000000000000
 	go.uber.org/automaxprocs v1.5.1

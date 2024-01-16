@@ -8,11 +8,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/nakji-network/connector"
-	"github.com/nakji-network/connector/chain/ethereum"
-	"github.com/nakji-network/connector/common"
-	"github.com/nakji-network/connector/kafkautils"
-	"github.com/nakji-network/connectors/evm/chain"
+	"github.com/trylotus/connector"
+	"github.com/trylotus/connector/chain/ethereum"
+	"github.com/trylotus/connector/common"
+	"github.com/trylotus/connector/kafkautils"
+	"github.com/trylotus/connectors/evm/chain"
 
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"

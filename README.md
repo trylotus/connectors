@@ -1,5 +1,5 @@
 # 🐙 Connectors
-This repo contains all the Nakji team supported connectors.
+This repo contains all the Lotus team supported connectors.
 
 Github Actions is set up to build, run tests, and push docker image for each connector individually.
 
@@ -10,6 +10,6 @@ go run cmd/<connector_name>/main.go
 ```
 
 ### 🚀 To deploy
-For Nakji devs, ensure that the image was built successfully (check Github Actions) and pushed to our internal artifact registry, then update Helmfile values.yaml. 
+For Lotus devs, ensure that the image was built successfully (check Github Actions) and pushed to our internal artifact registry, then update Helmfile values.yaml. 
 
-If you would like to build your own connector, start by taking a look at our [documentation](https://docs.nakji.network/docs/intro), and [reach out to our team](mailto:hello@nakji.network) with any questions you may have.
+If you would like to build your own connector, start by taking a look at our [documentation](https://docs.trylotus.xyz/docs/intro), and [reach out to our team](mailto:hello@trylotus.xyz) with any questions you may have.

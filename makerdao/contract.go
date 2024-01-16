@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/nakji-network/connectors/makerdao/IlkRegistry"
+	"github.com/trylotus/connectors/makerdao/IlkRegistry"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"

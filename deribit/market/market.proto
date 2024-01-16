@@ -3,7 +3,7 @@ package market;
 
 import "google/protobuf/timestamp.proto";
 
-option go_package = "github.com/nakji-network/connectors/deribit/market";
+option go_package = "github.com/trylotus/connectors/deribit/market";
 
 message OpenInterest {
     google.protobuf.Timestamp ts        = 1;

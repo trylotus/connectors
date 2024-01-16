@@ -3,7 +3,7 @@ package flowstakingcollection;
 
 import "google/protobuf/timestamp.proto";
 
-option go_package = "github.com/nakji-network/connectors/flow/flowstakingcollection";
+option go_package = "github.com/trylotus/connectors/flow/flowstakingcollection";
 
 message NodeAddedToStakingCollection {
     google.protobuf.Timestamp   ts                  = 1;

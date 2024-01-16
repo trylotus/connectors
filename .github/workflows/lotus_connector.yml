@@ -1,4 +1,4 @@
-name: Nakji Connector
+name: Lotus Connector
 
 on:
   workflow_dispatch:
@@ -6,7 +6,7 @@ on:
     branches: [ main, staging ]
     paths:
       - '**'
-      - '.github/workflows/nakji_connector.yml'
+      - '.github/workflows/lotus_connector.yml'
   pull_request:
     branches: [ main, staging ]
 

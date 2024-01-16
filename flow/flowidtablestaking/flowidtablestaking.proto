@@ -3,7 +3,7 @@ package flowidtablestaking;
 
 import "google/protobuf/timestamp.proto";
 
-option go_package = "github.com/nakji-network/connectors/flow/flowidtablestaking";
+option go_package = "github.com/trylotus/connectors/flow/flowidtablestaking";
 
 message NewEpoch {
     google.protobuf.Timestamp   ts                  = 1;

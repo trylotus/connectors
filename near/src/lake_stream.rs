@@ -52,7 +52,7 @@ async fn handle_streamer_message(
 fn lake_config(from_block: u64, block_pool_size: usize) -> LakeConfig {
     // Create a NEAR Lake Framework config
     // Begin by checking config volume for credentials
-    let yaml_string = read_to_string("/etc/nakji/config.yaml").ok();
+    let yaml_string = read_to_string("/etc/lotus/config.yaml").ok();
 
     
     let yaml = yaml_rust::YamlLoader::load_from_str(&yaml_string.unwrap())

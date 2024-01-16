@@ -3,7 +3,7 @@ package flowstoragefees;
 
 import "google/protobuf/timestamp.proto";
 
-option go_package = "github.com/nakji-network/connectors/flow/flowstoragefees";
+option go_package = "github.com/trylotus/connectors/flow/flowstoragefees";
 
 message StorageMegaBytesPerReservedFLOWChanged {
     google.protobuf.Timestamp   ts                              = 1;

@@ -4,8 +4,8 @@ import (
 	"context"
 	"time"
 
-	"github.com/nakji-network/connector"
-	"github.com/nakji-network/connector/kafkautils"
+	"github.com/trylotus/connector"
+	"github.com/trylotus/connector/kafkautils"
 
 	"github.com/rs/zerolog/log"
 	"google.golang.org/protobuf/proto"

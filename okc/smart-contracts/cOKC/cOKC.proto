@@ -3,7 +3,7 @@ package cOKC;
 
 import "google/protobuf/timestamp.proto";
 
-option go_package = "github.com/nakji-network/connector/okc/smart-contracts/cOKC";
+option go_package = "github.com/trylotus/connector/okc/smart-contracts/cOKC";
 
 message Approval {
 

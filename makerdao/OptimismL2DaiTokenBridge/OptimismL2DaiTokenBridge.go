@@ -1,8 +1,7 @@
-
 package OptimismL2DaiTokenBridge
 
 import (
-	"github.com/nakji-network/connector/common"
+	"github.com/trylotus/connector/common"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -23,10 +22,10 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Approve{
-				Ts:   timestamp,
-				Token:  e.Token.Bytes(),
-				Spender:  e.Spender.Bytes(),
-				Value:  e.Value.Bytes(),
+			Ts:      timestamp,
+			Token:   e.Token.Bytes(),
+			Spender: e.Spender.Bytes(),
+			Value:   e.Value.Bytes(),
 		}
 	case "Deny":
 		e := new(OPTIMISML2DAITOKENBRIDGEDeny)
@@ -36,8 +35,8 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Deny{
-				Ts:   timestamp,
-				Usr:  e.Usr.Bytes(),
+			Ts:  timestamp,
+			Usr: e.Usr.Bytes(),
 		}
 	case "Rely":
 		e := new(OPTIMISML2DAITOKENBRIDGERely)
@@ -47,8 +46,8 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Rely{
-				Ts:   timestamp,
-				Usr:  e.Usr.Bytes(),
+			Ts:  timestamp,
+			Usr: e.Usr.Bytes(),
 		}
 	}
 	return nil

@@ -1,8 +1,7 @@
-
 package VoteProxyFactory
 
 import (
-	"github.com/nakji-network/connector/common"
+	"github.com/trylotus/connector/common"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -23,10 +22,10 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &LinkConfirmed{
-				Ts:   timestamp,
-				Cold:  e.Cold.Bytes(),
-				Hot:  e.Hot.Bytes(),
-				VoteProxy:  e.VoteProxy.Bytes(),
+			Ts:        timestamp,
+			Cold:      e.Cold.Bytes(),
+			Hot:       e.Hot.Bytes(),
+			VoteProxy: e.VoteProxy.Bytes(),
 		}
 	case "LinkRequested":
 		e := new(VOTEPROXYFACTORYLinkRequested)
@@ -36,9 +35,9 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &LinkRequested{
-				Ts:   timestamp,
-				Cold:  e.Cold.Bytes(),
-				Hot:  e.Hot.Bytes(),
+			Ts:   timestamp,
+			Cold: e.Cold.Bytes(),
+			Hot:  e.Hot.Bytes(),
 		}
 	}
 	return nil

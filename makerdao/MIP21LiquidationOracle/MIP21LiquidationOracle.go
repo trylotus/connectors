@@ -1,8 +1,7 @@
-
 package MIP21LiquidationOracle
 
 import (
-	"github.com/nakji-network/connector/common"
+	"github.com/trylotus/connector/common"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -23,9 +22,9 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Bump{
-				Ts:   timestamp,
-				Ilk:  e.Ilk[:],
-				Val:  e.Val.Bytes(),
+			Ts:  timestamp,
+			Ilk: e.Ilk[:],
+			Val: e.Val.Bytes(),
 		}
 	case "Cull":
 		e := new(MIP21LIQUIDATIONORACLECull)
@@ -35,9 +34,9 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Cull{
-				Ts:   timestamp,
-				Ilk:  e.Ilk[:],
-				Urn:  e.Urn.Bytes(),
+			Ts:  timestamp,
+			Ilk: e.Ilk[:],
+			Urn: e.Urn.Bytes(),
 		}
 	case "Cure":
 		e := new(MIP21LIQUIDATIONORACLECure)
@@ -47,8 +46,8 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Cure{
-				Ts:   timestamp,
-				Ilk:  e.Ilk[:],
+			Ts:  timestamp,
+			Ilk: e.Ilk[:],
 		}
 	case "Deny":
 		e := new(MIP21LIQUIDATIONORACLEDeny)
@@ -58,8 +57,8 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Deny{
-				Ts:   timestamp,
-				Usr:  e.Usr.Bytes(),
+			Ts:  timestamp,
+			Usr: e.Usr.Bytes(),
 		}
 	case "File":
 		e := new(MIP21LIQUIDATIONORACLEFile)
@@ -69,9 +68,9 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &File{
-				Ts:   timestamp,
-				What:  e.What[:],
-				Data:  e.Data.Bytes(),
+			Ts:   timestamp,
+			What: e.What[:],
+			Data: e.Data.Bytes(),
 		}
 	case "Init":
 		e := new(MIP21LIQUIDATIONORACLEInit)
@@ -81,10 +80,10 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Init{
-				Ts:   timestamp,
-				Ilk:  e.Ilk[:],
-				Val:  e.Val.Bytes(),
-				Tau:  e.Tau.Bytes(),
+			Ts:  timestamp,
+			Ilk: e.Ilk[:],
+			Val: e.Val.Bytes(),
+			Tau: e.Tau.Bytes(),
 		}
 	case "Rely":
 		e := new(MIP21LIQUIDATIONORACLERely)
@@ -94,8 +93,8 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Rely{
-				Ts:   timestamp,
-				Usr:  e.Usr.Bytes(),
+			Ts:  timestamp,
+			Usr: e.Usr.Bytes(),
 		}
 	case "Tell":
 		e := new(MIP21LIQUIDATIONORACLETell)
@@ -105,8 +104,8 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Tell{
-				Ts:   timestamp,
-				Ilk:  e.Ilk[:],
+			Ts:  timestamp,
+			Ilk: e.Ilk[:],
 		}
 	}
 	return nil

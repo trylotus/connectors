@@ -1,8 +1,8 @@
 package ethnft
 
 import (
-	"github.com/nakji-network/connectors/ethnft/smart-contracts/erc1155"
-	"github.com/nakji-network/connectors/ethnft/smart-contracts/erc721"
+	"github.com/trylotus/connectors/ethnft/smart-contracts/erc1155"
+	"github.com/trylotus/connectors/ethnft/smart-contracts/erc721"
 
 	"github.com/rs/zerolog/log"
 )

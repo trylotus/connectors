@@ -1,8 +1,7 @@
-
 package MCDEnd
 
 import (
-	"github.com/nakji-network/connector/common"
+	"github.com/trylotus/connector/common"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -23,7 +22,7 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Cage{
-				Ts:   timestamp,
+			Ts: timestamp,
 		}
 	case "Cage0":
 		e := new(MCDENDCage0)
@@ -33,8 +32,8 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Cage0{
-				Ts:   timestamp,
-				Ilk:  e.Ilk[:],
+			Ts:  timestamp,
+			Ilk: e.Ilk[:],
 		}
 	case "Cash":
 		e := new(MCDENDCash)
@@ -44,10 +43,10 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Cash{
-				Ts:   timestamp,
-				Ilk:  e.Ilk[:],
-				Usr:  e.Usr.Bytes(),
-				Wad:  e.Wad.Bytes(),
+			Ts:  timestamp,
+			Ilk: e.Ilk[:],
+			Usr: e.Usr.Bytes(),
+			Wad: e.Wad.Bytes(),
 		}
 	case "Deny":
 		e := new(MCDENDDeny)
@@ -57,8 +56,8 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Deny{
-				Ts:   timestamp,
-				Usr:  e.Usr.Bytes(),
+			Ts:  timestamp,
+			Usr: e.Usr.Bytes(),
 		}
 	case "File":
 		e := new(MCDENDFile)
@@ -68,9 +67,9 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &File{
-				Ts:   timestamp,
-				What:  e.What[:],
-				Data:  e.Data.Bytes(),
+			Ts:   timestamp,
+			What: e.What[:],
+			Data: e.Data.Bytes(),
 		}
 	case "File0":
 		e := new(MCDENDFile0)
@@ -80,9 +79,9 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &File0{
-				Ts:   timestamp,
-				What:  e.What[:],
-				Data:  e.Data.Bytes(),
+			Ts:   timestamp,
+			What: e.What[:],
+			Data: e.Data.Bytes(),
 		}
 	case "Flow":
 		e := new(MCDENDFlow)
@@ -92,8 +91,8 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Flow{
-				Ts:   timestamp,
-				Ilk:  e.Ilk[:],
+			Ts:  timestamp,
+			Ilk: e.Ilk[:],
 		}
 	case "Free":
 		e := new(MCDENDFree)
@@ -103,10 +102,10 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Free{
-				Ts:   timestamp,
-				Ilk:  e.Ilk[:],
-				Usr:  e.Usr.Bytes(),
-				Ink:  e.Ink.Bytes(),
+			Ts:  timestamp,
+			Ilk: e.Ilk[:],
+			Usr: e.Usr.Bytes(),
+			Ink: e.Ink.Bytes(),
 		}
 	case "Pack":
 		e := new(MCDENDPack)
@@ -116,9 +115,9 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Pack{
-				Ts:   timestamp,
-				Usr:  e.Usr.Bytes(),
-				Wad:  e.Wad.Bytes(),
+			Ts:  timestamp,
+			Usr: e.Usr.Bytes(),
+			Wad: e.Wad.Bytes(),
 		}
 	case "Rely":
 		e := new(MCDENDRely)
@@ -128,8 +127,8 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Rely{
-				Ts:   timestamp,
-				Usr:  e.Usr.Bytes(),
+			Ts:  timestamp,
+			Usr: e.Usr.Bytes(),
 		}
 	case "Skim":
 		e := new(MCDENDSkim)
@@ -139,11 +138,11 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Skim{
-				Ts:   timestamp,
-				Ilk:  e.Ilk[:],
-				Urn:  e.Urn.Bytes(),
-				Wad:  e.Wad.Bytes(),
-				Art:  e.Art.Bytes(),
+			Ts:  timestamp,
+			Ilk: e.Ilk[:],
+			Urn: e.Urn.Bytes(),
+			Wad: e.Wad.Bytes(),
+			Art: e.Art.Bytes(),
 		}
 	case "Skip":
 		e := new(MCDENDSkip)
@@ -153,13 +152,13 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Skip{
-				Ts:   timestamp,
-				Ilk:  e.Ilk[:],
-				Id:  e.Id.Bytes(),
-				Usr:  e.Usr.Bytes(),
-				Tab:  e.Tab.Bytes(),
-				Lot:  e.Lot.Bytes(),
-				Art:  e.Art.Bytes(),
+			Ts:  timestamp,
+			Ilk: e.Ilk[:],
+			Id:  e.Id.Bytes(),
+			Usr: e.Usr.Bytes(),
+			Tab: e.Tab.Bytes(),
+			Lot: e.Lot.Bytes(),
+			Art: e.Art.Bytes(),
 		}
 	case "Snip":
 		e := new(MCDENDSnip)
@@ -169,13 +168,13 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Snip{
-				Ts:   timestamp,
-				Ilk:  e.Ilk[:],
-				Id:  e.Id.Bytes(),
-				Usr:  e.Usr.Bytes(),
-				Tab:  e.Tab.Bytes(),
-				Lot:  e.Lot.Bytes(),
-				Art:  e.Art.Bytes(),
+			Ts:  timestamp,
+			Ilk: e.Ilk[:],
+			Id:  e.Id.Bytes(),
+			Usr: e.Usr.Bytes(),
+			Tab: e.Tab.Bytes(),
+			Lot: e.Lot.Bytes(),
+			Art: e.Art.Bytes(),
 		}
 	case "Thaw":
 		e := new(MCDENDThaw)
@@ -185,7 +184,7 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Thaw{
-				Ts:   timestamp,
+			Ts: timestamp,
 		}
 	}
 	return nil

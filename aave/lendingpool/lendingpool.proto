@@ -5,7 +5,7 @@ syntax = "proto3";
 package lendingpool;
 
 import "google/protobuf/timestamp.proto";
-option go_package = "github.com/nakji-network/connectors/aave/lendingpool";
+option go_package = "github.com/trylotus/connectors/aave/lendingpool";
 
 
 message Borrow {

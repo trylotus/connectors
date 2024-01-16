@@ -1,8 +1,7 @@
-
 package MCDFlash
 
 import (
-	"github.com/nakji-network/connector/common"
+	"github.com/trylotus/connector/common"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -23,8 +22,8 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Deny{
-				Ts:   timestamp,
-				Usr:  e.Usr.Bytes(),
+			Ts:  timestamp,
+			Usr: e.Usr.Bytes(),
 		}
 	case "File":
 		e := new(MCDFLASHFile)
@@ -34,9 +33,9 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &File{
-				Ts:   timestamp,
-				What:  e.What[:],
-				Data:  e.Data.Bytes(),
+			Ts:   timestamp,
+			What: e.What[:],
+			Data: e.Data.Bytes(),
 		}
 	case "FlashLoan":
 		e := new(MCDFLASHFlashLoan)
@@ -46,11 +45,11 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &FlashLoan{
-				Ts:   timestamp,
-				Receiver:  e.Receiver.Bytes(),
-				Token:  e.Token.Bytes(),
-				Amount:  e.Amount.Bytes(),
-				Fee:  e.Fee.Bytes(),
+			Ts:       timestamp,
+			Receiver: e.Receiver.Bytes(),
+			Token:    e.Token.Bytes(),
+			Amount:   e.Amount.Bytes(),
+			Fee:      e.Fee.Bytes(),
 		}
 	case "Rely":
 		e := new(MCDFLASHRely)
@@ -60,8 +59,8 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Rely{
-				Ts:   timestamp,
-				Usr:  e.Usr.Bytes(),
+			Ts:  timestamp,
+			Usr: e.Usr.Bytes(),
 		}
 	case "VatDaiFlashLoan":
 		e := new(MCDFLASHVatDaiFlashLoan)
@@ -71,10 +70,10 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &VatDaiFlashLoan{
-				Ts:   timestamp,
-				Receiver:  e.Receiver.Bytes(),
-				Amount:  e.Amount.Bytes(),
-				Fee:  e.Fee.Bytes(),
+			Ts:       timestamp,
+			Receiver: e.Receiver.Bytes(),
+			Amount:   e.Amount.Bytes(),
+			Fee:      e.Fee.Bytes(),
 		}
 	}
 	return nil

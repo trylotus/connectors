@@ -3,7 +3,7 @@ package okc
 import (
 	"strings"
 
-	"github.com/nakji-network/connectors/okc/smart-contracts/cOKC"
+	"github.com/trylotus/connectors/okc/smart-contracts/cOKC"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"

@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 
-	"github.com/nakji-network/connectors/bitcoin"
+	"github.com/trylotus/connectors/bitcoin"
 
 	_ "go.uber.org/automaxprocs"
 )

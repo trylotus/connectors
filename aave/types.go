@@ -1,7 +1,7 @@
 package aave
 
 import (
-	"github.com/nakji-network/connectors/aave/lendingpool"
+	"github.com/trylotus/connectors/aave/lendingpool"
 	"google.golang.org/protobuf/proto"
 )
 

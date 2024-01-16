@@ -4,8 +4,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/nakji-network/connector"
-	"github.com/nakji-network/connectors/test"
+	"github.com/trylotus/connector"
+	"github.com/trylotus/connectors/test"
 
 	"github.com/hugjobk/go-benchmark"
 	"github.com/rs/zerolog/log"

@@ -1,8 +1,7 @@
-
 package LerpFab
 
 import (
-	"github.com/nakji-network/connector/common"
+	"github.com/trylotus/connector/common"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -23,8 +22,8 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Deny{
-				Ts:   timestamp,
-				Usr:  e.Usr.Bytes(),
+			Ts:  timestamp,
+			Usr: e.Usr.Bytes(),
 		}
 	case "LerpFinished":
 		e := new(LERPFABLerpFinished)
@@ -34,8 +33,8 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &LerpFinished{
-				Ts:   timestamp,
-				Lerp:  e.Lerp.Bytes(),
+			Ts:   timestamp,
+			Lerp: e.Lerp.Bytes(),
 		}
 	case "NewIlkLerp":
 		e := new(LERPFABNewIlkLerp)
@@ -45,15 +44,15 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &NewIlkLerp{
-				Ts:   timestamp,
-				Name:  e.Name[:],
-				Target:  e.Target.Bytes(),
-				Ilk:  e.Ilk[:],
-				What:  e.What[:],
-				StartTime:  e.StartTime.Bytes(),
-				Start:  e.Start.Bytes(),
-				End:  e.End.Bytes(),
-				Duration:  e.Duration.Bytes(),
+			Ts:        timestamp,
+			Name:      e.Name[:],
+			Target:    e.Target.Bytes(),
+			Ilk:       e.Ilk[:],
+			What:      e.What[:],
+			StartTime: e.StartTime.Bytes(),
+			Start:     e.Start.Bytes(),
+			End:       e.End.Bytes(),
+			Duration:  e.Duration.Bytes(),
 		}
 	case "NewLerp":
 		e := new(LERPFABNewLerp)
@@ -63,14 +62,14 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &NewLerp{
-				Ts:   timestamp,
-				Name:  e.Name[:],
-				Target:  e.Target.Bytes(),
-				What:  e.What[:],
-				StartTime:  e.StartTime.Bytes(),
-				Start:  e.Start.Bytes(),
-				End:  e.End.Bytes(),
-				Duration:  e.Duration.Bytes(),
+			Ts:        timestamp,
+			Name:      e.Name[:],
+			Target:    e.Target.Bytes(),
+			What:      e.What[:],
+			StartTime: e.StartTime.Bytes(),
+			Start:     e.Start.Bytes(),
+			End:       e.End.Bytes(),
+			Duration:  e.Duration.Bytes(),
 		}
 	case "Rely":
 		e := new(LERPFABRely)
@@ -80,8 +79,8 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Rely{
-				Ts:   timestamp,
-				Usr:  e.Usr.Bytes(),
+			Ts:  timestamp,
+			Usr: e.Usr.Bytes(),
 		}
 	}
 	return nil

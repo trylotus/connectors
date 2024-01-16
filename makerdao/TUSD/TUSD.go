@@ -1,8 +1,7 @@
-
 package TUSD
 
 import (
-	"github.com/nakji-network/connector/common"
+	"github.com/trylotus/connector/common"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -23,9 +22,9 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &NewPendingOwner{
-				Ts:   timestamp,
-				CurrentOwner:  e.CurrentOwner.Bytes(),
-				PendingOwner:  e.PendingOwner.Bytes(),
+			Ts:           timestamp,
+			CurrentOwner: e.CurrentOwner.Bytes(),
+			PendingOwner: e.PendingOwner.Bytes(),
 		}
 	case "ProxyOwnershipTransferred":
 		e := new(TUSDProxyOwnershipTransferred)
@@ -35,9 +34,9 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &ProxyOwnershipTransferred{
-				Ts:   timestamp,
-				PreviousOwner:  e.PreviousOwner.Bytes(),
-				NewOwner:  e.NewOwner.Bytes(),
+			Ts:            timestamp,
+			PreviousOwner: e.PreviousOwner.Bytes(),
+			NewOwner:      e.NewOwner.Bytes(),
 		}
 	case "Upgraded":
 		e := new(TUSDUpgraded)
@@ -47,8 +46,8 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Upgraded{
-				Ts:   timestamp,
-				Implementation:  e.Implementation.Bytes(),
+			Ts:             timestamp,
+			Implementation: e.Implementation.Bytes(),
 		}
 	}
 	return nil

@@ -1,8 +1,7 @@
-
 package RWAUrn
 
 import (
-	"github.com/nakji-network/connector/common"
+	"github.com/trylotus/connector/common"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -23,8 +22,8 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Deny{
-				Ts:   timestamp,
-				Usr:  e.Usr.Bytes(),
+			Ts:  timestamp,
+			Usr: e.Usr.Bytes(),
 		}
 	case "Draw":
 		e := new(RWAURNDraw)
@@ -34,9 +33,9 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Draw{
-				Ts:   timestamp,
-				Usr:  e.Usr.Bytes(),
-				Wad:  e.Wad.Bytes(),
+			Ts:  timestamp,
+			Usr: e.Usr.Bytes(),
+			Wad: e.Wad.Bytes(),
 		}
 	case "File":
 		e := new(RWAURNFile)
@@ -46,9 +45,9 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &File{
-				Ts:   timestamp,
-				What:  e.What[:],
-				Data:  e.Data.Bytes(),
+			Ts:   timestamp,
+			What: e.What[:],
+			Data: e.Data.Bytes(),
 		}
 	case "Free":
 		e := new(RWAURNFree)
@@ -58,9 +57,9 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Free{
-				Ts:   timestamp,
-				Usr:  e.Usr.Bytes(),
-				Wad:  e.Wad.Bytes(),
+			Ts:  timestamp,
+			Usr: e.Usr.Bytes(),
+			Wad: e.Wad.Bytes(),
 		}
 	case "Hope":
 		e := new(RWAURNHope)
@@ -70,8 +69,8 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Hope{
-				Ts:   timestamp,
-				Usr:  e.Usr.Bytes(),
+			Ts:  timestamp,
+			Usr: e.Usr.Bytes(),
 		}
 	case "Lock":
 		e := new(RWAURNLock)
@@ -81,9 +80,9 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Lock{
-				Ts:   timestamp,
-				Usr:  e.Usr.Bytes(),
-				Wad:  e.Wad.Bytes(),
+			Ts:  timestamp,
+			Usr: e.Usr.Bytes(),
+			Wad: e.Wad.Bytes(),
 		}
 	case "Nope":
 		e := new(RWAURNNope)
@@ -93,8 +92,8 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Nope{
-				Ts:   timestamp,
-				Usr:  e.Usr.Bytes(),
+			Ts:  timestamp,
+			Usr: e.Usr.Bytes(),
 		}
 	case "Quit":
 		e := new(RWAURNQuit)
@@ -104,9 +103,9 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Quit{
-				Ts:   timestamp,
-				Usr:  e.Usr.Bytes(),
-				Wad:  e.Wad.Bytes(),
+			Ts:  timestamp,
+			Usr: e.Usr.Bytes(),
+			Wad: e.Wad.Bytes(),
 		}
 	case "Rely":
 		e := new(RWAURNRely)
@@ -116,8 +115,8 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Rely{
-				Ts:   timestamp,
-				Usr:  e.Usr.Bytes(),
+			Ts:  timestamp,
+			Usr: e.Usr.Bytes(),
 		}
 	case "Wipe":
 		e := new(RWAURNWipe)
@@ -127,9 +126,9 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Wipe{
-				Ts:   timestamp,
-				Usr:  e.Usr.Bytes(),
-				Wad:  e.Wad.Bytes(),
+			Ts:  timestamp,
+			Usr: e.Usr.Bytes(),
+			Wad: e.Wad.Bytes(),
 		}
 	}
 	return nil

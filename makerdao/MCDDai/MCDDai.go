@@ -1,8 +1,7 @@
-
 package MCDDai
 
 import (
-	"github.com/nakji-network/connector/common"
+	"github.com/trylotus/connector/common"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -23,10 +22,10 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Approval{
-				Ts:   timestamp,
-				Src:  e.Src.Bytes(),
-				Guy:  e.Guy.Bytes(),
-				Wad:  e.Wad.Bytes(),
+			Ts:  timestamp,
+			Src: e.Src.Bytes(),
+			Guy: e.Guy.Bytes(),
+			Wad: e.Wad.Bytes(),
 		}
 	case "Transfer":
 		e := new(MCDDAITransfer)
@@ -36,10 +35,10 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Transfer{
-				Ts:   timestamp,
-				Src:  e.Src.Bytes(),
-				Dst:  e.Dst.Bytes(),
-				Wad:  e.Wad.Bytes(),
+			Ts:  timestamp,
+			Src: e.Src.Bytes(),
+			Dst: e.Dst.Bytes(),
+			Wad: e.Wad.Bytes(),
 		}
 	}
 	return nil

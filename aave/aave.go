@@ -6,8 +6,8 @@ import (
 	"time"
 
 	ethcommon "github.com/ethereum/go-ethereum/common"
-	"github.com/nakji-network/connector"
-	"github.com/nakji-network/connector/common"
+	"github.com/trylotus/connector"
+	"github.com/trylotus/connector/common"
 
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/rs/zerolog/log"

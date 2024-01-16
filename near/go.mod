@@ -1,10 +1,10 @@
-module github.com/nakji-network/connectors/near
+module github.com/trylotus/connectors/near
 
 go 1.20
 
 require (
 	github.com/gorilla/websocket v1.4.2
-	github.com/nakji-network/connector v0.0.1-beta.1.0.20221014085026-d7cbf7619b04
+	github.com/trylotus/connector v0.0.1-beta.1.0.20221014085026-d7cbf7619b04
 	github.com/rs/zerolog v1.28.0
 	github.com/spf13/pflag v1.0.5
 	google.golang.org/protobuf v1.28.1

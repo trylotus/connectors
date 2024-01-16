@@ -1,11 +1,11 @@
-module github.com/nakji-network/connectors/candymachine
+module github.com/trylotus/connectors/candymachine
 
 go 1.20
 
 require (
 	github.com/gagliardetto/metaplex-go v0.2.0
 	github.com/gagliardetto/solana-go v1.1.0
-	github.com/nakji-network/connector v0.0.1-beta.1.0.20220928122513-c51982adda53
+	github.com/trylotus/connector v0.0.1-beta.1.0.20220928122513-c51982adda53
 	github.com/rs/zerolog v1.28.0
 	github.com/spf13/viper v1.13.0
 	go.uber.org/automaxprocs v1.5.1

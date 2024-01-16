@@ -321,13 +321,13 @@ func file_chain_chain_proto_rawDescGZIP() []byte {
 
 var file_chain_chain_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_chain_chain_proto_goTypes = []interface{}{
-	(*Transaction)(nil),           // 0: nakji.evm.chain.Transaction
-	(*Block)(nil),                 // 1: nakji.evm.chain.Block
+	(*Transaction)(nil),           // 0: lotus.evm.chain.Transaction
+	(*Block)(nil),                 // 1: lotus.evm.chain.Block
 	(*timestamppb.Timestamp)(nil), // 2: google.protobuf.Timestamp
 }
 var file_chain_chain_proto_depIdxs = []int32{
-	2, // 0: nakji.evm.chain.Transaction.ts:type_name -> google.protobuf.Timestamp
-	2, // 1: nakji.evm.chain.Block.ts:type_name -> google.protobuf.Timestamp
+	2, // 0: lotus.evm.chain.Transaction.ts:type_name -> google.protobuf.Timestamp
+	2, // 1: lotus.evm.chain.Block.ts:type_name -> google.protobuf.Timestamp
 	2, // [2:2] is the sub-list for method output_type
 	2, // [2:2] is the sub-list for method input_type
 	2, // [2:2] is the sub-list for extension type_name

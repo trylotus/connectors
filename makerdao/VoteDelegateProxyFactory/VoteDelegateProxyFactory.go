@@ -1,8 +1,7 @@
-
 package VoteDelegateProxyFactory
 
 import (
-	"github.com/nakji-network/connector/common"
+	"github.com/trylotus/connector/common"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -14,7 +13,7 @@ import (
 type SmartContract struct{}
 
 func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog types.Log, timestamp *timestamppb.Timestamp) protoreflect.ProtoMessage {
-	if eventName == "CreateVoteDelegate"{
+	if eventName == "CreateVoteDelegate" {
 		e := new(VOTEDELEGATEPROXYFACTORYCreateVoteDelegate)
 		if err := common.UnpackLog(*contractAbi, e, eventName, vLog); err != nil {
 			log.Error().Err(err).Msg("Failed to unpack log")
@@ -22,9 +21,9 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &CreateVoteDelegate{
-				Ts:   timestamp,
-				Delegate:  e.Delegate.Bytes(),
-				VoteDelegate:  e.VoteDelegate.Bytes(),
+			Ts:           timestamp,
+			Delegate:     e.Delegate.Bytes(),
+			VoteDelegate: e.VoteDelegate.Bytes(),
 		}
 	}
 	return nil

@@ -5,9 +5,9 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/nakji-network/connector"
-	"github.com/nakji-network/connector/common"
-	"github.com/nakji-network/connectors/binance/market"
+	"github.com/trylotus/connector"
+	"github.com/trylotus/connector/common"
+	"github.com/trylotus/connectors/binance/market"
 
 	"github.com/rs/zerolog/log"
 	"github.com/tidwall/gjson"

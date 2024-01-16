@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/nakji-network/connectors/flow"
+	"github.com/trylotus/connectors/flow"
 
 	"github.com/onflow/flow-go-sdk/access/grpc"
 	"google.golang.org/protobuf/encoding/protojson"

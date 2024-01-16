@@ -1,8 +1,7 @@
-
 package MCDFlap
 
 import (
-	"github.com/nakji-network/connector/common"
+	"github.com/trylotus/connector/common"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -23,10 +22,10 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Kick{
-				Ts:   timestamp,
-				Id:  e.Id.Bytes(),
-				Lot:  e.Lot.Bytes(),
-				Bid:  e.Bid.Bytes(),
+			Ts:  timestamp,
+			Id:  e.Id.Bytes(),
+			Lot: e.Lot.Bytes(),
+			Bid: e.Bid.Bytes(),
 		}
 	}
 	return nil

@@ -1,8 +1,7 @@
-
 package GUSD
 
 import (
-	"github.com/nakji-network/connector/common"
+	"github.com/trylotus/connector/common"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -23,10 +22,10 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Approval{
-				Ts:   timestamp,
-				Owner:  e.Owner.Bytes(),
-				Spender:  e.Spender.Bytes(),
-				Value:  e.Value.Bytes(),
+			Ts:      timestamp,
+			Owner:   e.Owner.Bytes(),
+			Spender: e.Spender.Bytes(),
+			Value:   e.Value.Bytes(),
 		}
 	case "CustodianChangeConfirmed":
 		e := new(GUSDCustodianChangeConfirmed)
@@ -36,9 +35,9 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &CustodianChangeConfirmed{
-				Ts:   timestamp,
-				LockId:  e.LockId[:],
-				NewCustodian:  e.NewCustodian.Bytes(),
+			Ts:           timestamp,
+			LockId:       e.LockId[:],
+			NewCustodian: e.NewCustodian.Bytes(),
 		}
 	case "CustodianChangeRequested":
 		e := new(GUSDCustodianChangeRequested)
@@ -48,10 +47,10 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &CustodianChangeRequested{
-				Ts:   timestamp,
-				LockId:  e.LockId[:],
-				MsgSender:  e.MsgSender.Bytes(),
-				ProposedCustodian:  e.ProposedCustodian.Bytes(),
+			Ts:                timestamp,
+			LockId:            e.LockId[:],
+			MsgSender:         e.MsgSender.Bytes(),
+			ProposedCustodian: e.ProposedCustodian.Bytes(),
 		}
 	case "ImplChangeConfirmed":
 		e := new(GUSDImplChangeConfirmed)
@@ -61,9 +60,9 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &ImplChangeConfirmed{
-				Ts:   timestamp,
-				LockId:  e.LockId[:],
-				NewImpl:  e.NewImpl.Bytes(),
+			Ts:      timestamp,
+			LockId:  e.LockId[:],
+			NewImpl: e.NewImpl.Bytes(),
 		}
 	case "ImplChangeRequested":
 		e := new(GUSDImplChangeRequested)
@@ -73,10 +72,10 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &ImplChangeRequested{
-				Ts:   timestamp,
-				LockId:  e.LockId[:],
-				MsgSender:  e.MsgSender.Bytes(),
-				ProposedImpl:  e.ProposedImpl.Bytes(),
+			Ts:           timestamp,
+			LockId:       e.LockId[:],
+			MsgSender:    e.MsgSender.Bytes(),
+			ProposedImpl: e.ProposedImpl.Bytes(),
 		}
 	case "Transfer":
 		e := new(GUSDTransfer)
@@ -86,10 +85,10 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Transfer{
-				Ts:   timestamp,
-				From:  e.From.Bytes(),
-				To:  e.To.Bytes(),
-				Value:  e.Value.Bytes(),
+			Ts:    timestamp,
+			From:  e.From.Bytes(),
+			To:    e.To.Bytes(),
+			Value: e.Value.Bytes(),
 		}
 	}
 	return nil

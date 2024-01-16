@@ -1,8 +1,7 @@
-
 package DsrManager
 
 import (
-	"github.com/nakji-network/connector/common"
+	"github.com/trylotus/connector/common"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -23,9 +22,9 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Exit{
-				Ts:   timestamp,
-				Dst:  e.Dst.Bytes(),
-				Wad:  e.Wad.Bytes(),
+			Ts:  timestamp,
+			Dst: e.Dst.Bytes(),
+			Wad: e.Wad.Bytes(),
 		}
 	case "Join":
 		e := new(DSRMANAGERJoin)
@@ -35,9 +34,9 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Join{
-				Ts:   timestamp,
-				Dst:  e.Dst.Bytes(),
-				Wad:  e.Wad.Bytes(),
+			Ts:  timestamp,
+			Dst: e.Dst.Bytes(),
+			Wad: e.Wad.Bytes(),
 		}
 	}
 	return nil

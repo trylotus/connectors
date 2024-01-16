@@ -1,8 +1,7 @@
-
 package MCDIamAutoLine
 
 import (
-	"github.com/nakji-network/connector/common"
+	"github.com/trylotus/connector/common"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -23,8 +22,8 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Deny{
-				Ts:   timestamp,
-				Usr:  e.Usr.Bytes(),
+			Ts:  timestamp,
+			Usr: e.Usr.Bytes(),
 		}
 	case "Exec":
 		e := new(MCDIAMAUTOLINEExec)
@@ -34,10 +33,10 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Exec{
-				Ts:   timestamp,
-				Ilk:  e.Ilk[:],
-				Line:  e.Line.Bytes(),
-				LineNew:  e.LineNew.Bytes(),
+			Ts:      timestamp,
+			Ilk:     e.Ilk[:],
+			Line:    e.Line.Bytes(),
+			LineNew: e.LineNew.Bytes(),
 		}
 	case "Rely":
 		e := new(MCDIAMAUTOLINERely)
@@ -47,8 +46,8 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Rely{
-				Ts:   timestamp,
-				Usr:  e.Usr.Bytes(),
+			Ts:  timestamp,
+			Usr: e.Usr.Bytes(),
 		}
 	case "Remove":
 		e := new(MCDIAMAUTOLINERemove)
@@ -58,8 +57,8 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Remove{
-				Ts:   timestamp,
-				Ilk:  e.Ilk[:],
+			Ts:  timestamp,
+			Ilk: e.Ilk[:],
 		}
 	case "Setup":
 		e := new(MCDIAMAUTOLINESetup)
@@ -69,11 +68,11 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Setup{
-				Ts:   timestamp,
-				Ilk:  e.Ilk[:],
-				Line:  e.Line.Bytes(),
-				Gap:  e.Gap.Bytes(),
-				Ttl:  e.Ttl.Bytes(),
+			Ts:   timestamp,
+			Ilk:  e.Ilk[:],
+			Line: e.Line.Bytes(),
+			Gap:  e.Gap.Bytes(),
+			Ttl:  e.Ttl.Bytes(),
 		}
 	}
 	return nil

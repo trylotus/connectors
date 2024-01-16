@@ -1,8 +1,7 @@
-
 package MCDSpot
 
 import (
-	"github.com/nakji-network/connector/common"
+	"github.com/trylotus/connector/common"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -23,10 +22,10 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Poke{
-				Ts:   timestamp,
-				Ilk:  e.Ilk[:],
-				Val:  e.Val[:],
-				Spot:  e.Spot.Bytes(),
+			Ts:   timestamp,
+			Ilk:  e.Ilk[:],
+			Val:  e.Val[:],
+			Spot: e.Spot.Bytes(),
 		}
 	}
 	return nil

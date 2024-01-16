@@ -1,7 +1,7 @@
 package flowstoragefees
 
 import (
-	"github.com/nakji-network/connectors/flow"
+	"github.com/trylotus/connectors/flow"
 
 	"github.com/onflow/cadence"
 	"github.com/rs/zerolog/log"

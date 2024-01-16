@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/nakji-network/connector"
-	"github.com/nakji-network/connectors/ftx"
-	"github.com/nakji-network/connectors/ftx/market"
+	"github.com/trylotus/connector"
+	"github.com/trylotus/connectors/ftx"
+	"github.com/trylotus/connectors/ftx/market"
 
 	"github.com/rs/zerolog/log"
 )

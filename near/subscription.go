@@ -14,12 +14,12 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
-	"github.com/nakji-network/connector/kafkautils"
 	"github.com/rs/zerolog/log"
+	"github.com/trylotus/connector/kafkautils"
 	"google.golang.org/protobuf/proto"
 )
 
-//go:embed target/x86_64-unknown-linux-musl/release/nakji_near_client
+//go:embed target/x86_64-unknown-linux-musl/release/lotus_near_client
 var f embed.FS
 
 var endpointMap = map[string]proto.Message{
@@ -50,15 +50,15 @@ type Subscription struct {
 
 func NewSubscription(ctx context.Context, config *Config, events []string) (*Subscription, error) {
 	// Read binary from embed
-	bin, err := f.ReadFile("target/x86_64-unknown-linux-musl/release/nakji_near_client")
+	bin, err := f.ReadFile("target/x86_64-unknown-linux-musl/release/lotus_near_client")
 	if err != nil {
-		log.Fatal().Err(err).Msg("failed read embedded Nakji Near Client binary")
+		log.Fatal().Err(err).Msg("failed read embedded Lotus Near Client binary")
 	}
 
 	// Write binary to file so we can execute it
-	err = os.WriteFile("/nearclient/nakji_near_client", bin, 0755)
+	err = os.WriteFile("/nearclient/lotus_near_client", bin, 0755)
 	if err != nil {
-		log.Fatal().Err(err).Msg("failed to write embedded Nakji Near Client binary to local fs")
+		log.Fatal().Err(err).Msg("failed to write embedded Lotus Near Client binary to local fs")
 	}
 
 	sub := &Subscription{
@@ -148,7 +148,7 @@ func (s *Subscription) backfill() {
 func (s *Subscription) startLakeStream(port string, fromBlock uint64, numBlocks uint64) {
 	// Setup command for Lake stream
 	cmd := []string{
-		"/nearclient/nakji_near_client",
+		"/nearclient/lotus_near_client",
 	}
 
 	cmd = append(cmd, fmt.Sprintf("--port=%s", port))
@@ -171,7 +171,7 @@ func (s *Subscription) startLakeStream(port string, fromBlock uint64, numBlocks 
 	// Run binary in goroutine
 	go func() {
 		if err := execCmd.Run(); err != nil {
-			log.Fatal().Err(err).Msg(fmt.Sprintf("%s Error running Nakji NEAR Client (Rust binary): ", err))
+			log.Fatal().Err(err).Msg(fmt.Sprintf("%s Error running Lotus NEAR Client (Rust binary): ", err))
 		}
 	}()
 }

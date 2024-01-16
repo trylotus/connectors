@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/nakji-network/connector"
-	"github.com/nakji-network/connector/config"
-	"github.com/nakji-network/connectors/aave"
-	"github.com/nakji-network/connectors/aave/lendingpool"
+	"github.com/trylotus/connector"
+	"github.com/trylotus/connector/config"
+	"github.com/trylotus/connectors/aave"
+	"github.com/trylotus/connectors/aave/lendingpool"
 
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/pflag"
@@ -20,7 +20,7 @@ func main() {
 		log.Fatal().Err(err).Msg("failed to instantiate connector")
 	}
 
-	c.Config.SetDefault("aave.author", "nakji")
+	c.Config.SetDefault("aave.author", "lotus")
 	c.Config.SetDefault("aave.version", "0_0_0")
 	c.Config.SetDefault("blockTime", 15*time.Second)
 	c.Config.SetDefault("waitBlocks", 4)

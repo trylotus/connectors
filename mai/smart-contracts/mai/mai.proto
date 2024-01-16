@@ -5,7 +5,7 @@ syntax = "proto3";
 package mai;
 
 import "google/protobuf/timestamp.proto";
-option go_package = "github.com/nakji-network/connectors/mai/smart-contracts/mai";
+option go_package = "github.com/trylotus/connectors/mai/smart-contracts/mai";
 
 message OwnershipTransferred {
 	google.protobuf.Timestamp ts = 1;

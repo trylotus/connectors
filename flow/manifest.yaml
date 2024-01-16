@@ -1,7 +1,7 @@
 name: flow
-author: nakji
+author: lotus
 version: "0.0.0"
 
 outputPath: flow
 package: flow
-owner: nakji
+owner: lotus

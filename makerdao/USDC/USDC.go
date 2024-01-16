@@ -1,8 +1,7 @@
-
 package USDC
 
 import (
-	"github.com/nakji-network/connector/common"
+	"github.com/trylotus/connector/common"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -23,9 +22,9 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &AdminChanged{
-				Ts:   timestamp,
-				PreviousAdmin:  e.PreviousAdmin.Bytes(),
-				NewAdmin:  e.NewAdmin.Bytes(),
+			Ts:            timestamp,
+			PreviousAdmin: e.PreviousAdmin.Bytes(),
+			NewAdmin:      e.NewAdmin.Bytes(),
 		}
 	case "Upgraded":
 		e := new(USDCUpgraded)
@@ -35,8 +34,8 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Upgraded{
-				Ts:   timestamp,
-				Implementation:  e.Implementation.Bytes(),
+			Ts:             timestamp,
+			Implementation: e.Implementation.Bytes(),
 		}
 	}
 	return nil

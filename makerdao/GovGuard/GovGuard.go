@@ -1,8 +1,7 @@
-
 package GovGuard
 
 import (
-	"github.com/nakji-network/connector/common"
+	"github.com/trylotus/connector/common"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -23,8 +22,8 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &LogDeny{
-				Ts:   timestamp,
-				Usr:  e.Usr.Bytes(),
+			Ts:  timestamp,
+			Usr: e.Usr.Bytes(),
 		}
 	case "LogRely":
 		e := new(GOVGUARDLogRely)
@@ -34,8 +33,8 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &LogRely{
-				Ts:   timestamp,
-				Usr:  e.Usr.Bytes(),
+			Ts:  timestamp,
+			Usr: e.Usr.Bytes(),
 		}
 	case "LogSetRoot":
 		e := new(GOVGUARDLogSetRoot)
@@ -45,8 +44,8 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &LogSetRoot{
-				Ts:   timestamp,
-				NewRoot:  e.NewRoot.Bytes(),
+			Ts:      timestamp,
+			NewRoot: e.NewRoot.Bytes(),
 		}
 	}
 	return nil

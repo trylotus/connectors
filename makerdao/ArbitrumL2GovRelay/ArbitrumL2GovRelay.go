@@ -1,8 +1,7 @@
-
 package ArbitrumL2GovRelay
 
 import (
-	"github.com/nakji-network/connector/common"
+	"github.com/trylotus/connector/common"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -23,7 +22,7 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Closed{
-				Ts:   timestamp,
+			Ts: timestamp,
 		}
 	case "Deny":
 		e := new(ARBITRUML2GOVRELAYDeny)
@@ -33,8 +32,8 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Deny{
-				Ts:   timestamp,
-				Usr:  e.Usr.Bytes(),
+			Ts:  timestamp,
+			Usr: e.Usr.Bytes(),
 		}
 	case "ERC20DepositInitiated":
 		e := new(ARBITRUML2GOVRELAYERC20DepositInitiated)
@@ -44,13 +43,13 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &ERC20DepositInitiated{
-				Ts:   timestamp,
-				L1Token:  e.L1Token.Bytes(),
-				L2Token:  e.L2Token.Bytes(),
-				From:  e.From.Bytes(),
-				To:  e.To.Bytes(),
-				Amount:  e.Amount.Bytes(),
-				Data:  e.Data[:],
+			Ts:      timestamp,
+			L1Token: e.L1Token.Bytes(),
+			L2Token: e.L2Token.Bytes(),
+			From:    e.From.Bytes(),
+			To:      e.To.Bytes(),
+			Amount:  e.Amount.Bytes(),
+			Data:    e.Data[:],
 		}
 	case "ERC20WithdrawalFinalized":
 		e := new(ARBITRUML2GOVRELAYERC20WithdrawalFinalized)
@@ -60,13 +59,13 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &ERC20WithdrawalFinalized{
-				Ts:   timestamp,
-				L1Token:  e.L1Token.Bytes(),
-				L2Token:  e.L2Token.Bytes(),
-				From:  e.From.Bytes(),
-				To:  e.To.Bytes(),
-				Amount:  e.Amount.Bytes(),
-				Data:  e.Data[:],
+			Ts:      timestamp,
+			L1Token: e.L1Token.Bytes(),
+			L2Token: e.L2Token.Bytes(),
+			From:    e.From.Bytes(),
+			To:      e.To.Bytes(),
+			Amount:  e.Amount.Bytes(),
+			Data:    e.Data[:],
 		}
 	case "Rely":
 		e := new(ARBITRUML2GOVRELAYRely)
@@ -76,8 +75,8 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Rely{
-				Ts:   timestamp,
-				Usr:  e.Usr.Bytes(),
+			Ts:  timestamp,
+			Usr: e.Usr.Bytes(),
 		}
 	}
 	return nil

@@ -1,10 +1,10 @@
-module github.com/nakji-network/connectors/flow
+module github.com/trylotus/connectors/flow
 
 go 1.20
 
 require (
 	github.com/hashicorp/golang-lru v0.5.5-0.20210104140557-80c98217689d
-	github.com/nakji-network/connector v0.0.1-beta.1.0.20221201060803-17273625c2bc
+	github.com/trylotus/connector v0.0.1-beta.1.0.20221201060803-17273625c2bc
 	github.com/onflow/cadence v0.26.0
 	github.com/onflow/flow-go-sdk v0.27.0
 	github.com/rs/zerolog v1.28.0

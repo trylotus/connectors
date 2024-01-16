@@ -5,7 +5,7 @@ syntax = "proto3";
 package erc721;
 
 import "google/protobuf/timestamp.proto";
-option go_package = "github.com/nakji-network/connectors/ethnft/smart-contracts/erc721";
+option go_package = "github.com/trylotus/connectors/ethnft/smart-contracts/erc721";
 
 
 message Approval {

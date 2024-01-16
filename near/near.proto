@@ -2,7 +2,7 @@ syntax = "proto3";
 package near;
 
 import "google/protobuf/timestamp.proto";
-option go_package = "github.com/nakji-network/connectors/near";
+option go_package = "github.com/trylotus/connectors/near";
 
 message Block {
   google.protobuf.Timestamp ts      = 1;

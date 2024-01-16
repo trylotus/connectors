@@ -1,8 +1,7 @@
-
 package MCDPause
 
 import (
-	"github.com/nakji-network/connector/common"
+	"github.com/trylotus/connector/common"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -23,8 +22,8 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &LogSetAuthority{
-				Ts:   timestamp,
-				Authority:  e.Authority.Bytes(),
+			Ts:        timestamp,
+			Authority: e.Authority.Bytes(),
 		}
 	case "LogSetOwner":
 		e := new(MCDPAUSELogSetOwner)
@@ -34,8 +33,8 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &LogSetOwner{
-				Ts:   timestamp,
-				Owner:  e.Owner.Bytes(),
+			Ts:    timestamp,
+			Owner: e.Owner.Bytes(),
 		}
 	}
 	return nil

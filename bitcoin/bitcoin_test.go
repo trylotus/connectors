@@ -11,13 +11,13 @@ package bitcoin
 // 	"github.com/golang/mock/gomock"
 
 // 	"blep.ai/data/connectors/source/bitcoin/mocks"
-// 	"github.com/nakji-network/connector/kafkautils"
+// 	"github.com/trylotus/connector/kafkautils"
 // )
 
 // const (
 // 	kafkaUrl   = "localhost:9092"
-// 	BLOCKTOPIC = ".fct.nakji.bitcoin.0_0_0.chain_block"
-// 	TXTOPIC    = ".fct.nakji.bitcoin.0_0_0.chain_tx"
+// 	BLOCKTOPIC = ".fct.lotus.bitcoin.0_0_0.chain_block"
+// 	TXTOPIC    = ".fct.lotus.bitcoin.0_0_0.chain_tx"
 // )
 
 // func TestStartConnector(t *testing.T) {

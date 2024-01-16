@@ -1,8 +1,7 @@
-
 package MCDCat
 
 import (
-	"github.com/nakji-network/connector/common"
+	"github.com/trylotus/connector/common"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -23,14 +22,14 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Bite{
-				Ts:   timestamp,
-				Ilk:  e.Ilk[:],
-				Urn:  e.Urn.Bytes(),
-				Ink:  e.Ink.Bytes(),
-				Art:  e.Art.Bytes(),
-				Tab:  e.Tab.Bytes(),
-				Flip:  e.Flip.Bytes(),
-				Id:  e.Id.Bytes(),
+			Ts:   timestamp,
+			Ilk:  e.Ilk[:],
+			Urn:  e.Urn.Bytes(),
+			Ink:  e.Ink.Bytes(),
+			Art:  e.Art.Bytes(),
+			Tab:  e.Tab.Bytes(),
+			Flip: e.Flip.Bytes(),
+			Id:   e.Id.Bytes(),
 		}
 	}
 	return nil

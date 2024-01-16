@@ -1,7 +1,7 @@
 package WOOPP
 
 import (
-	"github.com/nakji-network/connector/common"
+	"github.com/trylotus/connector/common"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -22,11 +22,11 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Paused{
-				Ts:   timestamp,
-				BlockNumber: vLog.BlockNumber,
-				Index: uint64(vLog.Index),
-				TxHash: vLog.TxHash.Bytes(),
-				Account:  e.Account.Bytes(),
+			Ts:          timestamp,
+			BlockNumber: vLog.BlockNumber,
+			Index:       uint64(vLog.Index),
+			TxHash:      vLog.TxHash.Bytes(),
+			Account:     e.Account.Bytes(),
 		}
 	case "OwnershipTransferred":
 		e := new(WOOPPOwnershipTransferred)
@@ -36,12 +36,12 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &OwnershipTransferred{
-				Ts:   timestamp,
-				BlockNumber: vLog.BlockNumber,
-				Index: uint64(vLog.Index),
-				TxHash: vLog.TxHash.Bytes(),
-				PreviousOwner:  e.PreviousOwner.Bytes(),
-				NewOwner:  e.NewOwner.Bytes(),
+			Ts:            timestamp,
+			BlockNumber:   vLog.BlockNumber,
+			Index:         uint64(vLog.Index),
+			TxHash:        vLog.TxHash.Bytes(),
+			PreviousOwner: e.PreviousOwner.Bytes(),
+			NewOwner:      e.NewOwner.Bytes(),
 		}
 	case "ParametersUpdated":
 		e := new(WOOPPParametersUpdated)
@@ -51,13 +51,13 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &ParametersUpdated{
-				Ts:   timestamp,
-				BlockNumber: vLog.BlockNumber,
-				Index: uint64(vLog.Index),
-				TxHash: vLog.TxHash.Bytes(),
-				BaseToken:  e.BaseToken.Bytes(),
-				NewThreshold:  e.NewThreshold.Bytes(),
-				NewR: e.NewR.Bytes(),
+			Ts:           timestamp,
+			BlockNumber:  vLog.BlockNumber,
+			Index:        uint64(vLog.Index),
+			TxHash:       vLog.TxHash.Bytes(),
+			BaseToken:    e.BaseToken.Bytes(),
+			NewThreshold: e.NewThreshold.Bytes(),
+			NewR:         e.NewR.Bytes(),
 		}
 	case "FeeManagerUpdated":
 		e := new(WOOPPFeeManagerUpdated)
@@ -67,11 +67,11 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &FeeManagerUpdated{
-				Ts:   timestamp,
-				BlockNumber: vLog.BlockNumber,
-				Index: uint64(vLog.Index),
-				TxHash: vLog.TxHash.Bytes(),
-				NewFeeManager:  e.NewFeeManager.Bytes(),
+			Ts:            timestamp,
+			BlockNumber:   vLog.BlockNumber,
+			Index:         uint64(vLog.Index),
+			TxHash:        vLog.TxHash.Bytes(),
+			NewFeeManager: e.NewFeeManager.Bytes(),
 		}
 	case "RewardManagerUpdated":
 		e := new(WOOPPRewardManagerUpdated)
@@ -81,11 +81,11 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &RewardManagerUpdated{
-				Ts:   timestamp,
-				BlockNumber: vLog.BlockNumber,
-				Index: uint64(vLog.Index),
-				TxHash: vLog.TxHash.Bytes(),
-				NewRewardManager:  e.NewRewardManager.Bytes(),
+			Ts:               timestamp,
+			BlockNumber:      vLog.BlockNumber,
+			Index:            uint64(vLog.Index),
+			TxHash:           vLog.TxHash.Bytes(),
+			NewRewardManager: e.NewRewardManager.Bytes(),
 		}
 	case "Unpaused":
 		e := new(WOOPPUnpaused)
@@ -95,11 +95,11 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Unpaused{
-				Ts:   timestamp,
-				BlockNumber: vLog.BlockNumber,
-				Index: uint64(vLog.Index),
-				TxHash: vLog.TxHash.Bytes(),
-				Account:  e.Account.Bytes(),
+			Ts:          timestamp,
+			BlockNumber: vLog.BlockNumber,
+			Index:       uint64(vLog.Index),
+			TxHash:      vLog.TxHash.Bytes(),
+			Account:     e.Account.Bytes(),
 		}
 	case "WooGuardianUpdated":
 		e := new(WOOPPWooGuardianUpdated)
@@ -109,11 +109,11 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &WooGuardianUpdated{
-				Ts:   timestamp,
-				BlockNumber: vLog.BlockNumber,
-				Index: uint64(vLog.Index),
-				TxHash: vLog.TxHash.Bytes(),
-				NewWooGuardian:  e.NewWooGuardian.Bytes(),
+			Ts:             timestamp,
+			BlockNumber:    vLog.BlockNumber,
+			Index:          uint64(vLog.Index),
+			TxHash:         vLog.TxHash.Bytes(),
+			NewWooGuardian: e.NewWooGuardian.Bytes(),
 		}
 	case "WooSwap":
 		e := new(WOOPPWooSwap)
@@ -123,17 +123,17 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &WooSwap{
-				Ts:   timestamp,
-				BlockNumber: vLog.BlockNumber,
-				Index: uint64(vLog.Index),
-				TxHash: vLog.TxHash.Bytes(),
-				FromToken:  e.FromToken.Bytes(),
-				ToToken:  e.ToToken.Bytes(),
-				FromAmount:  e.FromAmount.Bytes(),
-				ToAmount:  e.ToAmount.Bytes(),
-				From: e.From.Bytes(),
-				To: e.To.Bytes(),
-				RebateTo: e.RebateTo.Bytes(),
+			Ts:          timestamp,
+			BlockNumber: vLog.BlockNumber,
+			Index:       uint64(vLog.Index),
+			TxHash:      vLog.TxHash.Bytes(),
+			FromToken:   e.FromToken.Bytes(),
+			ToToken:     e.ToToken.Bytes(),
+			FromAmount:  e.FromAmount.Bytes(),
+			ToAmount:    e.ToAmount.Bytes(),
+			From:        e.From.Bytes(),
+			To:          e.To.Bytes(),
+			RebateTo:    e.RebateTo.Bytes(),
 		}
 	case "OwnershipTransferPrepared":
 		e := new(WOOPPOwnershipTransferPrepared)
@@ -143,12 +143,12 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &OwnershipTransferPrepared{
-				Ts:   timestamp,
-				BlockNumber: vLog.BlockNumber,
-				Index: uint64(vLog.Index),
-				TxHash: vLog.TxHash.Bytes(),
-				PreviousOwner: e.PreviousOwner.Bytes(),
-				NewOwner: e.NewOwner.Bytes(),
+			Ts:            timestamp,
+			BlockNumber:   vLog.BlockNumber,
+			Index:         uint64(vLog.Index),
+			TxHash:        vLog.TxHash.Bytes(),
+			PreviousOwner: e.PreviousOwner.Bytes(),
+			NewOwner:      e.NewOwner.Bytes(),
 		}
 	case "WooracleUpdated":
 		e := new(WOOPPWooracleUpdated)
@@ -158,11 +158,11 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &WooracleUpdated{
-				Ts:   timestamp,
-				BlockNumber: vLog.BlockNumber,
-				Index: uint64(vLog.Index),
-				TxHash: vLog.TxHash.Bytes(),
-				NewWooracle: e.NewWooracle.Bytes(),
+			Ts:          timestamp,
+			BlockNumber: vLog.BlockNumber,
+			Index:       uint64(vLog.Index),
+			TxHash:      vLog.TxHash.Bytes(),
+			NewWooracle: e.NewWooracle.Bytes(),
 		}
 	case "StrategistUpdated":
 		e := new(WOOPPStrategistUpdated)
@@ -172,12 +172,12 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &StrategistUpdated{
-				Ts:   timestamp,
-				BlockNumber: vLog.BlockNumber,
-				Index: uint64(vLog.Index),
-				TxHash: vLog.TxHash.Bytes(),
-				Strategist: e.Strategist.Bytes(),
-				Flag: e.Flag,
+			Ts:          timestamp,
+			BlockNumber: vLog.BlockNumber,
+			Index:       uint64(vLog.Index),
+			TxHash:      vLog.TxHash.Bytes(),
+			Strategist:  e.Strategist.Bytes(),
+			Flag:        e.Flag,
 		}
 	case "Withdraw":
 		e := new(WOOPPWithdraw)
@@ -187,13 +187,13 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Withdraw{
-				Ts:   timestamp,
-				BlockNumber: vLog.BlockNumber,
-				Index: uint64(vLog.Index),
-				TxHash: vLog.TxHash.Bytes(),
-				Token: e.Token.Bytes(),
-				To: e.To.Bytes(),
-				Amount: e.Amount.Bytes(),
+			Ts:          timestamp,
+			BlockNumber: vLog.BlockNumber,
+			Index:       uint64(vLog.Index),
+			TxHash:      vLog.TxHash.Bytes(),
+			Token:       e.Token.Bytes(),
+			To:          e.To.Bytes(),
+			Amount:      e.Amount.Bytes(),
 		}
 	}
 	return nil
