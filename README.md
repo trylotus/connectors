@@ -15,7 +15,7 @@ For Lotus devs, ensure that the image was built successfully (check Github Actio
 ## 🛠️ How to Build a Connector
 There are **only TWO requirements** when it comes to writing a valid Lotus Source Connector:
 
-1. Write [protobuf](https://developers.google.com/protocol-buffers) messages to [Nakji Message Queue (Kafka)](https://kafka.apache.org/) using [transactions](https://www.confluent.io/blog/transactions-apache-kafka/).
+1. Write [protobuf](https://developers.google.com/protocol-buffers) messages to [Lotus Message Queue (Kafka)](https://kafka.apache.org/) using [transactions](https://www.confluent.io/blog/transactions-apache-kafka/).
 2. Manifest file that contains connector metadata (eg title, author, version)
 
 There are no DSLs (domain specific languages) you have to learn, no weird structures you have to abide by, and no awkward terminology you have to remember.
@@ -26,7 +26,7 @@ Below, you will find an example of a connector. Alternatively, feel free to look
 
 ### Example
 
-This is an example of a barebones Ethereum connector which ingests Block and Transaction data into Nakji, written in Golang.
+This is an example of a barebones Ethereum connector which ingests Block and Transaction data into Lotus, written in Golang.
 
 :::info
 This example is currently 90% finished, with most key features present. Some of the libraries referenced in the Go files have not been published publicly yet. A fully functional source connector will be published in a public repo soon. 
@@ -34,7 +34,7 @@ This example is currently 90% finished, with most key features present. Some of 
 
 ### Protobuf
 
-First, a `protobuf` definition file needs to be created. Protobuf is the platform-neutral data format for almost all the *data in motion* within Nakji, whether it's into or out of the Nakji Message Queue. Make sure to use Version 3 of the Protobuf spec ([proto3 documentation](https://developers.google.com/protocol-buffers/docs/proto3)).
+First, a `protobuf` definition file needs to be created. Protobuf is the platform-neutral data format for almost all the *data in motion* within Lotus, whether it's into or out of the Lotus Message Queue. Make sure to use Version 3 of the Protobuf spec ([proto3 documentation](https://developers.google.com/protocol-buffers/docs/proto3)).
 
 ```protobuf title="/ethereum.proto"
 syntax = "proto3";
@@ -43,7 +43,7 @@ import "google/protobuf/timestamp.proto";
 
 package ethereum;
 
-option go_package = "github.com/nakji-network/connector/examples/ethereum_connector";
+option go_package = "github.com/trylotus/connector/examples/ethereum_connector";
 
 // to convert addresses from bytes to hex address, https://github.com/ethereum/go-ethereum/blob/4b2ff1457ac28fb2894485194e0e344e84c2bcd7/common/types.go#L210
 message Transaction {
@@ -93,11 +93,11 @@ package main
 import (
 	"fmt"
 
-	"github.com/nakji-network/connector/config"
-	"github.com/nakji-network/connector/examples/ethereum"
-	. "github.com/nakji-network/connector/kafkautils"
-	"github.com/nakji-network/connector/monitor"
-	"github.com/nakji-network/connector/manifest"
+	"github.com/trylotus/connector/config"
+	"github.com/trylotus/connector/examples/ethereum"
+	. "github.com/trylotus/connector/kafkautils"
+	"github.com/trylotus/connector/monitor"
+	"github.com/trylotus/connector/manifest"
 	"github.com/rs/zerolog/log"
 )
 
@@ -134,7 +134,7 @@ func main() {
 ```
 
 ### Main connector code
-The `ethereum.go` file connects to the data source (in this case, an Ethereum RPC). When data is received, it is cleaned and shaped into the Protobuf format defined above, and sent to the correct Topics in the Nakji Message Queue (Kafka).
+The `ethereum.go` file connects to the data source (in this case, an Ethereum RPC). When data is received, it is cleaned and shaped into the Protobuf format defined above, and sent to the correct Topics in the Lotus Message Queue (Kafka).
 
 ```go title="/ethereum.go"
 package ethereum
@@ -148,10 +148,10 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 	ethtypes "github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
-	"github.com/nakji-network/connector/manifest"
+	"github.com/trylotus/connector/manifest"
 	"github.com/rs/zerolog/log"
 
-	. "github.com/nakji-network/connector/kafkautils"
+	. "github.com/trylotus/connector/kafkautils"
 )
 
 type EthereumConnector struct {
@@ -269,8 +269,8 @@ func PrintBlock(block *ethtypes.Block) {
 ```
 
 
-### Advanced
-In some cases, a source connector may use input data from the Nakji message queue instead of an external source. This reduces the need for every connector to make a new RPC request, at the cost of slightly increasing latency. For example:
+## Advanced
+In some cases, a source connector may use input data from the Lotus message queue instead of an external source. This reduces the need for every connector to make a new RPC request, at the cost of slightly increasing latency. For example:
 
 ```kroki imgType="mermaid" imgTitle="Aggregator connectors"
 flowchart LR
