@@ -6,8 +6,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/nakji-network/connector"
-	"github.com/nakji-network/connectors/bitfinex/market"
+	"github.com/trylotus/connector"
+	"github.com/trylotus/connectors/bitfinex/market"
 
 	"github.com/rs/zerolog/log"
 	gctconfig "github.com/thrasher-corp/gocryptotrader/config"

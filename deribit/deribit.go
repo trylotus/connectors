@@ -9,8 +9,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/nakji-network/connector"
-	"github.com/nakji-network/connectors/deribit/market"
+	"github.com/trylotus/connector"
+	"github.com/trylotus/connectors/deribit/market"
 
 	"github.com/golang/protobuf/ptypes"
 	"github.com/rs/zerolog/log"

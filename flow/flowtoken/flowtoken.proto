@@ -3,7 +3,7 @@ package flowtoken;
 
 import "google/protobuf/timestamp.proto";
 
-option go_package = "github.com/nakji-network/connectors/flow/flowtoken";
+option go_package = "github.com/trylotus/connectors/flow/flowtoken";
 
 message TokensInitialized {
     google.protobuf.Timestamp   ts              = 1;

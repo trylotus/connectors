@@ -5,8 +5,8 @@ import (
 	"os"
 	"os/signal"
 
-	"github.com/nakji-network/connector"
-	"github.com/nakji-network/connector/chain"
+	"github.com/trylotus/connector"
+	"github.com/trylotus/connector/chain"
 
 	candymachinev2 "github.com/gagliardetto/metaplex-go/clients/nft-candy-machine-v2"
 	"github.com/gagliardetto/solana-go"

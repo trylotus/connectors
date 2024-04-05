@@ -1,8 +1,7 @@
-
 package FlipperMom
 
 import (
-	"github.com/nakji-network/connector/common"
+	"github.com/trylotus/connector/common"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -23,9 +22,9 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Deny{
-				Ts:   timestamp,
-				Flip:  e.Flip.Bytes(),
-				Cat:  e.Cat.Bytes(),
+			Ts:   timestamp,
+			Flip: e.Flip.Bytes(),
+			Cat:  e.Cat.Bytes(),
 		}
 	case "Rely":
 		e := new(FLIPPERMOMRely)
@@ -35,9 +34,9 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Rely{
-				Ts:   timestamp,
-				Flip:  e.Flip.Bytes(),
-				Usr:  e.Usr.Bytes(),
+			Ts:   timestamp,
+			Flip: e.Flip.Bytes(),
+			Usr:  e.Usr.Bytes(),
 		}
 	case "SetAuthority":
 		e := new(FLIPPERMOMSetAuthority)
@@ -47,9 +46,9 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &SetAuthority{
-				Ts:   timestamp,
-				OldAuthority:  e.OldAuthority.Bytes(),
-				NewAuthority:  e.NewAuthority.Bytes(),
+			Ts:           timestamp,
+			OldAuthority: e.OldAuthority.Bytes(),
+			NewAuthority: e.NewAuthority.Bytes(),
 		}
 	case "SetOwner":
 		e := new(FLIPPERMOMSetOwner)
@@ -59,9 +58,9 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &SetOwner{
-				Ts:   timestamp,
-				OldOwner:  e.OldOwner.Bytes(),
-				NewOwner:  e.NewOwner.Bytes(),
+			Ts:       timestamp,
+			OldOwner: e.OldOwner.Bytes(),
+			NewOwner: e.NewOwner.Bytes(),
 		}
 	}
 	return nil

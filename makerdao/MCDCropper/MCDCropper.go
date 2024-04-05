@@ -1,8 +1,7 @@
-
 package MCDCropper
 
 import (
-	"github.com/nakji-network/connector/common"
+	"github.com/trylotus/connector/common"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -23,8 +22,8 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Deny{
-				Ts:   timestamp,
-				Usr:  e.Usr.Bytes(),
+			Ts:  timestamp,
+			Usr: e.Usr.Bytes(),
 		}
 	case "Rely":
 		e := new(MCDCROPPERRely)
@@ -34,8 +33,8 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Rely{
-				Ts:   timestamp,
-				Usr:  e.Usr.Bytes(),
+			Ts:  timestamp,
+			Usr: e.Usr.Bytes(),
 		}
 	case "SetImplementation":
 		e := new(MCDCROPPERSetImplementation)
@@ -45,8 +44,8 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &SetImplementation{
-				Ts:   timestamp,
-				Arg0:  e.Arg0.Bytes(),
+			Ts:   timestamp,
+			Arg0: e.Arg0.Bytes(),
 		}
 	}
 	return nil

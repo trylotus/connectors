@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/nakji-network/connector"
-	"github.com/nakji-network/connector/config"
-	"github.com/nakji-network/connectors/makerdao"
+	"github.com/trylotus/connector"
+	"github.com/trylotus/connector/config"
+	"github.com/trylotus/connectors/makerdao"
 
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/pflag"
@@ -21,7 +21,7 @@ func main() {
 	}
 
 	c.Config.SetDefault("contracts.url", "https://changelog.makerdao.com/releases/mainnet/active/contracts.json")
-	c.Config.SetDefault("makerdao.author", "nakji")
+	c.Config.SetDefault("makerdao.author", "lotus")
 	c.Config.SetDefault("makerdao.factoryAddress", "0x5a464C28D19848f44199D003BeF5ecc87d090F87")
 	c.Config.SetDefault("makerdao.version", "0_0_0")
 	c.Config.SetDefault("blockTime", 15*time.Second)

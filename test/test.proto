@@ -3,7 +3,7 @@ package test;
 
 import "google/protobuf/timestamp.proto";
 
-option go_package = "github.com/nakji-network/connectors/test";
+option go_package = "github.com/trylotus/connectors/test";
 
 message Message {
     google.protobuf.Timestamp ts   = 1;

@@ -1,8 +1,7 @@
-
 package MCDVestMkrTreasury
 
 import (
-	"github.com/nakji-network/connector/common"
+	"github.com/trylotus/connector/common"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -23,8 +22,8 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Deny{
-				Ts:   timestamp,
-				Usr:  e.Usr.Bytes(),
+			Ts:  timestamp,
+			Usr: e.Usr.Bytes(),
 		}
 	case "File":
 		e := new(MCDVESTMKRTREASURYFile)
@@ -34,9 +33,9 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &File{
-				Ts:   timestamp,
-				What:  e.What[:],
-				Data:  e.Data.Bytes(),
+			Ts:   timestamp,
+			What: e.What[:],
+			Data: e.Data.Bytes(),
 		}
 	case "Init":
 		e := new(MCDVESTMKRTREASURYInit)
@@ -46,9 +45,9 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Init{
-				Ts:   timestamp,
-				Id:  e.Id.Bytes(),
-				Usr:  e.Usr.Bytes(),
+			Ts:  timestamp,
+			Id:  e.Id.Bytes(),
+			Usr: e.Usr.Bytes(),
 		}
 	case "Move":
 		e := new(MCDVESTMKRTREASURYMove)
@@ -58,9 +57,9 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Move{
-				Ts:   timestamp,
-				Id:  e.Id.Bytes(),
-				Dst:  e.Dst.Bytes(),
+			Ts:  timestamp,
+			Id:  e.Id.Bytes(),
+			Dst: e.Dst.Bytes(),
 		}
 	case "Rely":
 		e := new(MCDVESTMKRTREASURYRely)
@@ -70,8 +69,8 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Rely{
-				Ts:   timestamp,
-				Usr:  e.Usr.Bytes(),
+			Ts:  timestamp,
+			Usr: e.Usr.Bytes(),
 		}
 	case "Restrict":
 		e := new(MCDVESTMKRTREASURYRestrict)
@@ -81,8 +80,8 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Restrict{
-				Ts:   timestamp,
-				Id:  e.Id.Bytes(),
+			Ts: timestamp,
+			Id: e.Id.Bytes(),
 		}
 	case "Unrestrict":
 		e := new(MCDVESTMKRTREASURYUnrestrict)
@@ -92,8 +91,8 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Unrestrict{
-				Ts:   timestamp,
-				Id:  e.Id.Bytes(),
+			Ts: timestamp,
+			Id: e.Id.Bytes(),
 		}
 	case "Vest":
 		e := new(MCDVESTMKRTREASURYVest)
@@ -103,9 +102,9 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Vest{
-				Ts:   timestamp,
-				Id:  e.Id.Bytes(),
-				Amt:  e.Amt.Bytes(),
+			Ts:  timestamp,
+			Id:  e.Id.Bytes(),
+			Amt: e.Amt.Bytes(),
 		}
 	case "Yank":
 		e := new(MCDVESTMKRTREASURYYank)
@@ -115,9 +114,9 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Yank{
-				Ts:   timestamp,
-				Id:  e.Id.Bytes(),
-				End:  e.End.Bytes(),
+			Ts:  timestamp,
+			Id:  e.Id.Bytes(),
+			End: e.End.Bytes(),
 		}
 	}
 	return nil

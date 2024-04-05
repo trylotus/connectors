@@ -1,7 +1,7 @@
 name: test
-author: nakji
+author: lotus
 version: "0.0.0"
 
 outputPath: test
 package: test
-owner: nakji
+owner: lotus

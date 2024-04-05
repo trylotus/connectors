@@ -1,7 +1,7 @@
 package mai
 
 import (
-	"github.com/nakji-network/connectors/mai/smart-contracts/mai"
+	"github.com/trylotus/connectors/mai/smart-contracts/mai"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/core/types"

@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/nakji-network/connector"
-	"github.com/nakji-network/connector/common"
-	"github.com/nakji-network/connectors/woofi/WOOPP"
+	"github.com/trylotus/connector"
+	"github.com/trylotus/connector/common"
+	"github.com/trylotus/connectors/woofi/WOOPP"
 
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/rs/zerolog/log"

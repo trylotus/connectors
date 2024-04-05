@@ -3,12 +3,12 @@ package main
 import (
 	"fmt"
 
-	"github.com/nakji-network/connector"
-	"github.com/nakji-network/connector/config"
-	"github.com/nakji-network/connector/kafkautils"
-	"github.com/nakji-network/connectors/near"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/pflag"
+	"github.com/trylotus/connector"
+	"github.com/trylotus/connector/config"
+	"github.com/trylotus/connector/kafkautils"
+	"github.com/trylotus/connectors/near"
 	"google.golang.org/protobuf/proto"
 )
 

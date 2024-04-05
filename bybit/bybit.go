@@ -9,9 +9,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/nakji-network/connector"
-	"github.com/nakji-network/connector/kafkautils"
-	"github.com/nakji-network/connectors/bybit/market"
+	"github.com/trylotus/connector"
+	"github.com/trylotus/connector/kafkautils"
+	"github.com/trylotus/connectors/bybit/market"
 
 	"github.com/rs/zerolog/log"
 	"github.com/thrasher-corp/gocryptotrader/common"

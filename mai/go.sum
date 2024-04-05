@@ -260,10 +260,10 @@ github.com/modern-go/concurrent v0.0.0-20180228061459-e0a39a4cb421/go.mod h1:6dJ
 github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd/go.mod h1:6dJC0mAP4ikYIbvyc7fijjWJddQyLn8Ig3JB5CqoB9Q=
 github.com/modern-go/reflect2 v0.0.0-20180701023420-4b7aa43c6742/go.mod h1:bx2lNnkwVCuqBIxFjflWJWanXIb3RllmbCylyMrvgv0=
 github.com/modern-go/reflect2 v1.0.1/go.mod h1:bx2lNnkwVCuqBIxFjflWJWanXIb3RllmbCylyMrvgv0=
-github.com/nakji-network/connector v0.0.1-beta.1.0.20230605130045-3cb913cd2124 h1:xiY4IUhvMDb1pJ9zoZQGZg43QjZUVeuuzARjJIUnPPI=
-github.com/nakji-network/connector v0.0.1-beta.1.0.20230605130045-3cb913cd2124/go.mod h1:C4X2sz8Rh71nAEB8tKhbSfLQX+S1I+zNZBWmMd75Kmk=
-github.com/nakji-network/connector/chain/ethereum v0.0.0-20230605130045-3cb913cd2124 h1:0jzr5yxwF7aevvqnFLTaIDRQnI56kdzGz8IYYNYhXu0=
-github.com/nakji-network/connector/chain/ethereum v0.0.0-20230605130045-3cb913cd2124/go.mod h1:KscZFtMB3xgO8E/xEREw3tCBJc576CLq2PZZLjmoJS4=
+github.com/trylotus/connector v0.0.1-beta.1.0.20230605130045-3cb913cd2124 h1:xiY4IUhvMDb1pJ9zoZQGZg43QjZUVeuuzARjJIUnPPI=
+github.com/trylotus/connector v0.0.1-beta.1.0.20230605130045-3cb913cd2124/go.mod h1:C4X2sz8Rh71nAEB8tKhbSfLQX+S1I+zNZBWmMd75Kmk=
+github.com/trylotus/connector/chain/ethereum v0.0.0-20230605130045-3cb913cd2124 h1:0jzr5yxwF7aevvqnFLTaIDRQnI56kdzGz8IYYNYhXu0=
+github.com/trylotus/connector/chain/ethereum v0.0.0-20230605130045-3cb913cd2124/go.mod h1:KscZFtMB3xgO8E/xEREw3tCBJc576CLq2PZZLjmoJS4=
 github.com/nrwiersma/avro-benchmarks v0.0.0-20210913175520-21aec48c8f76/go.mod h1:iKyFMidsk/sVYONJRE372sJuX/QTRPacU7imPqqsu7g=
 github.com/olekukonko/tablewriter v0.0.5 h1:P2Ga83D34wi1o9J6Wh1mRuqd4mF/x/lgBS7N7AbDhec=
 github.com/pelletier/go-toml v1.9.4 h1:tjENF6MfZAg8e4ZmZTeWaWiT2vXtsoO6+iuOjFhECwM=

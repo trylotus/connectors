@@ -6,10 +6,10 @@ import (
 	"time"
 
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/nakji-network/connector"
-	"github.com/nakji-network/connector/chain/ethereum"
-	nakjicommon "github.com/nakji-network/connector/common"
-	"github.com/nakji-network/connector/kafkautils"
+	"github.com/trylotus/connector"
+	"github.com/trylotus/connector/chain/ethereum"
+	lotuscommon "github.com/trylotus/connector/common"
+	"github.com/trylotus/connector/kafkautils"
 
 	"github.com/rs/zerolog/log"
 )
@@ -176,7 +176,7 @@ func (c *Connector) parse(msgType kafkautils.MsgType, vLog ethereum.Log) *kafkau
 	if err != nil {
 		log.Error().Str("contract name", contractName).Err(err).Msg("Failed to retrieve timestamp")
 	}
-	timestamp := nakjicommon.UnixToTimestampPb(int64(bt * 1000))
+	timestamp := lotuscommon.UnixToTimestampPb(int64(bt * 1000))
 
 	msg := eventParser.Message(abiEvent.Name, contractAbi, vLog.Log, timestamp)
 	if msg == nil {

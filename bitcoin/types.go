@@ -7,8 +7,8 @@ import (
 )
 
 var TopicTypes = map[string]proto.Message{
-	"nakji.bitcoin.0_0_0.chain_block": &Block{},
-	"nakji.bitcoin.0_0_0.chain_tx":    &Transaction{},
+	"lotus.bitcoin.0_0_0.chain_block": &Block{},
+	"lotus.bitcoin.0_0_0.chain_tx":    &Transaction{},
 }
 
 // Convert from btcd MsgBlock to Blep's Bitcoin Block

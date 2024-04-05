@@ -1,8 +1,7 @@
-
 package IlkRegistry
 
 import (
-	"github.com/nakji-network/connector/common"
+	"github.com/trylotus/connector/common"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -23,8 +22,8 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &AddIlk{
-				Ts:   timestamp,
-				Ilk:  e.Ilk[:],
+			Ts:  timestamp,
+			Ilk: e.Ilk[:],
 		}
 	case "Deny":
 		e := new(ILKREGISTRYDeny)
@@ -34,8 +33,8 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Deny{
-				Ts:   timestamp,
-				Usr:  e.Usr.Bytes(),
+			Ts:  timestamp,
+			Usr: e.Usr.Bytes(),
 		}
 	case "File":
 		e := new(ILKREGISTRYFile)
@@ -45,9 +44,9 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &File{
-				Ts:   timestamp,
-				What:  e.What[:],
-				Data:  e.Data.Bytes(),
+			Ts:   timestamp,
+			What: e.What[:],
+			Data: e.Data.Bytes(),
 		}
 	case "File0":
 		e := new(ILKREGISTRYFile0)
@@ -57,10 +56,10 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &File0{
-				Ts:   timestamp,
-				Ilk:  e.Ilk[:],
-				What:  e.What[:],
-				Data:  e.Data.Bytes(),
+			Ts:   timestamp,
+			Ilk:  e.Ilk[:],
+			What: e.What[:],
+			Data: e.Data.Bytes(),
 		}
 	case "File1":
 		e := new(ILKREGISTRYFile1)
@@ -70,10 +69,10 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &File1{
-				Ts:   timestamp,
-				Ilk:  e.Ilk[:],
-				What:  e.What[:],
-				Data:  e.Data.Bytes(),
+			Ts:   timestamp,
+			Ilk:  e.Ilk[:],
+			What: e.What[:],
+			Data: e.Data.Bytes(),
 		}
 	case "File2":
 		e := new(ILKREGISTRYFile2)
@@ -83,9 +82,9 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &File2{
-				Ts:   timestamp,
-				Ilk:  e.Ilk[:],
-				What:  e.What[:],
+			Ts:   timestamp,
+			Ilk:  e.Ilk[:],
+			What: e.What[:],
 		}
 	case "NameError":
 		e := new(ILKREGISTRYNameError)
@@ -95,8 +94,8 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &NameError{
-				Ts:   timestamp,
-				Ilk:  e.Ilk[:],
+			Ts:  timestamp,
+			Ilk: e.Ilk[:],
 		}
 	case "Rely":
 		e := new(ILKREGISTRYRely)
@@ -106,8 +105,8 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Rely{
-				Ts:   timestamp,
-				Usr:  e.Usr.Bytes(),
+			Ts:  timestamp,
+			Usr: e.Usr.Bytes(),
 		}
 	case "RemoveIlk":
 		e := new(ILKREGISTRYRemoveIlk)
@@ -117,8 +116,8 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &RemoveIlk{
-				Ts:   timestamp,
-				Ilk:  e.Ilk[:],
+			Ts:  timestamp,
+			Ilk: e.Ilk[:],
 		}
 	case "SymbolError":
 		e := new(ILKREGISTRYSymbolError)
@@ -128,8 +127,8 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &SymbolError{
-				Ts:   timestamp,
-				Ilk:  e.Ilk[:],
+			Ts:  timestamp,
+			Ilk: e.Ilk[:],
 		}
 	case "UpdateIlk":
 		e := new(ILKREGISTRYUpdateIlk)
@@ -139,8 +138,8 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &UpdateIlk{
-				Ts:   timestamp,
-				Ilk:  e.Ilk[:],
+			Ts:  timestamp,
+			Ilk: e.Ilk[:],
 		}
 	}
 	return nil

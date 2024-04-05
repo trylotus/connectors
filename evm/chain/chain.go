@@ -2,8 +2,8 @@ package chain
 
 import (
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/nakji-network/connector/common"
 	"github.com/rs/zerolog/log"
+	"github.com/trylotus/connector/common"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 )
 

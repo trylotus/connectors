@@ -3,7 +3,7 @@ package flow;
 
 import "google/protobuf/timestamp.proto";
 
-option go_package = "github.com/nakji-network/connectors/flow";
+option go_package = "github.com/trylotus/connectors/flow";
 
 message Block {
     google.protobuf.Timestamp    ts                   = 1;

@@ -3,7 +3,7 @@ package flowcontractaudits;
 
 import "google/protobuf/timestamp.proto";
 
-option go_package = "github.com/nakji-network/connectors/flow/flowcontractaudits";
+option go_package = "github.com/trylotus/connectors/flow/flowcontractaudits";
 
 message AuditorCreated {
     google.protobuf.Timestamp   ts              = 1;

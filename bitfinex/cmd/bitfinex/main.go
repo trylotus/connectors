@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/nakji-network/connector"
-	"github.com/nakji-network/connectors/bitfinex"
-	"github.com/nakji-network/connectors/bitfinex/market"
+	"github.com/trylotus/connector"
+	"github.com/trylotus/connectors/bitfinex"
+	"github.com/trylotus/connectors/bitfinex/market"
 
 	"github.com/rs/zerolog/log"
 )

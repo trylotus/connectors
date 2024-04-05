@@ -5,11 +5,11 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/nakji-network/connector/kafkautils"
-	"github.com/nakji-network/connectors/makerdao/Eth"
-	"github.com/nakji-network/connectors/makerdao/MCDDai"
-	"github.com/nakji-network/connectors/makerdao/USDT"
-	"github.com/nakji-network/connectors/makerdao/Uni"
+	"github.com/trylotus/connector/kafkautils"
+	"github.com/trylotus/connectors/makerdao/Eth"
+	"github.com/trylotus/connectors/makerdao/MCDDai"
+	"github.com/trylotus/connectors/makerdao/USDT"
+	"github.com/trylotus/connectors/makerdao/Uni"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/common"
@@ -163,9 +163,9 @@ func getMockContracts() map[string]*Contract {
 
 func registerTopics() {
 	topicTypes := map[string]proto.Message{
-		"nakji.makerdao.0_0_0.Uni_Transfer":  &Uni.Transfer{},
-		"nakji.makerdao.0_0_0.Eth_Deposit":   &Eth.Deposit{},
-		"nakji.makerdao.0_0_0.USDT_Transfer": &USDT.Transfer{},
+		"lotus.makerdao.0_0_0.Uni_Transfer":  &Uni.Transfer{},
+		"lotus.makerdao.0_0_0.Eth_Deposit":   &Eth.Deposit{},
+		"lotus.makerdao.0_0_0.USDT_Transfer": &USDT.Transfer{},
 	}
 	kafkautils.TopicTypeRegistry.Load(topicTypes)
 }

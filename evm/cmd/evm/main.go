@@ -3,9 +3,9 @@ package main
 import (
 	"fmt"
 
-	"github.com/nakji-network/connector"
-	"github.com/nakji-network/connector/config"
-	"github.com/nakji-network/connectors/evm"
+	"github.com/trylotus/connector"
+	"github.com/trylotus/connector/config"
+	"github.com/trylotus/connectors/evm"
 
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/pflag"
@@ -16,7 +16,7 @@ func main() {
 	pflag.StringP("network", "n", "ethereum", "network to connect to e.g. ethereum")
 	pflag.Int64P("from-block", "f", 0, "block number to start backfill from (optional")
 	pflag.Int64P("num-blocks", "b", 0, "number of blocks to backfill (optional)")
-	pflag.StringP("author", "a", "nakji", "author of the connector (optional)")
+	pflag.StringP("author", "a", "lotus", "author of the connector (optional)")
 	pflag.Parse()
 
 	cfg := config.GetConfig()

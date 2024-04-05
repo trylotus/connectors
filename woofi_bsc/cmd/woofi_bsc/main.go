@@ -1,15 +1,15 @@
 package main
 
 import (
-	"github.com/nakji-network/woofi-connectors/woofi"
-	"github.com/nakji-network/woofi-connectors/woofi/WooCrossChainRouterV1"
-	"github.com/nakji-network/woofi-connectors/woofi/WooPPV1"
-	"github.com/nakji-network/woofi-connectors/woofi/WooPPV2"
-	"github.com/nakji-network/woofi-connectors/woofi/WooPPV3"
-	"github.com/nakji-network/woofi-connectors/woofi/WooPPV4"
-	"github.com/nakji-network/woofi-connectors/woofi/WooRouterV1"
-	"github.com/nakji-network/woofi-connectors/woofi/WooRouterV2"
-	"github.com/nakji-network/woofi-connectors/woofi/WooRouterV3"
+	"github.com/trylotus/woofi-connectors/woofi"
+	"github.com/trylotus/woofi-connectors/woofi/WooCrossChainRouterV1"
+	"github.com/trylotus/woofi-connectors/woofi/WooPPV1"
+	"github.com/trylotus/woofi-connectors/woofi/WooPPV2"
+	"github.com/trylotus/woofi-connectors/woofi/WooPPV3"
+	"github.com/trylotus/woofi-connectors/woofi/WooPPV4"
+	"github.com/trylotus/woofi-connectors/woofi/WooRouterV1"
+	"github.com/trylotus/woofi-connectors/woofi/WooRouterV2"
+	"github.com/trylotus/woofi-connectors/woofi/WooRouterV3"
 
 	"github.com/spf13/pflag"
 	_ "go.uber.org/automaxprocs"

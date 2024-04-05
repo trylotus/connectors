@@ -1,7 +1,7 @@
 name: evm
-author: nakji
+author: lotus
 version: "0.0.0"
 
 outputPath: evm
 package: evm
-owner: nakji
+owner: lotus

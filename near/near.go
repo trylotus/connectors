@@ -3,8 +3,8 @@ package near
 import (
 	"context"
 
-	"github.com/nakji-network/connector"
 	"github.com/rs/zerolog/log"
+	"github.com/trylotus/connector"
 	"google.golang.org/protobuf/proto"
 )
 

@@ -1,13 +1,13 @@
-module github.com/nakji-network/connectors/bybit
+module github.com/trylotus/connectors/bybit
 
 go 1.20
 
-replace github.com/nakji-network/connectors/bybit/market => ./market
+replace github.com/trylotus/connectors/bybit/market => ./market
 
 replace github.com/thrasher-corp/gocryptotrader => github.com/blep-ai/gocryptotrader v0.0.0-20210824033446-5f39de372417
 
 require (
-	github.com/nakji-network/connector v0.0.1-beta.1.0.20221028055614-5542a88f3142
+	github.com/trylotus/connector v0.0.1-beta.1.0.20221028055614-5542a88f3142
 	github.com/rs/zerolog v1.26.1
 	github.com/thrasher-corp/gocryptotrader v0.0.0-00010101000000-000000000000
 	google.golang.org/protobuf v1.28.1

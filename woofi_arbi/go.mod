@@ -1,9 +1,9 @@
-module github.com/nakji-network/connectors/woofi_arbi
+module github.com/trylotus/connectors/woofi_arbi
 
 go 1.20
 
 require (
-	github.com/nakji-network/woofi-connectors/woofi v0.0.0-20230206071951-6fa749de2c27
+	github.com/trylotus/woofi-connectors/woofi v0.0.0-20230206071951-6fa749de2c27
 	github.com/spf13/pflag v1.0.5
 	go.uber.org/automaxprocs v1.5.1
 )
@@ -36,8 +36,8 @@ require (
 	github.com/mattn/go-isatty v0.0.14 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.1 // indirect
 	github.com/mitchellh/mapstructure v1.4.3 // indirect
-	github.com/nakji-network/connector v0.0.1-beta.1.0.20230201120636-970c4b0b1394 // indirect
-	github.com/nakji-network/connector/chain/ethereum v0.0.0-20230201120636-970c4b0b1394 // indirect
+	github.com/trylotus/connector v0.0.1-beta.1.0.20230201120636-970c4b0b1394 // indirect
+	github.com/trylotus/connector/chain/ethereum v0.0.0-20230201120636-970c4b0b1394 // indirect
 	github.com/pelletier/go-toml v1.9.4 // indirect
 	github.com/prometheus/client_golang v1.11.0 // indirect
 	github.com/prometheus/client_model v0.2.0 // indirect

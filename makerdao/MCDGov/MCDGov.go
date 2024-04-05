@@ -1,8 +1,7 @@
-
 package MCDGov
 
 import (
-	"github.com/nakji-network/connector/common"
+	"github.com/trylotus/connector/common"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -23,10 +22,10 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Approval{
-				Ts:   timestamp,
-				Owner:  e.Owner.Bytes(),
-				Spender:  e.Spender.Bytes(),
-				Value:  e.Value.Bytes(),
+			Ts:      timestamp,
+			Owner:   e.Owner.Bytes(),
+			Spender: e.Spender.Bytes(),
+			Value:   e.Value.Bytes(),
 		}
 	case "Burn":
 		e := new(MCDGOVBurn)
@@ -36,9 +35,9 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Burn{
-				Ts:   timestamp,
-				Guy:  e.Guy.Bytes(),
-				Wad:  e.Wad.Bytes(),
+			Ts:  timestamp,
+			Guy: e.Guy.Bytes(),
+			Wad: e.Wad.Bytes(),
 		}
 	case "LogSetAuthority":
 		e := new(MCDGOVLogSetAuthority)
@@ -48,8 +47,8 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &LogSetAuthority{
-				Ts:   timestamp,
-				Authority:  e.Authority.Bytes(),
+			Ts:        timestamp,
+			Authority: e.Authority.Bytes(),
 		}
 	case "LogSetOwner":
 		e := new(MCDGOVLogSetOwner)
@@ -59,8 +58,8 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &LogSetOwner{
-				Ts:   timestamp,
-				Owner:  e.Owner.Bytes(),
+			Ts:    timestamp,
+			Owner: e.Owner.Bytes(),
 		}
 	case "Mint":
 		e := new(MCDGOVMint)
@@ -70,9 +69,9 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Mint{
-				Ts:   timestamp,
-				Guy:  e.Guy.Bytes(),
-				Wad:  e.Wad.Bytes(),
+			Ts:  timestamp,
+			Guy: e.Guy.Bytes(),
+			Wad: e.Wad.Bytes(),
 		}
 	case "Transfer":
 		e := new(MCDGOVTransfer)
@@ -82,10 +81,10 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Transfer{
-				Ts:   timestamp,
-				From:  e.From.Bytes(),
-				To:  e.To.Bytes(),
-				Value:  e.Value.Bytes(),
+			Ts:    timestamp,
+			From:  e.From.Bytes(),
+			To:    e.To.Bytes(),
+			Value: e.Value.Bytes(),
 		}
 	}
 	return nil

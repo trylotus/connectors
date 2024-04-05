@@ -1,8 +1,7 @@
-
 package ClipperMom
 
 import (
-	"github.com/nakji-network/connector/common"
+	"github.com/trylotus/connector/common"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -23,9 +22,9 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &SetAuthority{
-				Ts:   timestamp,
-				OldAuthority:  e.OldAuthority.Bytes(),
-				NewAuthority:  e.NewAuthority.Bytes(),
+			Ts:           timestamp,
+			OldAuthority: e.OldAuthority.Bytes(),
+			NewAuthority: e.NewAuthority.Bytes(),
 		}
 	case "SetBreaker":
 		e := new(CLIPPERMOMSetBreaker)
@@ -35,9 +34,9 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &SetBreaker{
-				Ts:   timestamp,
-				Clip:  e.Clip.Bytes(),
-				Level:  e.Level.Bytes(),
+			Ts:    timestamp,
+			Clip:  e.Clip.Bytes(),
+			Level: e.Level.Bytes(),
 		}
 	case "SetOwner":
 		e := new(CLIPPERMOMSetOwner)
@@ -47,9 +46,9 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &SetOwner{
-				Ts:   timestamp,
-				OldOwner:  e.OldOwner.Bytes(),
-				NewOwner:  e.NewOwner.Bytes(),
+			Ts:       timestamp,
+			OldOwner: e.OldOwner.Bytes(),
+			NewOwner: e.NewOwner.Bytes(),
 		}
 	}
 	return nil

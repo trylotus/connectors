@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/nakji-network/connector/config"
-	"github.com/nakji-network/connector/kafkautils"
-	"github.com/nakji-network/connectors/candymachine"
+	"github.com/trylotus/connector/config"
+	"github.com/trylotus/connector/kafkautils"
+	"github.com/trylotus/connectors/candymachine"
 
 	_ "go.uber.org/automaxprocs"
 )

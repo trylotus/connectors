@@ -1,8 +1,7 @@
-
 package MCDCropperImp
 
 import (
-	"github.com/nakji-network/connector/common"
+	"github.com/trylotus/connector/common"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -23,9 +22,9 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Hope{
-				Ts:   timestamp,
-				From:  e.From.Bytes(),
-				To:  e.To.Bytes(),
+			Ts:   timestamp,
+			From: e.From.Bytes(),
+			To:   e.To.Bytes(),
 		}
 	case "NewProxy":
 		e := new(MCDCROPPERIMPNewProxy)
@@ -35,9 +34,9 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &NewProxy{
-				Ts:   timestamp,
-				Usr:  e.Usr.Bytes(),
-				Urp:  e.Urp.Bytes(),
+			Ts:  timestamp,
+			Usr: e.Usr.Bytes(),
+			Urp: e.Urp.Bytes(),
 		}
 	case "Nope":
 		e := new(MCDCROPPERIMPNope)
@@ -47,9 +46,9 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Nope{
-				Ts:   timestamp,
-				From:  e.From.Bytes(),
-				To:  e.To.Bytes(),
+			Ts:   timestamp,
+			From: e.From.Bytes(),
+			To:   e.To.Bytes(),
 		}
 	}
 	return nil

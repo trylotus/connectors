@@ -1,8 +1,7 @@
-
 package MCDESM
 
 import (
-	"github.com/nakji-network/connector/common"
+	"github.com/trylotus/connector/common"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -23,8 +22,8 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Deny{
-				Ts:   timestamp,
-				Usr:  e.Usr.Bytes(),
+			Ts:  timestamp,
+			Usr: e.Usr.Bytes(),
 		}
 	case "DenyProxy":
 		e := new(MCDESMDenyProxy)
@@ -34,9 +33,9 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &DenyProxy{
-				Ts:   timestamp,
-				Base:  e.Base.Bytes(),
-				Pause:  e.Pause.Bytes(),
+			Ts:    timestamp,
+			Base:  e.Base.Bytes(),
+			Pause: e.Pause.Bytes(),
 		}
 	case "File":
 		e := new(MCDESMFile)
@@ -46,9 +45,9 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &File{
-				Ts:   timestamp,
-				What:  e.What[:],
-				Data:  e.Data.Bytes(),
+			Ts:   timestamp,
+			What: e.What[:],
+			Data: e.Data.Bytes(),
 		}
 	case "File0":
 		e := new(MCDESMFile0)
@@ -58,9 +57,9 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &File0{
-				Ts:   timestamp,
-				What:  e.What[:],
-				Data:  e.Data.Bytes(),
+			Ts:   timestamp,
+			What: e.What[:],
+			Data: e.Data.Bytes(),
 		}
 	case "Fire":
 		e := new(MCDESMFire)
@@ -70,7 +69,7 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Fire{
-				Ts:   timestamp,
+			Ts: timestamp,
 		}
 	case "Join":
 		e := new(MCDESMJoin)
@@ -80,9 +79,9 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Join{
-				Ts:   timestamp,
-				Usr:  e.Usr.Bytes(),
-				Wad:  e.Wad.Bytes(),
+			Ts:  timestamp,
+			Usr: e.Usr.Bytes(),
+			Wad: e.Wad.Bytes(),
 		}
 	case "Rely":
 		e := new(MCDESMRely)
@@ -92,8 +91,8 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Rely{
-				Ts:   timestamp,
-				Usr:  e.Usr.Bytes(),
+			Ts:  timestamp,
+			Usr: e.Usr.Bytes(),
 		}
 	}
 	return nil

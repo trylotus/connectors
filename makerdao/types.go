@@ -1,454 +1,454 @@
 package makerdao
 
 import (
-	"github.com/nakji-network/connectors/makerdao/Aave"
-	"github.com/nakji-network/connectors/makerdao/Adai"
-	"github.com/nakji-network/connectors/makerdao/ArbitrumDaiBridge"
-	"github.com/nakji-network/connectors/makerdao/ArbitrumEscrow"
-	"github.com/nakji-network/connectors/makerdao/ArbitrumGovRelay"
-	"github.com/nakji-network/connectors/makerdao/ArbitrumL2Dai"
-	"github.com/nakji-network/connectors/makerdao/ArbitrumL2DaiGateway"
-	"github.com/nakji-network/connectors/makerdao/ArbitrumL2GovRelay"
-	"github.com/nakji-network/connectors/makerdao/BAT"
-	"github.com/nakji-network/connectors/makerdao/Bal"
-	"github.com/nakji-network/connectors/makerdao/CdpManager"
-	"github.com/nakji-network/connectors/makerdao/CdpRegistry"
-	"github.com/nakji-network/connectors/makerdao/Changelog"
-	"github.com/nakji-network/connectors/makerdao/ClipperMom"
-	"github.com/nakji-network/connectors/makerdao/Comp"
-	"github.com/nakji-network/connectors/makerdao/CrvV1EthSTEth"
-	"github.com/nakji-network/connectors/makerdao/DirectMom"
-	"github.com/nakji-network/connectors/makerdao/DsrManager"
-	"github.com/nakji-network/connectors/makerdao/Eth"
-	"github.com/nakji-network/connectors/makerdao/FlipperMom"
-	"github.com/nakji-network/connectors/makerdao/GUSD"
-	"github.com/nakji-network/connectors/makerdao/GUniV3DaiUSDC1"
-	"github.com/nakji-network/connectors/makerdao/GUniV3DaiUSDC2"
-	"github.com/nakji-network/connectors/makerdao/GovGuard"
-	"github.com/nakji-network/connectors/makerdao/IlkRegistry"
-	"github.com/nakji-network/connectors/makerdao/JoinFab"
-	"github.com/nakji-network/connectors/makerdao/KNC"
-	"github.com/nakji-network/connectors/makerdao/LRC"
-	"github.com/nakji-network/connectors/makerdao/LerpFab"
-	"github.com/nakji-network/connectors/makerdao/Link"
-	"github.com/nakji-network/connectors/makerdao/MCDADM"
-	"github.com/nakji-network/connectors/makerdao/MCDCat"
-	"github.com/nakji-network/connectors/makerdao/MCDCropper"
-	"github.com/nakji-network/connectors/makerdao/MCDCropperImp"
-	"github.com/nakji-network/connectors/makerdao/MCDDai"
-	"github.com/nakji-network/connectors/makerdao/MCDDeploy"
-	"github.com/nakji-network/connectors/makerdao/MCDDog"
-	"github.com/nakji-network/connectors/makerdao/MCDESM"
-	"github.com/nakji-network/connectors/makerdao/MCDEnd"
-	"github.com/nakji-network/connectors/makerdao/MCDFlap"
-	"github.com/nakji-network/connectors/makerdao/MCDFlash"
-	"github.com/nakji-network/connectors/makerdao/MCDFlop"
-	"github.com/nakji-network/connectors/makerdao/MCDGov"
-	"github.com/nakji-network/connectors/makerdao/MCDIamAutoLine"
-	"github.com/nakji-network/connectors/makerdao/MCDJug"
-	"github.com/nakji-network/connectors/makerdao/MCDPSMGUSDA"
-	"github.com/nakji-network/connectors/makerdao/MCDPSMPaxA"
-	"github.com/nakji-network/connectors/makerdao/MCDPSMUSDCA"
-	"github.com/nakji-network/connectors/makerdao/MCDPause"
-	"github.com/nakji-network/connectors/makerdao/MCDPot"
-	"github.com/nakji-network/connectors/makerdao/MCDSpot"
-	"github.com/nakji-network/connectors/makerdao/MCDVat"
-	"github.com/nakji-network/connectors/makerdao/MCDVestDai"
-	"github.com/nakji-network/connectors/makerdao/MCDVestDaiLegacy"
-	"github.com/nakji-network/connectors/makerdao/MCDVestMkr"
-	"github.com/nakji-network/connectors/makerdao/MCDVestMkrTreasury"
-	"github.com/nakji-network/connectors/makerdao/MCDVow"
-	"github.com/nakji-network/connectors/makerdao/MIP21LiquidationOracle"
-	"github.com/nakji-network/connectors/makerdao/Mana"
-	"github.com/nakji-network/connectors/makerdao/Matic"
-	"github.com/nakji-network/connectors/makerdao/OSMMom"
-	"github.com/nakji-network/connectors/makerdao/OptimismDaiBridge"
-	"github.com/nakji-network/connectors/makerdao/OptimismEscrow"
-	"github.com/nakji-network/connectors/makerdao/OptimismGovRelay"
-	"github.com/nakji-network/connectors/makerdao/OptimismL2Dai"
-	"github.com/nakji-network/connectors/makerdao/OptimismL2DaiTokenBridge"
-	"github.com/nakji-network/connectors/makerdao/OptimismL2GovernanceRelay"
-	"github.com/nakji-network/connectors/makerdao/Pax"
-	"github.com/nakji-network/connectors/makerdao/PaxUSD"
-	"github.com/nakji-network/connectors/makerdao/ProxyDeployer"
-	"github.com/nakji-network/connectors/makerdao/ProxyFactory"
-	"github.com/nakji-network/connectors/makerdao/RWA"
-	"github.com/nakji-network/connectors/makerdao/RWAConduit"
-	"github.com/nakji-network/connectors/makerdao/RWAUrn"
-	"github.com/nakji-network/connectors/makerdao/RenBTC"
-	"github.com/nakji-network/connectors/makerdao/STEth"
-	"github.com/nakji-network/connectors/makerdao/TUSD"
-	"github.com/nakji-network/connectors/makerdao/USDC"
-	"github.com/nakji-network/connectors/makerdao/USDT"
-	"github.com/nakji-network/connectors/makerdao/Uni"
-	"github.com/nakji-network/connectors/makerdao/UniV2"
-	"github.com/nakji-network/connectors/makerdao/VoteDelegateProxyFactory"
-	"github.com/nakji-network/connectors/makerdao/VoteProxyFactory"
-	"github.com/nakji-network/connectors/makerdao/WBTC"
-	"github.com/nakji-network/connectors/makerdao/WSTEth"
-	"github.com/nakji-network/connectors/makerdao/YFi"
-	"github.com/nakji-network/connectors/makerdao/ZRX"
+	"github.com/trylotus/connectors/makerdao/Aave"
+	"github.com/trylotus/connectors/makerdao/Adai"
+	"github.com/trylotus/connectors/makerdao/ArbitrumDaiBridge"
+	"github.com/trylotus/connectors/makerdao/ArbitrumEscrow"
+	"github.com/trylotus/connectors/makerdao/ArbitrumGovRelay"
+	"github.com/trylotus/connectors/makerdao/ArbitrumL2Dai"
+	"github.com/trylotus/connectors/makerdao/ArbitrumL2DaiGateway"
+	"github.com/trylotus/connectors/makerdao/ArbitrumL2GovRelay"
+	"github.com/trylotus/connectors/makerdao/BAT"
+	"github.com/trylotus/connectors/makerdao/Bal"
+	"github.com/trylotus/connectors/makerdao/CdpManager"
+	"github.com/trylotus/connectors/makerdao/CdpRegistry"
+	"github.com/trylotus/connectors/makerdao/Changelog"
+	"github.com/trylotus/connectors/makerdao/ClipperMom"
+	"github.com/trylotus/connectors/makerdao/Comp"
+	"github.com/trylotus/connectors/makerdao/CrvV1EthSTEth"
+	"github.com/trylotus/connectors/makerdao/DirectMom"
+	"github.com/trylotus/connectors/makerdao/DsrManager"
+	"github.com/trylotus/connectors/makerdao/Eth"
+	"github.com/trylotus/connectors/makerdao/FlipperMom"
+	"github.com/trylotus/connectors/makerdao/GUSD"
+	"github.com/trylotus/connectors/makerdao/GUniV3DaiUSDC1"
+	"github.com/trylotus/connectors/makerdao/GUniV3DaiUSDC2"
+	"github.com/trylotus/connectors/makerdao/GovGuard"
+	"github.com/trylotus/connectors/makerdao/IlkRegistry"
+	"github.com/trylotus/connectors/makerdao/JoinFab"
+	"github.com/trylotus/connectors/makerdao/KNC"
+	"github.com/trylotus/connectors/makerdao/LRC"
+	"github.com/trylotus/connectors/makerdao/LerpFab"
+	"github.com/trylotus/connectors/makerdao/Link"
+	"github.com/trylotus/connectors/makerdao/MCDADM"
+	"github.com/trylotus/connectors/makerdao/MCDCat"
+	"github.com/trylotus/connectors/makerdao/MCDCropper"
+	"github.com/trylotus/connectors/makerdao/MCDCropperImp"
+	"github.com/trylotus/connectors/makerdao/MCDDai"
+	"github.com/trylotus/connectors/makerdao/MCDDeploy"
+	"github.com/trylotus/connectors/makerdao/MCDDog"
+	"github.com/trylotus/connectors/makerdao/MCDESM"
+	"github.com/trylotus/connectors/makerdao/MCDEnd"
+	"github.com/trylotus/connectors/makerdao/MCDFlap"
+	"github.com/trylotus/connectors/makerdao/MCDFlash"
+	"github.com/trylotus/connectors/makerdao/MCDFlop"
+	"github.com/trylotus/connectors/makerdao/MCDGov"
+	"github.com/trylotus/connectors/makerdao/MCDIamAutoLine"
+	"github.com/trylotus/connectors/makerdao/MCDJug"
+	"github.com/trylotus/connectors/makerdao/MCDPSMGUSDA"
+	"github.com/trylotus/connectors/makerdao/MCDPSMPaxA"
+	"github.com/trylotus/connectors/makerdao/MCDPSMUSDCA"
+	"github.com/trylotus/connectors/makerdao/MCDPause"
+	"github.com/trylotus/connectors/makerdao/MCDPot"
+	"github.com/trylotus/connectors/makerdao/MCDSpot"
+	"github.com/trylotus/connectors/makerdao/MCDVat"
+	"github.com/trylotus/connectors/makerdao/MCDVestDai"
+	"github.com/trylotus/connectors/makerdao/MCDVestDaiLegacy"
+	"github.com/trylotus/connectors/makerdao/MCDVestMkr"
+	"github.com/trylotus/connectors/makerdao/MCDVestMkrTreasury"
+	"github.com/trylotus/connectors/makerdao/MCDVow"
+	"github.com/trylotus/connectors/makerdao/MIP21LiquidationOracle"
+	"github.com/trylotus/connectors/makerdao/Mana"
+	"github.com/trylotus/connectors/makerdao/Matic"
+	"github.com/trylotus/connectors/makerdao/OSMMom"
+	"github.com/trylotus/connectors/makerdao/OptimismDaiBridge"
+	"github.com/trylotus/connectors/makerdao/OptimismEscrow"
+	"github.com/trylotus/connectors/makerdao/OptimismGovRelay"
+	"github.com/trylotus/connectors/makerdao/OptimismL2Dai"
+	"github.com/trylotus/connectors/makerdao/OptimismL2DaiTokenBridge"
+	"github.com/trylotus/connectors/makerdao/OptimismL2GovernanceRelay"
+	"github.com/trylotus/connectors/makerdao/Pax"
+	"github.com/trylotus/connectors/makerdao/PaxUSD"
+	"github.com/trylotus/connectors/makerdao/ProxyDeployer"
+	"github.com/trylotus/connectors/makerdao/ProxyFactory"
+	"github.com/trylotus/connectors/makerdao/RWA"
+	"github.com/trylotus/connectors/makerdao/RWAConduit"
+	"github.com/trylotus/connectors/makerdao/RWAUrn"
+	"github.com/trylotus/connectors/makerdao/RenBTC"
+	"github.com/trylotus/connectors/makerdao/STEth"
+	"github.com/trylotus/connectors/makerdao/TUSD"
+	"github.com/trylotus/connectors/makerdao/USDC"
+	"github.com/trylotus/connectors/makerdao/USDT"
+	"github.com/trylotus/connectors/makerdao/Uni"
+	"github.com/trylotus/connectors/makerdao/UniV2"
+	"github.com/trylotus/connectors/makerdao/VoteDelegateProxyFactory"
+	"github.com/trylotus/connectors/makerdao/VoteProxyFactory"
+	"github.com/trylotus/connectors/makerdao/WBTC"
+	"github.com/trylotus/connectors/makerdao/WSTEth"
+	"github.com/trylotus/connectors/makerdao/YFi"
+	"github.com/trylotus/connectors/makerdao/ZRX"
 
 	"google.golang.org/protobuf/proto"
 )
 
 var TopicTypes = map[string]map[string]proto.Message{
 	"arbitrum": {
-		"nakji.makerdao.0_0_0.ArbitrumL2DaiGateway_Approve":                &ArbitrumL2DaiGateway.Approve{},
-		"nakji.makerdao.0_0_0.ArbitrumL2DaiGateway_Deny":                   &ArbitrumL2DaiGateway.Deny{},
-		"nakji.makerdao.0_0_0.ArbitrumL2DaiGateway_Rely":                   &ArbitrumL2DaiGateway.Rely{},
-		"nakji.makerdao.0_0_0.ArbitrumL2GovRelay_Closed":                   &ArbitrumL2GovRelay.Closed{},
-		"nakji.makerdao.0_0_0.ArbitrumL2GovRelay_Deny":                     &ArbitrumL2GovRelay.Deny{},
-		"nakji.makerdao.0_0_0.ArbitrumL2GovRelay_ERC20DepositInitiated":    &ArbitrumL2GovRelay.ERC20DepositInitiated{},
-		"nakji.makerdao.0_0_0.ArbitrumL2GovRelay_ERC20WithdrawalFinalized": &ArbitrumL2GovRelay.ERC20WithdrawalFinalized{},
-		"nakji.makerdao.0_0_0.ArbitrumL2GovRelay_Rely":                     &ArbitrumL2GovRelay.Rely{},
+		"lotus.makerdao.0_0_0.ArbitrumL2DaiGateway_Approve":                &ArbitrumL2DaiGateway.Approve{},
+		"lotus.makerdao.0_0_0.ArbitrumL2DaiGateway_Deny":                   &ArbitrumL2DaiGateway.Deny{},
+		"lotus.makerdao.0_0_0.ArbitrumL2DaiGateway_Rely":                   &ArbitrumL2DaiGateway.Rely{},
+		"lotus.makerdao.0_0_0.ArbitrumL2GovRelay_Closed":                   &ArbitrumL2GovRelay.Closed{},
+		"lotus.makerdao.0_0_0.ArbitrumL2GovRelay_Deny":                     &ArbitrumL2GovRelay.Deny{},
+		"lotus.makerdao.0_0_0.ArbitrumL2GovRelay_ERC20DepositInitiated":    &ArbitrumL2GovRelay.ERC20DepositInitiated{},
+		"lotus.makerdao.0_0_0.ArbitrumL2GovRelay_ERC20WithdrawalFinalized": &ArbitrumL2GovRelay.ERC20WithdrawalFinalized{},
+		"lotus.makerdao.0_0_0.ArbitrumL2GovRelay_Rely":                     &ArbitrumL2GovRelay.Rely{},
 	},
 	"ethereum": {
-		"nakji.makerdao.0_0_0.Aave_AdminChanged":                           &Aave.AdminChanged{},
-		"nakji.makerdao.0_0_0.Aave_Upgraded":                               &Aave.Upgraded{},
-		"nakji.makerdao.0_0_0.Adai_Upgraded":                               &Adai.Upgraded{},
-		"nakji.makerdao.0_0_0.ArbitrumDaiBridge_Closed":                    &ArbitrumDaiBridge.Closed{},
-		"nakji.makerdao.0_0_0.ArbitrumDaiBridge_Deny":                      &ArbitrumDaiBridge.Deny{},
-		"nakji.makerdao.0_0_0.ArbitrumDaiBridge_DepositInitiated":          &ArbitrumDaiBridge.DepositInitiated{},
-		"nakji.makerdao.0_0_0.ArbitrumDaiBridge_Rely":                      &ArbitrumDaiBridge.Rely{},
-		"nakji.makerdao.0_0_0.ArbitrumDaiBridge_TxTol2":                    &ArbitrumDaiBridge.TxToL2{},
-		"nakji.makerdao.0_0_0.ArbitrumDaiBridge_WithdrawalFinalized":       &ArbitrumDaiBridge.WithdrawalFinalized{},
-		"nakji.makerdao.0_0_0.ArbitrumEscrow_Approve":                      &ArbitrumEscrow.Approve{},
-		"nakji.makerdao.0_0_0.ArbitrumEscrow_Deny":                         &ArbitrumEscrow.Deny{},
-		"nakji.makerdao.0_0_0.ArbitrumEscrow_Rely":                         &ArbitrumEscrow.Rely{},
-		"nakji.makerdao.0_0_0.ArbitrumGovRelay_Deny":                       &ArbitrumGovRelay.Deny{},
-		"nakji.makerdao.0_0_0.ArbitrumGovRelay_Rely":                       &ArbitrumGovRelay.Rely{},
-		"nakji.makerdao.0_0_0.ArbitrumGovRelay_TxToL2":                     &ArbitrumGovRelay.TxToL2{},
-		"nakji.makerdao.0_0_0.Bal_Approval":                                &Bal.Approval{},
-		"nakji.makerdao.0_0_0.Bal_RoleGranted":                             &Bal.RoleGranted{},
-		"nakji.makerdao.0_0_0.Bal_RoleRevoked":                             &Bal.RoleRevoked{},
-		"nakji.makerdao.0_0_0.Bal_Snapshot":                                &Bal.Snapshot{},
-		"nakji.makerdao.0_0_0.Bal_Transfer":                                &Bal.Transfer{},
-		"nakji.makerdao.0_0_0.BAT_Approval":                                &BAT.Approval{},
-		"nakji.makerdao.0_0_0.BAT_CreateBAT":                               &BAT.CreateBAT{},
-		"nakji.makerdao.0_0_0.BAT_LogRefund":                               &BAT.LogRefund{},
-		"nakji.makerdao.0_0_0.BAT_Transfer":                                &BAT.Transfer{},
-		"nakji.makerdao.0_0_0.CdpManager_LogNote":                          &CdpManager.LogNote{},
-		"nakji.makerdao.0_0_0.CdpManager_NewCdp":                           &CdpManager.NewCdp{},
-		"nakji.makerdao.0_0_0.CdpRegistry_NewCdpRegistered":                &CdpRegistry.NewCdpRegistered{},
-		"nakji.makerdao.0_0_0.Changelog_Deny":                              &Changelog.Deny{},
-		"nakji.makerdao.0_0_0.Changelog_Rely":                              &Changelog.Rely{},
-		"nakji.makerdao.0_0_0.Changelog_RemoveAddress":                     &Changelog.RemoveAddress{},
-		"nakji.makerdao.0_0_0.Changelog_UpdateAddress":                     &Changelog.UpdateAddress{},
-		"nakji.makerdao.0_0_0.Changelog_UpdateIPFS":                        &Changelog.UpdateIPFS{},
-		"nakji.makerdao.0_0_0.Changelog_UpdateSha256Sum":                   &Changelog.UpdateSha256Sum{},
-		"nakji.makerdao.0_0_0.Changelog_UpdateVersion":                     &Changelog.UpdateVersion{},
-		"nakji.makerdao.0_0_0.ClipperMom_SetAuthority":                     &ClipperMom.SetAuthority{},
-		"nakji.makerdao.0_0_0.ClipperMom_SetBreaker":                       &ClipperMom.SetBreaker{},
-		"nakji.makerdao.0_0_0.ClipperMom_SetOwner":                         &ClipperMom.SetOwner{},
-		"nakji.makerdao.0_0_0.Comp_Approval":                               &Comp.Approval{},
-		"nakji.makerdao.0_0_0.Comp_DelegateChanged":                        &Comp.DelegateChanged{},
-		"nakji.makerdao.0_0_0.Comp_DelegateVotesChanged":                   &Comp.DelegateVotesChanged{},
-		"nakji.makerdao.0_0_0.Comp_Transfer":                               &Comp.Transfer{},
-		"nakji.makerdao.0_0_0.CrvV1EthSteth_Approval":                      &CrvV1EthSTEth.Approval{},
-		"nakji.makerdao.0_0_0.CrvV1EthSteth_Transfer":                      &CrvV1EthSTEth.Transfer{},
-		"nakji.makerdao.0_0_0.DirectMom_Disable":                           &DirectMom.Disable{},
-		"nakji.makerdao.0_0_0.DirectMom_SetAuthority":                      &DirectMom.SetAuthority{},
-		"nakji.makerdao.0_0_0.DirectMom_SetOwner":                          &DirectMom.SetOwner{},
-		"nakji.makerdao.0_0_0.DsrManager_Exit":                             &DsrManager.Exit{},
-		"nakji.makerdao.0_0_0.DsrManager_Join":                             &DsrManager.Join{},
-		"nakji.makerdao.0_0_0.Eth_Approval":                                &Eth.Approval{},
-		"nakji.makerdao.0_0_0.Eth_Deposit":                                 &Eth.Deposit{},
-		"nakji.makerdao.0_0_0.Eth_Transfer":                                &Eth.Transfer{},
-		"nakji.makerdao.0_0_0.Eth_Withdrawal":                              &Eth.Withdrawal{},
-		"nakji.makerdao.0_0_0.FlipperMom_Deny":                             &FlipperMom.Deny{},
-		"nakji.makerdao.0_0_0.FlipperMom_Rely":                             &FlipperMom.Rely{},
-		"nakji.makerdao.0_0_0.FlipperMom_SetAuthority":                     &FlipperMom.SetAuthority{},
-		"nakji.makerdao.0_0_0.FlipperMom_SetOwner":                         &FlipperMom.SetOwner{},
-		"nakji.makerdao.0_0_0.GovGuard_LogDeny":                            &GovGuard.LogDeny{},
-		"nakji.makerdao.0_0_0.GovGuard_LogRely":                            &GovGuard.LogRely{},
-		"nakji.makerdao.0_0_0.GovGuard_LogSetRoot":                         &GovGuard.LogSetRoot{},
-		"nakji.makerdao.0_0_0.GUniV3DaiUSDC1_ProxyAdminTransferred":        &GUniV3DaiUSDC1.ProxyAdminTransferred{},
-		"nakji.makerdao.0_0_0.GUniV3DaiUSDC1_ProxyImplementationUpdated":   &GUniV3DaiUSDC1.ProxyImplementationUpdated{},
-		"nakji.makerdao.0_0_0.GUniV3DaiUSDC2_ProxyAdminTransferred":        &GUniV3DaiUSDC2.ProxyAdminTransferred{},
-		"nakji.makerdao.0_0_0.GUniV3DaiUSDC2_ProxyImplementationUpdated":   &GUniV3DaiUSDC2.ProxyImplementationUpdated{},
-		"nakji.makerdao.0_0_0.GUSD_Approval":                               &GUSD.Approval{},
-		"nakji.makerdao.0_0_0.GUSD_CustodianChangeConfirmed":               &GUSD.CustodianChangeConfirmed{},
-		"nakji.makerdao.0_0_0.GUSD_CustodianChangeRequested":               &GUSD.CustodianChangeRequested{},
-		"nakji.makerdao.0_0_0.GUSD_ImplChangeConfirmed":                    &GUSD.ImplChangeConfirmed{},
-		"nakji.makerdao.0_0_0.GUSD_ImplChangeRequested":                    &GUSD.ImplChangeRequested{},
-		"nakji.makerdao.0_0_0.GUSD_Transfer":                               &GUSD.Transfer{},
-		"nakji.makerdao.0_0_0.IlkRegistry_AddIlk":                          &IlkRegistry.AddIlk{},
-		"nakji.makerdao.0_0_0.IlkRegistry_Deny":                            &IlkRegistry.Deny{},
-		"nakji.makerdao.0_0_0.IlkRegistry_File":                            &IlkRegistry.File{},
-		"nakji.makerdao.0_0_0.IlkRegistry_File0":                           &IlkRegistry.File0{},
-		"nakji.makerdao.0_0_0.IlkRegistry_File1":                           &IlkRegistry.File1{},
-		"nakji.makerdao.0_0_0.IlkRegistry_File2":                           &IlkRegistry.File2{},
-		"nakji.makerdao.0_0_0.IlkRegistry_NameError":                       &IlkRegistry.NameError{},
-		"nakji.makerdao.0_0_0.IlkRegistry_Rely":                            &IlkRegistry.Rely{},
-		"nakji.makerdao.0_0_0.IlkRegistry_RemoveIlk":                       &IlkRegistry.RemoveIlk{},
-		"nakji.makerdao.0_0_0.IlkRegistry_SymbolError":                     &IlkRegistry.SymbolError{},
-		"nakji.makerdao.0_0_0.IlkRegistry_UpdateIlk":                       &IlkRegistry.UpdateIlk{},
-		"nakji.makerdao.0_0_0.JoinFab_NewJoin":                             &JoinFab.NewJoin{},
-		"nakji.makerdao.0_0_0.KNC_Approval":                                &KNC.Approval{},
-		"nakji.makerdao.0_0_0.KNC_Burn":                                    &KNC.Burn{},
-		"nakji.makerdao.0_0_0.KNC_Transfer":                                &KNC.Transfer{},
-		"nakji.makerdao.0_0_0.LerpFab_Deny":                                &LerpFab.Deny{},
-		"nakji.makerdao.0_0_0.LerpFab_LerpFinished":                        &LerpFab.LerpFinished{},
-		"nakji.makerdao.0_0_0.LerpFab_NewIlkLerp":                          &LerpFab.NewIlkLerp{},
-		"nakji.makerdao.0_0_0.LerpFab_NewLerp":                             &LerpFab.NewLerp{},
-		"nakji.makerdao.0_0_0.LerpFab_Rely":                                &LerpFab.Rely{},
-		"nakji.makerdao.0_0_0.Link_Approval":                               &Link.Approval{},
-		"nakji.makerdao.0_0_0.Link_Transfer":                               &Link.Transfer{},
-		"nakji.makerdao.0_0_0.LRC_Approval":                                &LRC.Approval{},
-		"nakji.makerdao.0_0_0.LRC_Burn":                                    &LRC.Burn{},
-		"nakji.makerdao.0_0_0.LRC_Transfer":                                &LRC.Transfer{},
-		"nakji.makerdao.0_0_0.Mana_Approval":                               &Mana.Approval{},
-		"nakji.makerdao.0_0_0.Mana_Burn":                                   &Mana.Burn{},
-		"nakji.makerdao.0_0_0.Mana_Mint":                                   &Mana.Mint{},
-		"nakji.makerdao.0_0_0.Mana_Mintfinished":                           &Mana.MintFinished{},
-		"nakji.makerdao.0_0_0.Mana_Pause":                                  &Mana.Pause{},
-		"nakji.makerdao.0_0_0.Mana_Transfer":                               &Mana.Transfer{},
-		"nakji.makerdao.0_0_0.Mana_Unpause":                                &Mana.Unpause{},
-		"nakji.makerdao.0_0_0.Matic_Approval":                              &Matic.Approval{},
-		"nakji.makerdao.0_0_0.Matic_Paused":                                &Matic.Paused{},
-		"nakji.makerdao.0_0_0.Matic_PauserAdded":                           &Matic.PauserAdded{},
-		"nakji.makerdao.0_0_0.Matic_PauserRemoved":                         &Matic.PauserRemoved{},
-		"nakji.makerdao.0_0_0.Matic_Transfer":                              &Matic.Transfer{},
-		"nakji.makerdao.0_0_0.Matic_Unpaused":                              &Matic.Unpaused{},
-		"nakji.makerdao.0_0_0.MCDADM_etch":                                 &MCDADM.Etch{},
-		"nakji.makerdao.0_0_0.MCDADM_LogNote":                              &MCDADM.LogNote{},
-		"nakji.makerdao.0_0_0.MCDADM_LogSetAuthority":                      &MCDADM.LogSetAuthority{},
-		"nakji.makerdao.0_0_0.MCDADM_LogSetOwner":                          &MCDADM.LogSetOwner{},
-		"nakji.makerdao.0_0_0.MCDCat_Bite":                                 &MCDCat.Bite{},
-		"nakji.makerdao.0_0_0.MCDCat_LogNote":                              &MCDCat.LogNote{},
-		"nakji.makerdao.0_0_0.MCDCropper_Deny":                             &MCDCropper.Deny{},
-		"nakji.makerdao.0_0_0.MCDCropperImp_Hope":                          &MCDCropperImp.Hope{},
-		"nakji.makerdao.0_0_0.MCDCropperImp_NewProxy":                      &MCDCropperImp.NewProxy{},
-		"nakji.makerdao.0_0_0.MCDCropperImp_Nope":                          &MCDCropperImp.Nope{},
-		"nakji.makerdao.0_0_0.MCDCropper_Rely":                             &MCDCropper.Rely{},
-		"nakji.makerdao.0_0_0.MCDCropper_SetImplementation":                &MCDCropper.SetImplementation{},
-		"nakji.makerdao.0_0_0.MCDDai_Approval":                             &MCDDai.Approval{},
-		"nakji.makerdao.0_0_0.MCDDai_LogNote":                              &MCDDai.LogNote{},
-		"nakji.makerdao.0_0_0.MCDDai_Transfer":                             &MCDDai.Transfer{},
-		"nakji.makerdao.0_0_0.MCDDeploy_LogSetAuthority":                   &MCDDeploy.LogSetAuthority{},
-		"nakji.makerdao.0_0_0.MCDDeploy_LogSetOwner":                       &MCDDeploy.LogSetOwner{},
-		"nakji.makerdao.0_0_0.MCDDog_Bark":                                 &MCDDog.Bark{},
-		"nakji.makerdao.0_0_0.MCDDog_Cage":                                 &MCDDog.Cage{},
-		"nakji.makerdao.0_0_0.MCDDog_Deny":                                 &MCDDog.Deny{},
-		"nakji.makerdao.0_0_0.MCDDog_Digs":                                 &MCDDog.Digs{},
-		"nakji.makerdao.0_0_0.MCDDog_File":                                 &MCDDog.File{},
-		"nakji.makerdao.0_0_0.MCDDog_File0":                                &MCDDog.File0{},
-		"nakji.makerdao.0_0_0.MCDDog_File1":                                &MCDDog.File1{},
-		"nakji.makerdao.0_0_0.MCDDog_File2":                                &MCDDog.File2{},
-		"nakji.makerdao.0_0_0.MCDDog_Rely":                                 &MCDDog.Rely{},
-		"nakji.makerdao.0_0_0.MCDEnd_Cage":                                 &MCDEnd.Cage{},
-		"nakji.makerdao.0_0_0.MCDEnd_Cage0":                                &MCDEnd.Cage0{},
-		"nakji.makerdao.0_0_0.MCDEnd_Cash":                                 &MCDEnd.Cash{},
-		"nakji.makerdao.0_0_0.MCDEnd_Deny":                                 &MCDEnd.Deny{},
-		"nakji.makerdao.0_0_0.MCDEnd_File":                                 &MCDEnd.File{},
-		"nakji.makerdao.0_0_0.MCDEnd_File0":                                &MCDEnd.File0{},
-		"nakji.makerdao.0_0_0.MCDEnd_Flow":                                 &MCDEnd.Flow{},
-		"nakji.makerdao.0_0_0.MCDEnd_Free":                                 &MCDEnd.Free{},
-		"nakji.makerdao.0_0_0.MCDEnd_Pack":                                 &MCDEnd.Pack{},
-		"nakji.makerdao.0_0_0.MCDEnd_Rely":                                 &MCDEnd.Rely{},
-		"nakji.makerdao.0_0_0.MCDEnd_Skim":                                 &MCDEnd.Skim{},
-		"nakji.makerdao.0_0_0.MCDEnd_Skip":                                 &MCDEnd.Skip{},
-		"nakji.makerdao.0_0_0.MCDEnd_Snip":                                 &MCDEnd.Snip{},
-		"nakji.makerdao.0_0_0.MCDEnd_Thaw":                                 &MCDEnd.Thaw{},
-		"nakji.makerdao.0_0_0.MCDESM_Deny":                                 &MCDESM.Deny{},
-		"nakji.makerdao.0_0_0.MCDESM_DenyProxy":                            &MCDESM.DenyProxy{},
-		"nakji.makerdao.0_0_0.MCDESM_File":                                 &MCDESM.File{},
-		"nakji.makerdao.0_0_0.MCDESM_File0":                                &MCDESM.File0{},
-		"nakji.makerdao.0_0_0.MCDESM_Fire":                                 &MCDESM.Fire{},
-		"nakji.makerdao.0_0_0.MCDESM_Join":                                 &MCDESM.Join{},
-		"nakji.makerdao.0_0_0.MCDESM_Rely":                                 &MCDESM.Rely{},
-		"nakji.makerdao.0_0_0.MCDFlap_Kick":                                &MCDFlap.Kick{},
-		"nakji.makerdao.0_0_0.MCDFlap_LogNote":                             &MCDFlap.LogNote{},
-		"nakji.makerdao.0_0_0.MCDFlash_Deny":                               &MCDFlash.Deny{},
-		"nakji.makerdao.0_0_0.MCDFlash_File":                               &MCDFlash.File{},
-		"nakji.makerdao.0_0_0.MCDFlash_FlashLoan":                          &MCDFlash.FlashLoan{},
-		"nakji.makerdao.0_0_0.MCDFlash_Rely":                               &MCDFlash.Rely{},
-		"nakji.makerdao.0_0_0.MCDFlash_VatDaiFlashLoan":                    &MCDFlash.VatDaiFlashLoan{},
-		"nakji.makerdao.0_0_0.MCDFlop_Kick":                                &MCDFlop.Kick{},
-		"nakji.makerdao.0_0_0.MCDFlop_LogNote":                             &MCDFlop.LogNote{},
-		"nakji.makerdao.0_0_0.MCDGov_Approval":                             &MCDGov.Approval{},
-		"nakji.makerdao.0_0_0.MCDGov_Burn":                                 &MCDGov.Burn{},
-		"nakji.makerdao.0_0_0.MCDGov_LogNote":                              &MCDGov.LogNote{},
-		"nakji.makerdao.0_0_0.MCDGov_LogSetAuthority":                      &MCDGov.LogSetAuthority{},
-		"nakji.makerdao.0_0_0.MCDGov_LogSetOwner":                          &MCDGov.LogSetOwner{},
-		"nakji.makerdao.0_0_0.MCDGov_Mint":                                 &MCDGov.Mint{},
-		"nakji.makerdao.0_0_0.MCDGov_Transfer":                             &MCDGov.Transfer{},
-		"nakji.makerdao.0_0_0.MCDIamAutoLine_Deny":                         &MCDIamAutoLine.Deny{},
-		"nakji.makerdao.0_0_0.MCDIamAutoLine_Exec":                         &MCDIamAutoLine.Exec{},
-		"nakji.makerdao.0_0_0.MCDIamAutoLine_Rely":                         &MCDIamAutoLine.Rely{},
-		"nakji.makerdao.0_0_0.MCDIamAutoLine_Remove":                       &MCDIamAutoLine.Remove{},
-		"nakji.makerdao.0_0_0.MCDIamAutoLine_Setup":                        &MCDIamAutoLine.Setup{},
-		"nakji.makerdao.0_0_0.MCDJug_LogNote":                              &MCDJug.LogNote{},
-		"nakji.makerdao.0_0_0.MCDPause_LogNote":                            &MCDPause.LogNote{},
-		"nakji.makerdao.0_0_0.MCDPause_LogSetAuthority":                    &MCDPause.LogSetAuthority{},
-		"nakji.makerdao.0_0_0.MCDPause_LogSetOwner":                        &MCDPause.LogSetOwner{},
-		"nakji.makerdao.0_0_0.MCDPot_LogNote":                              &MCDPot.LogNote{},
-		"nakji.makerdao.0_0_0.MCDPSMGUSDA_BuyGem":                          &MCDPSMGUSDA.BuyGem{},
-		"nakji.makerdao.0_0_0.MCDPSMGUSDA_Deny":                            &MCDPSMGUSDA.Deny{},
-		"nakji.makerdao.0_0_0.MCDPSMGUSDA_File":                            &MCDPSMGUSDA.File{},
-		"nakji.makerdao.0_0_0.MCDPSMGUSDA_Rely":                            &MCDPSMGUSDA.Rely{},
-		"nakji.makerdao.0_0_0.MCDPSMGUSDA_SellGem":                         &MCDPSMGUSDA.SellGem{},
-		"nakji.makerdao.0_0_0.MCDPSMPaxA_BuyGem":                           &MCDPSMPaxA.BuyGem{},
-		"nakji.makerdao.0_0_0.MCDPSMPaxA_Deny":                             &MCDPSMPaxA.Deny{},
-		"nakji.makerdao.0_0_0.MCDPSMPaxA_File":                             &MCDPSMPaxA.File{},
-		"nakji.makerdao.0_0_0.MCDPSMPaxA_Rely":                             &MCDPSMPaxA.Rely{},
-		"nakji.makerdao.0_0_0.MCDPSMPaxA_SellGem":                          &MCDPSMPaxA.SellGem{},
-		"nakji.makerdao.0_0_0.MCDPSMUSDCA_BuyGem":                          &MCDPSMUSDCA.BuyGem{},
-		"nakji.makerdao.0_0_0.MCDPSMUSDCA_Deny":                            &MCDPSMUSDCA.Deny{},
-		"nakji.makerdao.0_0_0.MCDPSMUSDCA_File":                            &MCDPSMUSDCA.File{},
-		"nakji.makerdao.0_0_0.MCDPSMUSDCA_Rely":                            &MCDPSMUSDCA.Rely{},
-		"nakji.makerdao.0_0_0.MCDPSMUSDCA_SellGem":                         &MCDPSMUSDCA.SellGem{},
-		"nakji.makerdao.0_0_0.MCDSpot_LogNote":                             &MCDSpot.LogNote{},
-		"nakji.makerdao.0_0_0.MCDSpot_Poke":                                &MCDSpot.Poke{},
-		"nakji.makerdao.0_0_0.MCDVat_LogNote":                              &MCDVat.LogNote{},
-		"nakji.makerdao.0_0_0.MCDVestDai_Deny":                             &MCDVestDai.Deny{},
-		"nakji.makerdao.0_0_0.MCDVestDai_File":                             &MCDVestDai.File{},
-		"nakji.makerdao.0_0_0.MCDVestDai_Init":                             &MCDVestDai.Init{},
-		"nakji.makerdao.0_0_0.MCDVestDaiLegacy_Deny":                       &MCDVestDaiLegacy.Deny{},
-		"nakji.makerdao.0_0_0.MCDVestDaiLegacy_File":                       &MCDVestDaiLegacy.File{},
-		"nakji.makerdao.0_0_0.MCDVestDaiLegacy_Init":                       &MCDVestDaiLegacy.Init{},
-		"nakji.makerdao.0_0_0.MCDVestDaiLegacy_Move":                       &MCDVestDaiLegacy.Move{},
-		"nakji.makerdao.0_0_0.MCDVestDaiLegacy_Rely":                       &MCDVestDaiLegacy.Rely{},
-		"nakji.makerdao.0_0_0.MCDVestDaiLegacy_Restrict":                   &MCDVestDaiLegacy.Restrict{},
-		"nakji.makerdao.0_0_0.MCDVestDaiLegacy_Unrestrict":                 &MCDVestDaiLegacy.Unrestrict{},
-		"nakji.makerdao.0_0_0.MCDVestDaiLegacy_Vest":                       &MCDVestDaiLegacy.Vest{},
-		"nakji.makerdao.0_0_0.MCDVestDaiLegacy_Yank":                       &MCDVestDaiLegacy.Yank{},
-		"nakji.makerdao.0_0_0.MCDVestDai_Move":                             &MCDVestDai.Move{},
-		"nakji.makerdao.0_0_0.MCDVestDai_Rely":                             &MCDVestDai.Rely{},
-		"nakji.makerdao.0_0_0.MCDVestDai_Restrict":                         &MCDVestDai.Restrict{},
-		"nakji.makerdao.0_0_0.MCDVestDai_Unrestrict":                       &MCDVestDai.Unrestrict{},
-		"nakji.makerdao.0_0_0.MCDVestDai_Vest":                             &MCDVestDai.Vest{},
-		"nakji.makerdao.0_0_0.MCDVestDai_Yank":                             &MCDVestDai.Yank{},
-		"nakji.makerdao.0_0_0.MCDVestMkr_Deny":                             &MCDVestMkr.Deny{},
-		"nakji.makerdao.0_0_0.MCDVestMkr_File":                             &MCDVestMkr.File{},
-		"nakji.makerdao.0_0_0.MCDVestMkr_Init":                             &MCDVestMkr.Init{},
-		"nakji.makerdao.0_0_0.MCDVestMkr_Move":                             &MCDVestMkr.Move{},
-		"nakji.makerdao.0_0_0.MCDVestMkr_Rely":                             &MCDVestMkr.Rely{},
-		"nakji.makerdao.0_0_0.MCDVestMkr_Restrict":                         &MCDVestMkr.Restrict{},
-		"nakji.makerdao.0_0_0.MCDVestMkrTreasury_Deny":                     &MCDVestMkrTreasury.Deny{},
-		"nakji.makerdao.0_0_0.MCDVestMkrTreasury_File":                     &MCDVestMkrTreasury.File{},
-		"nakji.makerdao.0_0_0.MCDVestMkrTreasury_Init":                     &MCDVestMkrTreasury.Init{},
-		"nakji.makerdao.0_0_0.MCDVestMkrTreasury_Move":                     &MCDVestMkrTreasury.Move{},
-		"nakji.makerdao.0_0_0.MCDVestMkrTreasury_Rely":                     &MCDVestMkrTreasury.Rely{},
-		"nakji.makerdao.0_0_0.MCDVestMkrTreasury_Restrict":                 &MCDVestMkrTreasury.Restrict{},
-		"nakji.makerdao.0_0_0.MCDVestMkrTreasury_Unrestrict":               &MCDVestMkrTreasury.Unrestrict{},
-		"nakji.makerdao.0_0_0.MCDVestMkrTreasury_Vest":                     &MCDVestMkrTreasury.Vest{},
-		"nakji.makerdao.0_0_0.MCDVestMkrTreasury_Yank":                     &MCDVestMkrTreasury.Yank{},
-		"nakji.makerdao.0_0_0.MCDVestMkr_Unrestrict":                       &MCDVestMkr.Unrestrict{},
-		"nakji.makerdao.0_0_0.MCDVestMkr_Vest":                             &MCDVestMkr.Vest{},
-		"nakji.makerdao.0_0_0.MCDVestMkr_Yank":                             &MCDVestMkr.Yank{},
-		"nakji.makerdao.0_0_0.MCDVow_LogNote":                              &MCDVow.LogNote{},
-		"nakji.makerdao.0_0_0.MIP21LiquidationOracle_Bump":                 &MIP21LiquidationOracle.Bump{},
-		"nakji.makerdao.0_0_0.MIP21LiquidationOracle_Cull":                 &MIP21LiquidationOracle.Cull{},
-		"nakji.makerdao.0_0_0.MIP21LiquidationOracle_Cure":                 &MIP21LiquidationOracle.Cure{},
-		"nakji.makerdao.0_0_0.MIP21LiquidationOracle_Deny":                 &MIP21LiquidationOracle.Deny{},
-		"nakji.makerdao.0_0_0.MIP21LiquidationOracle_File":                 &MIP21LiquidationOracle.File{},
-		"nakji.makerdao.0_0_0.MIP21LiquidationOracle_Init":                 &MIP21LiquidationOracle.Init{},
-		"nakji.makerdao.0_0_0.MIP21LiquidationOracle_Rely":                 &MIP21LiquidationOracle.Rely{},
-		"nakji.makerdao.0_0_0.MIP21LiquidationOracle_Tell":                 &MIP21LiquidationOracle.Tell{},
-		"nakji.makerdao.0_0_0.OptimismDaiBridge_Closed":                    &OptimismDaiBridge.Closed{},
-		"nakji.makerdao.0_0_0.OptimismDaiBridge_Deny":                      &OptimismDaiBridge.Deny{},
-		"nakji.makerdao.0_0_0.OptimismDaiBridge_ERC20DepositInitiated":     &OptimismDaiBridge.ERC20DepositInitiated{},
-		"nakji.makerdao.0_0_0.OptimismDaiBridge_ERC20WithdrawalFinalized":  &OptimismDaiBridge.ERC20WithdrawalFinalized{},
-		"nakji.makerdao.0_0_0.OptimismDaiBridge_Rely":                      &OptimismDaiBridge.Rely{},
-		"nakji.makerdao.0_0_0.OptimismEscrow_Approve":                      &OptimismEscrow.Approve{},
-		"nakji.makerdao.0_0_0.OptimismEscrow_Deny":                         &OptimismEscrow.Deny{},
-		"nakji.makerdao.0_0_0.OptimismEscrow_Rely":                         &OptimismEscrow.Rely{},
-		"nakji.makerdao.0_0_0.OptimismGovRelay_Deny":                       &OptimismGovRelay.Deny{},
-		"nakji.makerdao.0_0_0.OptimismGovRelay_Rely":                       &OptimismGovRelay.Rely{},
-		"nakji.makerdao.0_0_0.OSMMom_LogNote":                              &OSMMom.LogNote{},
-		"nakji.makerdao.0_0_0.Pax_AdminChanged":                            &Pax.AdminChanged{},
-		"nakji.makerdao.0_0_0.Pax_Upgraded":                                &Pax.Upgraded{},
-		"nakji.makerdao.0_0_0.PaxUSD_AdminChanged":                         &PaxUSD.AdminChanged{},
-		"nakji.makerdao.0_0_0.PaxUSD_Upgraded":                             &PaxUSD.Upgraded{},
-		"nakji.makerdao.0_0_0.ProxyDeployer_LogNote":                       &ProxyDeployer.LogNote{},
-		"nakji.makerdao.0_0_0.ProxyDeployer_LogSetAuthority":               &ProxyDeployer.LogSetAuthority{},
-		"nakji.makerdao.0_0_0.ProxyDeployer_LogSetOwner":                   &ProxyDeployer.LogSetOwner{},
-		"nakji.makerdao.0_0_0.ProxyFactory_Created":                        &ProxyFactory.Created{},
-		"nakji.makerdao.0_0_0.RenBTC_AdminChanged":                         &RenBTC.AdminChanged{},
-		"nakji.makerdao.0_0_0.RenBTC_Upgraded":                             &RenBTC.Upgraded{},
-		"nakji.makerdao.0_0_0.RWA_Approval":                                &RWA.Approval{},
-		"nakji.makerdao.0_0_0.RWAConduit_Cage":                             &RWAConduit.Cage{},
-		"nakji.makerdao.0_0_0.RWAConduit_Cull":                             &RWAConduit.Cull{},
-		"nakji.makerdao.0_0_0.RWAConduit_Deny":                             &RWAConduit.Deny{},
-		"nakji.makerdao.0_0_0.RWAConduit_Draw":                             &RWAConduit.Draw{},
-		"nakji.makerdao.0_0_0.RWAConduit_Exit":                             &RWAConduit.Exit{},
-		"nakji.makerdao.0_0_0.RWAConduit_File":                             &RWAConduit.File{},
-		"nakji.makerdao.0_0_0.RWAConduit_Join":                             &RWAConduit.Join{},
-		"nakji.makerdao.0_0_0.RWAConduit_Migrate":                          &RWAConduit.Migrate{},
-		"nakji.makerdao.0_0_0.RWAConduit_Recover":                          &RWAConduit.Recover{},
-		"nakji.makerdao.0_0_0.RWAConduit_Rely":                             &RWAConduit.Rely{},
-		"nakji.makerdao.0_0_0.RWAConduit_Tell":                             &RWAConduit.Tell{},
-		"nakji.makerdao.0_0_0.RWAConduit_Unwind":                           &RWAConduit.Unwind{},
-		"nakji.makerdao.0_0_0.RWAConduit_Wipe":                             &RWAConduit.Wipe{},
-		"nakji.makerdao.0_0_0.RWA_Transfer":                                &RWA.Transfer{},
-		"nakji.makerdao.0_0_0.RWAUrn_Deny":                                 &RWAUrn.Deny{},
-		"nakji.makerdao.0_0_0.RWAUrn_Draw":                                 &RWAUrn.Draw{},
-		"nakji.makerdao.0_0_0.RWAUrn_File":                                 &RWAUrn.File{},
-		"nakji.makerdao.0_0_0.RWAUrn_Free":                                 &RWAUrn.Free{},
-		"nakji.makerdao.0_0_0.RWAUrn_Hope":                                 &RWAUrn.Hope{},
-		"nakji.makerdao.0_0_0.RWAUrn_Lock":                                 &RWAUrn.Lock{},
-		"nakji.makerdao.0_0_0.RWAUrn_Nope":                                 &RWAUrn.Nope{},
-		"nakji.makerdao.0_0_0.RWAUrn_Quit":                                 &RWAUrn.Quit{},
-		"nakji.makerdao.0_0_0.RWAUrn_Rely":                                 &RWAUrn.Rely{},
-		"nakji.makerdao.0_0_0.RWAUrn_Wipe":                                 &RWAUrn.Wipe{},
-		"nakji.makerdao.0_0_0.Steth_ProxyDeposit":                          &STEth.ProxyDeposit{},
-		"nakji.makerdao.0_0_0.TUSD_NewPendingOwner":                        &TUSD.NewPendingOwner{},
-		"nakji.makerdao.0_0_0.TUSD_ProxyOwnershipTransferred":              &TUSD.ProxyOwnershipTransferred{},
-		"nakji.makerdao.0_0_0.TUSD_Upgraded":                               &TUSD.Upgraded{},
-		"nakji.makerdao.0_0_0.Uni_Approval":                                &Uni.Approval{},
-		"nakji.makerdao.0_0_0.Uni_DelegateChanged":                         &Uni.DelegateChanged{},
-		"nakji.makerdao.0_0_0.Uni_DelegateVotesChanged":                    &Uni.DelegateVotesChanged{},
-		"nakji.makerdao.0_0_0.Uni_MinterChanged":                           &Uni.MinterChanged{},
-		"nakji.makerdao.0_0_0.Uni_Transfer":                                &Uni.Transfer{},
-		"nakji.makerdao.0_0_0.UniV2_Approval":                              &UniV2.Approval{},
-		"nakji.makerdao.0_0_0.UniV2_Burn":                                  &UniV2.Burn{},
-		"nakji.makerdao.0_0_0.UniV2_Mint":                                  &UniV2.Mint{},
-		"nakji.makerdao.0_0_0.UniV2_Swap":                                  &UniV2.Swap{},
-		"nakji.makerdao.0_0_0.UniV2_Sync":                                  &UniV2.Sync{},
-		"nakji.makerdao.0_0_0.UniV2_Transfer":                              &UniV2.Transfer{},
-		"nakji.makerdao.0_0_0.USDC_AdminChanged":                           &USDC.AdminChanged{},
-		"nakji.makerdao.0_0_0.USDC_Upgraded":                               &USDC.Upgraded{},
-		"nakji.makerdao.0_0_0.USDT_addedblacklist":                         &USDT.AddedBlackList{},
-		"nakji.makerdao.0_0_0.USDT_Approval":                               &USDT.Approval{},
-		"nakji.makerdao.0_0_0.USDT_Deprecate":                              &USDT.Deprecate{},
-		"nakji.makerdao.0_0_0.USDT_DestroyedBlackFunds":                    &USDT.DestroyedBlackFunds{},
-		"nakji.makerdao.0_0_0.USDT_Issue":                                  &USDT.Issue{},
-		"nakji.makerdao.0_0_0.USDT_Params":                                 &USDT.Params{},
-		"nakji.makerdao.0_0_0.USDT_Pause":                                  &USDT.Pause{},
-		"nakji.makerdao.0_0_0.USDT_Redeem":                                 &USDT.Redeem{},
-		"nakji.makerdao.0_0_0.USDT_RemovedBlackList":                       &USDT.RemovedBlackList{},
-		"nakji.makerdao.0_0_0.USDT_Transfer":                               &USDT.Transfer{},
-		"nakji.makerdao.0_0_0.USDT_Unpause":                                &USDT.Unpause{},
-		"nakji.makerdao.0_0_0.VoteDelegateProxyFactory_CreateVoteDelegate": &VoteDelegateProxyFactory.CreateVoteDelegate{},
-		"nakji.makerdao.0_0_0.VoteProxyFactory_LinkConfirmed":              &VoteProxyFactory.LinkConfirmed{},
-		"nakji.makerdao.0_0_0.VoteProxyFactory_LinkRequested":              &VoteProxyFactory.LinkRequested{},
-		"nakji.makerdao.0_0_0.WBTC_Approval":                               &WBTC.Approval{},
-		"nakji.makerdao.0_0_0.WBTC_Burn":                                   &WBTC.Burn{},
-		"nakji.makerdao.0_0_0.WBTC_Mint":                                   &WBTC.Mint{},
-		"nakji.makerdao.0_0_0.WBTC_MintFinished":                           &WBTC.MintFinished{},
-		"nakji.makerdao.0_0_0.WBTC_OwnershipRenounced":                     &WBTC.OwnershipRenounced{},
-		"nakji.makerdao.0_0_0.WBTC_OwnershipTransferred":                   &WBTC.OwnershipTransferred{},
-		"nakji.makerdao.0_0_0.WBTC_Pause":                                  &WBTC.Pause{},
-		"nakji.makerdao.0_0_0.WBTC_Transfer":                               &WBTC.Transfer{},
-		"nakji.makerdao.0_0_0.WBTC_Unpause":                                &WBTC.Unpause{},
-		"nakji.makerdao.0_0_0.WSteth_Approval":                             &WSTEth.Approval{},
-		"nakji.makerdao.0_0_0.WSteth_Transfer":                             &WSTEth.Transfer{},
-		"nakji.makerdao.0_0_0.YFi_Approval":                                &YFi.Approval{},
-		"nakji.makerdao.0_0_0.YFi_Transfer":                                &YFi.Transfer{},
-		"nakji.makerdao.0_0_0.ZRX_Approval":                                &ZRX.Approval{},
-		"nakji.makerdao.0_0_0.ZRX_Transfer":                                &ZRX.Transfer{},
+		"lotus.makerdao.0_0_0.Aave_AdminChanged":                           &Aave.AdminChanged{},
+		"lotus.makerdao.0_0_0.Aave_Upgraded":                               &Aave.Upgraded{},
+		"lotus.makerdao.0_0_0.Adai_Upgraded":                               &Adai.Upgraded{},
+		"lotus.makerdao.0_0_0.ArbitrumDaiBridge_Closed":                    &ArbitrumDaiBridge.Closed{},
+		"lotus.makerdao.0_0_0.ArbitrumDaiBridge_Deny":                      &ArbitrumDaiBridge.Deny{},
+		"lotus.makerdao.0_0_0.ArbitrumDaiBridge_DepositInitiated":          &ArbitrumDaiBridge.DepositInitiated{},
+		"lotus.makerdao.0_0_0.ArbitrumDaiBridge_Rely":                      &ArbitrumDaiBridge.Rely{},
+		"lotus.makerdao.0_0_0.ArbitrumDaiBridge_TxTol2":                    &ArbitrumDaiBridge.TxToL2{},
+		"lotus.makerdao.0_0_0.ArbitrumDaiBridge_WithdrawalFinalized":       &ArbitrumDaiBridge.WithdrawalFinalized{},
+		"lotus.makerdao.0_0_0.ArbitrumEscrow_Approve":                      &ArbitrumEscrow.Approve{},
+		"lotus.makerdao.0_0_0.ArbitrumEscrow_Deny":                         &ArbitrumEscrow.Deny{},
+		"lotus.makerdao.0_0_0.ArbitrumEscrow_Rely":                         &ArbitrumEscrow.Rely{},
+		"lotus.makerdao.0_0_0.ArbitrumGovRelay_Deny":                       &ArbitrumGovRelay.Deny{},
+		"lotus.makerdao.0_0_0.ArbitrumGovRelay_Rely":                       &ArbitrumGovRelay.Rely{},
+		"lotus.makerdao.0_0_0.ArbitrumGovRelay_TxToL2":                     &ArbitrumGovRelay.TxToL2{},
+		"lotus.makerdao.0_0_0.Bal_Approval":                                &Bal.Approval{},
+		"lotus.makerdao.0_0_0.Bal_RoleGranted":                             &Bal.RoleGranted{},
+		"lotus.makerdao.0_0_0.Bal_RoleRevoked":                             &Bal.RoleRevoked{},
+		"lotus.makerdao.0_0_0.Bal_Snapshot":                                &Bal.Snapshot{},
+		"lotus.makerdao.0_0_0.Bal_Transfer":                                &Bal.Transfer{},
+		"lotus.makerdao.0_0_0.BAT_Approval":                                &BAT.Approval{},
+		"lotus.makerdao.0_0_0.BAT_CreateBAT":                               &BAT.CreateBAT{},
+		"lotus.makerdao.0_0_0.BAT_LogRefund":                               &BAT.LogRefund{},
+		"lotus.makerdao.0_0_0.BAT_Transfer":                                &BAT.Transfer{},
+		"lotus.makerdao.0_0_0.CdpManager_LogNote":                          &CdpManager.LogNote{},
+		"lotus.makerdao.0_0_0.CdpManager_NewCdp":                           &CdpManager.NewCdp{},
+		"lotus.makerdao.0_0_0.CdpRegistry_NewCdpRegistered":                &CdpRegistry.NewCdpRegistered{},
+		"lotus.makerdao.0_0_0.Changelog_Deny":                              &Changelog.Deny{},
+		"lotus.makerdao.0_0_0.Changelog_Rely":                              &Changelog.Rely{},
+		"lotus.makerdao.0_0_0.Changelog_RemoveAddress":                     &Changelog.RemoveAddress{},
+		"lotus.makerdao.0_0_0.Changelog_UpdateAddress":                     &Changelog.UpdateAddress{},
+		"lotus.makerdao.0_0_0.Changelog_UpdateIPFS":                        &Changelog.UpdateIPFS{},
+		"lotus.makerdao.0_0_0.Changelog_UpdateSha256Sum":                   &Changelog.UpdateSha256Sum{},
+		"lotus.makerdao.0_0_0.Changelog_UpdateVersion":                     &Changelog.UpdateVersion{},
+		"lotus.makerdao.0_0_0.ClipperMom_SetAuthority":                     &ClipperMom.SetAuthority{},
+		"lotus.makerdao.0_0_0.ClipperMom_SetBreaker":                       &ClipperMom.SetBreaker{},
+		"lotus.makerdao.0_0_0.ClipperMom_SetOwner":                         &ClipperMom.SetOwner{},
+		"lotus.makerdao.0_0_0.Comp_Approval":                               &Comp.Approval{},
+		"lotus.makerdao.0_0_0.Comp_DelegateChanged":                        &Comp.DelegateChanged{},
+		"lotus.makerdao.0_0_0.Comp_DelegateVotesChanged":                   &Comp.DelegateVotesChanged{},
+		"lotus.makerdao.0_0_0.Comp_Transfer":                               &Comp.Transfer{},
+		"lotus.makerdao.0_0_0.CrvV1EthSteth_Approval":                      &CrvV1EthSTEth.Approval{},
+		"lotus.makerdao.0_0_0.CrvV1EthSteth_Transfer":                      &CrvV1EthSTEth.Transfer{},
+		"lotus.makerdao.0_0_0.DirectMom_Disable":                           &DirectMom.Disable{},
+		"lotus.makerdao.0_0_0.DirectMom_SetAuthority":                      &DirectMom.SetAuthority{},
+		"lotus.makerdao.0_0_0.DirectMom_SetOwner":                          &DirectMom.SetOwner{},
+		"lotus.makerdao.0_0_0.DsrManager_Exit":                             &DsrManager.Exit{},
+		"lotus.makerdao.0_0_0.DsrManager_Join":                             &DsrManager.Join{},
+		"lotus.makerdao.0_0_0.Eth_Approval":                                &Eth.Approval{},
+		"lotus.makerdao.0_0_0.Eth_Deposit":                                 &Eth.Deposit{},
+		"lotus.makerdao.0_0_0.Eth_Transfer":                                &Eth.Transfer{},
+		"lotus.makerdao.0_0_0.Eth_Withdrawal":                              &Eth.Withdrawal{},
+		"lotus.makerdao.0_0_0.FlipperMom_Deny":                             &FlipperMom.Deny{},
+		"lotus.makerdao.0_0_0.FlipperMom_Rely":                             &FlipperMom.Rely{},
+		"lotus.makerdao.0_0_0.FlipperMom_SetAuthority":                     &FlipperMom.SetAuthority{},
+		"lotus.makerdao.0_0_0.FlipperMom_SetOwner":                         &FlipperMom.SetOwner{},
+		"lotus.makerdao.0_0_0.GovGuard_LogDeny":                            &GovGuard.LogDeny{},
+		"lotus.makerdao.0_0_0.GovGuard_LogRely":                            &GovGuard.LogRely{},
+		"lotus.makerdao.0_0_0.GovGuard_LogSetRoot":                         &GovGuard.LogSetRoot{},
+		"lotus.makerdao.0_0_0.GUniV3DaiUSDC1_ProxyAdminTransferred":        &GUniV3DaiUSDC1.ProxyAdminTransferred{},
+		"lotus.makerdao.0_0_0.GUniV3DaiUSDC1_ProxyImplementationUpdated":   &GUniV3DaiUSDC1.ProxyImplementationUpdated{},
+		"lotus.makerdao.0_0_0.GUniV3DaiUSDC2_ProxyAdminTransferred":        &GUniV3DaiUSDC2.ProxyAdminTransferred{},
+		"lotus.makerdao.0_0_0.GUniV3DaiUSDC2_ProxyImplementationUpdated":   &GUniV3DaiUSDC2.ProxyImplementationUpdated{},
+		"lotus.makerdao.0_0_0.GUSD_Approval":                               &GUSD.Approval{},
+		"lotus.makerdao.0_0_0.GUSD_CustodianChangeConfirmed":               &GUSD.CustodianChangeConfirmed{},
+		"lotus.makerdao.0_0_0.GUSD_CustodianChangeRequested":               &GUSD.CustodianChangeRequested{},
+		"lotus.makerdao.0_0_0.GUSD_ImplChangeConfirmed":                    &GUSD.ImplChangeConfirmed{},
+		"lotus.makerdao.0_0_0.GUSD_ImplChangeRequested":                    &GUSD.ImplChangeRequested{},
+		"lotus.makerdao.0_0_0.GUSD_Transfer":                               &GUSD.Transfer{},
+		"lotus.makerdao.0_0_0.IlkRegistry_AddIlk":                          &IlkRegistry.AddIlk{},
+		"lotus.makerdao.0_0_0.IlkRegistry_Deny":                            &IlkRegistry.Deny{},
+		"lotus.makerdao.0_0_0.IlkRegistry_File":                            &IlkRegistry.File{},
+		"lotus.makerdao.0_0_0.IlkRegistry_File0":                           &IlkRegistry.File0{},
+		"lotus.makerdao.0_0_0.IlkRegistry_File1":                           &IlkRegistry.File1{},
+		"lotus.makerdao.0_0_0.IlkRegistry_File2":                           &IlkRegistry.File2{},
+		"lotus.makerdao.0_0_0.IlkRegistry_NameError":                       &IlkRegistry.NameError{},
+		"lotus.makerdao.0_0_0.IlkRegistry_Rely":                            &IlkRegistry.Rely{},
+		"lotus.makerdao.0_0_0.IlkRegistry_RemoveIlk":                       &IlkRegistry.RemoveIlk{},
+		"lotus.makerdao.0_0_0.IlkRegistry_SymbolError":                     &IlkRegistry.SymbolError{},
+		"lotus.makerdao.0_0_0.IlkRegistry_UpdateIlk":                       &IlkRegistry.UpdateIlk{},
+		"lotus.makerdao.0_0_0.JoinFab_NewJoin":                             &JoinFab.NewJoin{},
+		"lotus.makerdao.0_0_0.KNC_Approval":                                &KNC.Approval{},
+		"lotus.makerdao.0_0_0.KNC_Burn":                                    &KNC.Burn{},
+		"lotus.makerdao.0_0_0.KNC_Transfer":                                &KNC.Transfer{},
+		"lotus.makerdao.0_0_0.LerpFab_Deny":                                &LerpFab.Deny{},
+		"lotus.makerdao.0_0_0.LerpFab_LerpFinished":                        &LerpFab.LerpFinished{},
+		"lotus.makerdao.0_0_0.LerpFab_NewIlkLerp":                          &LerpFab.NewIlkLerp{},
+		"lotus.makerdao.0_0_0.LerpFab_NewLerp":                             &LerpFab.NewLerp{},
+		"lotus.makerdao.0_0_0.LerpFab_Rely":                                &LerpFab.Rely{},
+		"lotus.makerdao.0_0_0.Link_Approval":                               &Link.Approval{},
+		"lotus.makerdao.0_0_0.Link_Transfer":                               &Link.Transfer{},
+		"lotus.makerdao.0_0_0.LRC_Approval":                                &LRC.Approval{},
+		"lotus.makerdao.0_0_0.LRC_Burn":                                    &LRC.Burn{},
+		"lotus.makerdao.0_0_0.LRC_Transfer":                                &LRC.Transfer{},
+		"lotus.makerdao.0_0_0.Mana_Approval":                               &Mana.Approval{},
+		"lotus.makerdao.0_0_0.Mana_Burn":                                   &Mana.Burn{},
+		"lotus.makerdao.0_0_0.Mana_Mint":                                   &Mana.Mint{},
+		"lotus.makerdao.0_0_0.Mana_Mintfinished":                           &Mana.MintFinished{},
+		"lotus.makerdao.0_0_0.Mana_Pause":                                  &Mana.Pause{},
+		"lotus.makerdao.0_0_0.Mana_Transfer":                               &Mana.Transfer{},
+		"lotus.makerdao.0_0_0.Mana_Unpause":                                &Mana.Unpause{},
+		"lotus.makerdao.0_0_0.Matic_Approval":                              &Matic.Approval{},
+		"lotus.makerdao.0_0_0.Matic_Paused":                                &Matic.Paused{},
+		"lotus.makerdao.0_0_0.Matic_PauserAdded":                           &Matic.PauserAdded{},
+		"lotus.makerdao.0_0_0.Matic_PauserRemoved":                         &Matic.PauserRemoved{},
+		"lotus.makerdao.0_0_0.Matic_Transfer":                              &Matic.Transfer{},
+		"lotus.makerdao.0_0_0.Matic_Unpaused":                              &Matic.Unpaused{},
+		"lotus.makerdao.0_0_0.MCDADM_etch":                                 &MCDADM.Etch{},
+		"lotus.makerdao.0_0_0.MCDADM_LogNote":                              &MCDADM.LogNote{},
+		"lotus.makerdao.0_0_0.MCDADM_LogSetAuthority":                      &MCDADM.LogSetAuthority{},
+		"lotus.makerdao.0_0_0.MCDADM_LogSetOwner":                          &MCDADM.LogSetOwner{},
+		"lotus.makerdao.0_0_0.MCDCat_Bite":                                 &MCDCat.Bite{},
+		"lotus.makerdao.0_0_0.MCDCat_LogNote":                              &MCDCat.LogNote{},
+		"lotus.makerdao.0_0_0.MCDCropper_Deny":                             &MCDCropper.Deny{},
+		"lotus.makerdao.0_0_0.MCDCropperImp_Hope":                          &MCDCropperImp.Hope{},
+		"lotus.makerdao.0_0_0.MCDCropperImp_NewProxy":                      &MCDCropperImp.NewProxy{},
+		"lotus.makerdao.0_0_0.MCDCropperImp_Nope":                          &MCDCropperImp.Nope{},
+		"lotus.makerdao.0_0_0.MCDCropper_Rely":                             &MCDCropper.Rely{},
+		"lotus.makerdao.0_0_0.MCDCropper_SetImplementation":                &MCDCropper.SetImplementation{},
+		"lotus.makerdao.0_0_0.MCDDai_Approval":                             &MCDDai.Approval{},
+		"lotus.makerdao.0_0_0.MCDDai_LogNote":                              &MCDDai.LogNote{},
+		"lotus.makerdao.0_0_0.MCDDai_Transfer":                             &MCDDai.Transfer{},
+		"lotus.makerdao.0_0_0.MCDDeploy_LogSetAuthority":                   &MCDDeploy.LogSetAuthority{},
+		"lotus.makerdao.0_0_0.MCDDeploy_LogSetOwner":                       &MCDDeploy.LogSetOwner{},
+		"lotus.makerdao.0_0_0.MCDDog_Bark":                                 &MCDDog.Bark{},
+		"lotus.makerdao.0_0_0.MCDDog_Cage":                                 &MCDDog.Cage{},
+		"lotus.makerdao.0_0_0.MCDDog_Deny":                                 &MCDDog.Deny{},
+		"lotus.makerdao.0_0_0.MCDDog_Digs":                                 &MCDDog.Digs{},
+		"lotus.makerdao.0_0_0.MCDDog_File":                                 &MCDDog.File{},
+		"lotus.makerdao.0_0_0.MCDDog_File0":                                &MCDDog.File0{},
+		"lotus.makerdao.0_0_0.MCDDog_File1":                                &MCDDog.File1{},
+		"lotus.makerdao.0_0_0.MCDDog_File2":                                &MCDDog.File2{},
+		"lotus.makerdao.0_0_0.MCDDog_Rely":                                 &MCDDog.Rely{},
+		"lotus.makerdao.0_0_0.MCDEnd_Cage":                                 &MCDEnd.Cage{},
+		"lotus.makerdao.0_0_0.MCDEnd_Cage0":                                &MCDEnd.Cage0{},
+		"lotus.makerdao.0_0_0.MCDEnd_Cash":                                 &MCDEnd.Cash{},
+		"lotus.makerdao.0_0_0.MCDEnd_Deny":                                 &MCDEnd.Deny{},
+		"lotus.makerdao.0_0_0.MCDEnd_File":                                 &MCDEnd.File{},
+		"lotus.makerdao.0_0_0.MCDEnd_File0":                                &MCDEnd.File0{},
+		"lotus.makerdao.0_0_0.MCDEnd_Flow":                                 &MCDEnd.Flow{},
+		"lotus.makerdao.0_0_0.MCDEnd_Free":                                 &MCDEnd.Free{},
+		"lotus.makerdao.0_0_0.MCDEnd_Pack":                                 &MCDEnd.Pack{},
+		"lotus.makerdao.0_0_0.MCDEnd_Rely":                                 &MCDEnd.Rely{},
+		"lotus.makerdao.0_0_0.MCDEnd_Skim":                                 &MCDEnd.Skim{},
+		"lotus.makerdao.0_0_0.MCDEnd_Skip":                                 &MCDEnd.Skip{},
+		"lotus.makerdao.0_0_0.MCDEnd_Snip":                                 &MCDEnd.Snip{},
+		"lotus.makerdao.0_0_0.MCDEnd_Thaw":                                 &MCDEnd.Thaw{},
+		"lotus.makerdao.0_0_0.MCDESM_Deny":                                 &MCDESM.Deny{},
+		"lotus.makerdao.0_0_0.MCDESM_DenyProxy":                            &MCDESM.DenyProxy{},
+		"lotus.makerdao.0_0_0.MCDESM_File":                                 &MCDESM.File{},
+		"lotus.makerdao.0_0_0.MCDESM_File0":                                &MCDESM.File0{},
+		"lotus.makerdao.0_0_0.MCDESM_Fire":                                 &MCDESM.Fire{},
+		"lotus.makerdao.0_0_0.MCDESM_Join":                                 &MCDESM.Join{},
+		"lotus.makerdao.0_0_0.MCDESM_Rely":                                 &MCDESM.Rely{},
+		"lotus.makerdao.0_0_0.MCDFlap_Kick":                                &MCDFlap.Kick{},
+		"lotus.makerdao.0_0_0.MCDFlap_LogNote":                             &MCDFlap.LogNote{},
+		"lotus.makerdao.0_0_0.MCDFlash_Deny":                               &MCDFlash.Deny{},
+		"lotus.makerdao.0_0_0.MCDFlash_File":                               &MCDFlash.File{},
+		"lotus.makerdao.0_0_0.MCDFlash_FlashLoan":                          &MCDFlash.FlashLoan{},
+		"lotus.makerdao.0_0_0.MCDFlash_Rely":                               &MCDFlash.Rely{},
+		"lotus.makerdao.0_0_0.MCDFlash_VatDaiFlashLoan":                    &MCDFlash.VatDaiFlashLoan{},
+		"lotus.makerdao.0_0_0.MCDFlop_Kick":                                &MCDFlop.Kick{},
+		"lotus.makerdao.0_0_0.MCDFlop_LogNote":                             &MCDFlop.LogNote{},
+		"lotus.makerdao.0_0_0.MCDGov_Approval":                             &MCDGov.Approval{},
+		"lotus.makerdao.0_0_0.MCDGov_Burn":                                 &MCDGov.Burn{},
+		"lotus.makerdao.0_0_0.MCDGov_LogNote":                              &MCDGov.LogNote{},
+		"lotus.makerdao.0_0_0.MCDGov_LogSetAuthority":                      &MCDGov.LogSetAuthority{},
+		"lotus.makerdao.0_0_0.MCDGov_LogSetOwner":                          &MCDGov.LogSetOwner{},
+		"lotus.makerdao.0_0_0.MCDGov_Mint":                                 &MCDGov.Mint{},
+		"lotus.makerdao.0_0_0.MCDGov_Transfer":                             &MCDGov.Transfer{},
+		"lotus.makerdao.0_0_0.MCDIamAutoLine_Deny":                         &MCDIamAutoLine.Deny{},
+		"lotus.makerdao.0_0_0.MCDIamAutoLine_Exec":                         &MCDIamAutoLine.Exec{},
+		"lotus.makerdao.0_0_0.MCDIamAutoLine_Rely":                         &MCDIamAutoLine.Rely{},
+		"lotus.makerdao.0_0_0.MCDIamAutoLine_Remove":                       &MCDIamAutoLine.Remove{},
+		"lotus.makerdao.0_0_0.MCDIamAutoLine_Setup":                        &MCDIamAutoLine.Setup{},
+		"lotus.makerdao.0_0_0.MCDJug_LogNote":                              &MCDJug.LogNote{},
+		"lotus.makerdao.0_0_0.MCDPause_LogNote":                            &MCDPause.LogNote{},
+		"lotus.makerdao.0_0_0.MCDPause_LogSetAuthority":                    &MCDPause.LogSetAuthority{},
+		"lotus.makerdao.0_0_0.MCDPause_LogSetOwner":                        &MCDPause.LogSetOwner{},
+		"lotus.makerdao.0_0_0.MCDPot_LogNote":                              &MCDPot.LogNote{},
+		"lotus.makerdao.0_0_0.MCDPSMGUSDA_BuyGem":                          &MCDPSMGUSDA.BuyGem{},
+		"lotus.makerdao.0_0_0.MCDPSMGUSDA_Deny":                            &MCDPSMGUSDA.Deny{},
+		"lotus.makerdao.0_0_0.MCDPSMGUSDA_File":                            &MCDPSMGUSDA.File{},
+		"lotus.makerdao.0_0_0.MCDPSMGUSDA_Rely":                            &MCDPSMGUSDA.Rely{},
+		"lotus.makerdao.0_0_0.MCDPSMGUSDA_SellGem":                         &MCDPSMGUSDA.SellGem{},
+		"lotus.makerdao.0_0_0.MCDPSMPaxA_BuyGem":                           &MCDPSMPaxA.BuyGem{},
+		"lotus.makerdao.0_0_0.MCDPSMPaxA_Deny":                             &MCDPSMPaxA.Deny{},
+		"lotus.makerdao.0_0_0.MCDPSMPaxA_File":                             &MCDPSMPaxA.File{},
+		"lotus.makerdao.0_0_0.MCDPSMPaxA_Rely":                             &MCDPSMPaxA.Rely{},
+		"lotus.makerdao.0_0_0.MCDPSMPaxA_SellGem":                          &MCDPSMPaxA.SellGem{},
+		"lotus.makerdao.0_0_0.MCDPSMUSDCA_BuyGem":                          &MCDPSMUSDCA.BuyGem{},
+		"lotus.makerdao.0_0_0.MCDPSMUSDCA_Deny":                            &MCDPSMUSDCA.Deny{},
+		"lotus.makerdao.0_0_0.MCDPSMUSDCA_File":                            &MCDPSMUSDCA.File{},
+		"lotus.makerdao.0_0_0.MCDPSMUSDCA_Rely":                            &MCDPSMUSDCA.Rely{},
+		"lotus.makerdao.0_0_0.MCDPSMUSDCA_SellGem":                         &MCDPSMUSDCA.SellGem{},
+		"lotus.makerdao.0_0_0.MCDSpot_LogNote":                             &MCDSpot.LogNote{},
+		"lotus.makerdao.0_0_0.MCDSpot_Poke":                                &MCDSpot.Poke{},
+		"lotus.makerdao.0_0_0.MCDVat_LogNote":                              &MCDVat.LogNote{},
+		"lotus.makerdao.0_0_0.MCDVestDai_Deny":                             &MCDVestDai.Deny{},
+		"lotus.makerdao.0_0_0.MCDVestDai_File":                             &MCDVestDai.File{},
+		"lotus.makerdao.0_0_0.MCDVestDai_Init":                             &MCDVestDai.Init{},
+		"lotus.makerdao.0_0_0.MCDVestDaiLegacy_Deny":                       &MCDVestDaiLegacy.Deny{},
+		"lotus.makerdao.0_0_0.MCDVestDaiLegacy_File":                       &MCDVestDaiLegacy.File{},
+		"lotus.makerdao.0_0_0.MCDVestDaiLegacy_Init":                       &MCDVestDaiLegacy.Init{},
+		"lotus.makerdao.0_0_0.MCDVestDaiLegacy_Move":                       &MCDVestDaiLegacy.Move{},
+		"lotus.makerdao.0_0_0.MCDVestDaiLegacy_Rely":                       &MCDVestDaiLegacy.Rely{},
+		"lotus.makerdao.0_0_0.MCDVestDaiLegacy_Restrict":                   &MCDVestDaiLegacy.Restrict{},
+		"lotus.makerdao.0_0_0.MCDVestDaiLegacy_Unrestrict":                 &MCDVestDaiLegacy.Unrestrict{},
+		"lotus.makerdao.0_0_0.MCDVestDaiLegacy_Vest":                       &MCDVestDaiLegacy.Vest{},
+		"lotus.makerdao.0_0_0.MCDVestDaiLegacy_Yank":                       &MCDVestDaiLegacy.Yank{},
+		"lotus.makerdao.0_0_0.MCDVestDai_Move":                             &MCDVestDai.Move{},
+		"lotus.makerdao.0_0_0.MCDVestDai_Rely":                             &MCDVestDai.Rely{},
+		"lotus.makerdao.0_0_0.MCDVestDai_Restrict":                         &MCDVestDai.Restrict{},
+		"lotus.makerdao.0_0_0.MCDVestDai_Unrestrict":                       &MCDVestDai.Unrestrict{},
+		"lotus.makerdao.0_0_0.MCDVestDai_Vest":                             &MCDVestDai.Vest{},
+		"lotus.makerdao.0_0_0.MCDVestDai_Yank":                             &MCDVestDai.Yank{},
+		"lotus.makerdao.0_0_0.MCDVestMkr_Deny":                             &MCDVestMkr.Deny{},
+		"lotus.makerdao.0_0_0.MCDVestMkr_File":                             &MCDVestMkr.File{},
+		"lotus.makerdao.0_0_0.MCDVestMkr_Init":                             &MCDVestMkr.Init{},
+		"lotus.makerdao.0_0_0.MCDVestMkr_Move":                             &MCDVestMkr.Move{},
+		"lotus.makerdao.0_0_0.MCDVestMkr_Rely":                             &MCDVestMkr.Rely{},
+		"lotus.makerdao.0_0_0.MCDVestMkr_Restrict":                         &MCDVestMkr.Restrict{},
+		"lotus.makerdao.0_0_0.MCDVestMkrTreasury_Deny":                     &MCDVestMkrTreasury.Deny{},
+		"lotus.makerdao.0_0_0.MCDVestMkrTreasury_File":                     &MCDVestMkrTreasury.File{},
+		"lotus.makerdao.0_0_0.MCDVestMkrTreasury_Init":                     &MCDVestMkrTreasury.Init{},
+		"lotus.makerdao.0_0_0.MCDVestMkrTreasury_Move":                     &MCDVestMkrTreasury.Move{},
+		"lotus.makerdao.0_0_0.MCDVestMkrTreasury_Rely":                     &MCDVestMkrTreasury.Rely{},
+		"lotus.makerdao.0_0_0.MCDVestMkrTreasury_Restrict":                 &MCDVestMkrTreasury.Restrict{},
+		"lotus.makerdao.0_0_0.MCDVestMkrTreasury_Unrestrict":               &MCDVestMkrTreasury.Unrestrict{},
+		"lotus.makerdao.0_0_0.MCDVestMkrTreasury_Vest":                     &MCDVestMkrTreasury.Vest{},
+		"lotus.makerdao.0_0_0.MCDVestMkrTreasury_Yank":                     &MCDVestMkrTreasury.Yank{},
+		"lotus.makerdao.0_0_0.MCDVestMkr_Unrestrict":                       &MCDVestMkr.Unrestrict{},
+		"lotus.makerdao.0_0_0.MCDVestMkr_Vest":                             &MCDVestMkr.Vest{},
+		"lotus.makerdao.0_0_0.MCDVestMkr_Yank":                             &MCDVestMkr.Yank{},
+		"lotus.makerdao.0_0_0.MCDVow_LogNote":                              &MCDVow.LogNote{},
+		"lotus.makerdao.0_0_0.MIP21LiquidationOracle_Bump":                 &MIP21LiquidationOracle.Bump{},
+		"lotus.makerdao.0_0_0.MIP21LiquidationOracle_Cull":                 &MIP21LiquidationOracle.Cull{},
+		"lotus.makerdao.0_0_0.MIP21LiquidationOracle_Cure":                 &MIP21LiquidationOracle.Cure{},
+		"lotus.makerdao.0_0_0.MIP21LiquidationOracle_Deny":                 &MIP21LiquidationOracle.Deny{},
+		"lotus.makerdao.0_0_0.MIP21LiquidationOracle_File":                 &MIP21LiquidationOracle.File{},
+		"lotus.makerdao.0_0_0.MIP21LiquidationOracle_Init":                 &MIP21LiquidationOracle.Init{},
+		"lotus.makerdao.0_0_0.MIP21LiquidationOracle_Rely":                 &MIP21LiquidationOracle.Rely{},
+		"lotus.makerdao.0_0_0.MIP21LiquidationOracle_Tell":                 &MIP21LiquidationOracle.Tell{},
+		"lotus.makerdao.0_0_0.OptimismDaiBridge_Closed":                    &OptimismDaiBridge.Closed{},
+		"lotus.makerdao.0_0_0.OptimismDaiBridge_Deny":                      &OptimismDaiBridge.Deny{},
+		"lotus.makerdao.0_0_0.OptimismDaiBridge_ERC20DepositInitiated":     &OptimismDaiBridge.ERC20DepositInitiated{},
+		"lotus.makerdao.0_0_0.OptimismDaiBridge_ERC20WithdrawalFinalized":  &OptimismDaiBridge.ERC20WithdrawalFinalized{},
+		"lotus.makerdao.0_0_0.OptimismDaiBridge_Rely":                      &OptimismDaiBridge.Rely{},
+		"lotus.makerdao.0_0_0.OptimismEscrow_Approve":                      &OptimismEscrow.Approve{},
+		"lotus.makerdao.0_0_0.OptimismEscrow_Deny":                         &OptimismEscrow.Deny{},
+		"lotus.makerdao.0_0_0.OptimismEscrow_Rely":                         &OptimismEscrow.Rely{},
+		"lotus.makerdao.0_0_0.OptimismGovRelay_Deny":                       &OptimismGovRelay.Deny{},
+		"lotus.makerdao.0_0_0.OptimismGovRelay_Rely":                       &OptimismGovRelay.Rely{},
+		"lotus.makerdao.0_0_0.OSMMom_LogNote":                              &OSMMom.LogNote{},
+		"lotus.makerdao.0_0_0.Pax_AdminChanged":                            &Pax.AdminChanged{},
+		"lotus.makerdao.0_0_0.Pax_Upgraded":                                &Pax.Upgraded{},
+		"lotus.makerdao.0_0_0.PaxUSD_AdminChanged":                         &PaxUSD.AdminChanged{},
+		"lotus.makerdao.0_0_0.PaxUSD_Upgraded":                             &PaxUSD.Upgraded{},
+		"lotus.makerdao.0_0_0.ProxyDeployer_LogNote":                       &ProxyDeployer.LogNote{},
+		"lotus.makerdao.0_0_0.ProxyDeployer_LogSetAuthority":               &ProxyDeployer.LogSetAuthority{},
+		"lotus.makerdao.0_0_0.ProxyDeployer_LogSetOwner":                   &ProxyDeployer.LogSetOwner{},
+		"lotus.makerdao.0_0_0.ProxyFactory_Created":                        &ProxyFactory.Created{},
+		"lotus.makerdao.0_0_0.RenBTC_AdminChanged":                         &RenBTC.AdminChanged{},
+		"lotus.makerdao.0_0_0.RenBTC_Upgraded":                             &RenBTC.Upgraded{},
+		"lotus.makerdao.0_0_0.RWA_Approval":                                &RWA.Approval{},
+		"lotus.makerdao.0_0_0.RWAConduit_Cage":                             &RWAConduit.Cage{},
+		"lotus.makerdao.0_0_0.RWAConduit_Cull":                             &RWAConduit.Cull{},
+		"lotus.makerdao.0_0_0.RWAConduit_Deny":                             &RWAConduit.Deny{},
+		"lotus.makerdao.0_0_0.RWAConduit_Draw":                             &RWAConduit.Draw{},
+		"lotus.makerdao.0_0_0.RWAConduit_Exit":                             &RWAConduit.Exit{},
+		"lotus.makerdao.0_0_0.RWAConduit_File":                             &RWAConduit.File{},
+		"lotus.makerdao.0_0_0.RWAConduit_Join":                             &RWAConduit.Join{},
+		"lotus.makerdao.0_0_0.RWAConduit_Migrate":                          &RWAConduit.Migrate{},
+		"lotus.makerdao.0_0_0.RWAConduit_Recover":                          &RWAConduit.Recover{},
+		"lotus.makerdao.0_0_0.RWAConduit_Rely":                             &RWAConduit.Rely{},
+		"lotus.makerdao.0_0_0.RWAConduit_Tell":                             &RWAConduit.Tell{},
+		"lotus.makerdao.0_0_0.RWAConduit_Unwind":                           &RWAConduit.Unwind{},
+		"lotus.makerdao.0_0_0.RWAConduit_Wipe":                             &RWAConduit.Wipe{},
+		"lotus.makerdao.0_0_0.RWA_Transfer":                                &RWA.Transfer{},
+		"lotus.makerdao.0_0_0.RWAUrn_Deny":                                 &RWAUrn.Deny{},
+		"lotus.makerdao.0_0_0.RWAUrn_Draw":                                 &RWAUrn.Draw{},
+		"lotus.makerdao.0_0_0.RWAUrn_File":                                 &RWAUrn.File{},
+		"lotus.makerdao.0_0_0.RWAUrn_Free":                                 &RWAUrn.Free{},
+		"lotus.makerdao.0_0_0.RWAUrn_Hope":                                 &RWAUrn.Hope{},
+		"lotus.makerdao.0_0_0.RWAUrn_Lock":                                 &RWAUrn.Lock{},
+		"lotus.makerdao.0_0_0.RWAUrn_Nope":                                 &RWAUrn.Nope{},
+		"lotus.makerdao.0_0_0.RWAUrn_Quit":                                 &RWAUrn.Quit{},
+		"lotus.makerdao.0_0_0.RWAUrn_Rely":                                 &RWAUrn.Rely{},
+		"lotus.makerdao.0_0_0.RWAUrn_Wipe":                                 &RWAUrn.Wipe{},
+		"lotus.makerdao.0_0_0.Steth_ProxyDeposit":                          &STEth.ProxyDeposit{},
+		"lotus.makerdao.0_0_0.TUSD_NewPendingOwner":                        &TUSD.NewPendingOwner{},
+		"lotus.makerdao.0_0_0.TUSD_ProxyOwnershipTransferred":              &TUSD.ProxyOwnershipTransferred{},
+		"lotus.makerdao.0_0_0.TUSD_Upgraded":                               &TUSD.Upgraded{},
+		"lotus.makerdao.0_0_0.Uni_Approval":                                &Uni.Approval{},
+		"lotus.makerdao.0_0_0.Uni_DelegateChanged":                         &Uni.DelegateChanged{},
+		"lotus.makerdao.0_0_0.Uni_DelegateVotesChanged":                    &Uni.DelegateVotesChanged{},
+		"lotus.makerdao.0_0_0.Uni_MinterChanged":                           &Uni.MinterChanged{},
+		"lotus.makerdao.0_0_0.Uni_Transfer":                                &Uni.Transfer{},
+		"lotus.makerdao.0_0_0.UniV2_Approval":                              &UniV2.Approval{},
+		"lotus.makerdao.0_0_0.UniV2_Burn":                                  &UniV2.Burn{},
+		"lotus.makerdao.0_0_0.UniV2_Mint":                                  &UniV2.Mint{},
+		"lotus.makerdao.0_0_0.UniV2_Swap":                                  &UniV2.Swap{},
+		"lotus.makerdao.0_0_0.UniV2_Sync":                                  &UniV2.Sync{},
+		"lotus.makerdao.0_0_0.UniV2_Transfer":                              &UniV2.Transfer{},
+		"lotus.makerdao.0_0_0.USDC_AdminChanged":                           &USDC.AdminChanged{},
+		"lotus.makerdao.0_0_0.USDC_Upgraded":                               &USDC.Upgraded{},
+		"lotus.makerdao.0_0_0.USDT_addedblacklist":                         &USDT.AddedBlackList{},
+		"lotus.makerdao.0_0_0.USDT_Approval":                               &USDT.Approval{},
+		"lotus.makerdao.0_0_0.USDT_Deprecate":                              &USDT.Deprecate{},
+		"lotus.makerdao.0_0_0.USDT_DestroyedBlackFunds":                    &USDT.DestroyedBlackFunds{},
+		"lotus.makerdao.0_0_0.USDT_Issue":                                  &USDT.Issue{},
+		"lotus.makerdao.0_0_0.USDT_Params":                                 &USDT.Params{},
+		"lotus.makerdao.0_0_0.USDT_Pause":                                  &USDT.Pause{},
+		"lotus.makerdao.0_0_0.USDT_Redeem":                                 &USDT.Redeem{},
+		"lotus.makerdao.0_0_0.USDT_RemovedBlackList":                       &USDT.RemovedBlackList{},
+		"lotus.makerdao.0_0_0.USDT_Transfer":                               &USDT.Transfer{},
+		"lotus.makerdao.0_0_0.USDT_Unpause":                                &USDT.Unpause{},
+		"lotus.makerdao.0_0_0.VoteDelegateProxyFactory_CreateVoteDelegate": &VoteDelegateProxyFactory.CreateVoteDelegate{},
+		"lotus.makerdao.0_0_0.VoteProxyFactory_LinkConfirmed":              &VoteProxyFactory.LinkConfirmed{},
+		"lotus.makerdao.0_0_0.VoteProxyFactory_LinkRequested":              &VoteProxyFactory.LinkRequested{},
+		"lotus.makerdao.0_0_0.WBTC_Approval":                               &WBTC.Approval{},
+		"lotus.makerdao.0_0_0.WBTC_Burn":                                   &WBTC.Burn{},
+		"lotus.makerdao.0_0_0.WBTC_Mint":                                   &WBTC.Mint{},
+		"lotus.makerdao.0_0_0.WBTC_MintFinished":                           &WBTC.MintFinished{},
+		"lotus.makerdao.0_0_0.WBTC_OwnershipRenounced":                     &WBTC.OwnershipRenounced{},
+		"lotus.makerdao.0_0_0.WBTC_OwnershipTransferred":                   &WBTC.OwnershipTransferred{},
+		"lotus.makerdao.0_0_0.WBTC_Pause":                                  &WBTC.Pause{},
+		"lotus.makerdao.0_0_0.WBTC_Transfer":                               &WBTC.Transfer{},
+		"lotus.makerdao.0_0_0.WBTC_Unpause":                                &WBTC.Unpause{},
+		"lotus.makerdao.0_0_0.WSteth_Approval":                             &WSTEth.Approval{},
+		"lotus.makerdao.0_0_0.WSteth_Transfer":                             &WSTEth.Transfer{},
+		"lotus.makerdao.0_0_0.YFi_Approval":                                &YFi.Approval{},
+		"lotus.makerdao.0_0_0.YFi_Transfer":                                &YFi.Transfer{},
+		"lotus.makerdao.0_0_0.ZRX_Approval":                                &ZRX.Approval{},
+		"lotus.makerdao.0_0_0.ZRX_Transfer":                                &ZRX.Transfer{},
 	},
 	"optimism": {
-		"nakji.makerdao.0_0_0.OptimismL2DaiTokenBridge_Approve":                   &OptimismL2DaiTokenBridge.Approve{},
-		"nakji.makerdao.0_0_0.OptimismL2DaiTokenBridge_Deny":                      &OptimismL2DaiTokenBridge.Deny{},
-		"nakji.makerdao.0_0_0.OptimismL2DaiTokenBridge_Rely":                      &OptimismL2DaiTokenBridge.Rely{},
-		"nakji.makerdao.0_0_0.OptimismL2GovernanceRelay_Closed":                   &OptimismL2GovernanceRelay.Closed{},
-		"nakji.makerdao.0_0_0.OptimismL2GovernanceRelay_Deny":                     &OptimismL2GovernanceRelay.Deny{},
-		"nakji.makerdao.0_0_0.OptimismL2GovernanceRelay_ERC20DepositInitiated":    &OptimismL2GovernanceRelay.ERC20DepositInitiated{},
-		"nakji.makerdao.0_0_0.OptimismL2GovernanceRelay_ERC20WithdrawalFinalized": &OptimismL2GovernanceRelay.ERC20WithdrawalFinalized{},
-		"nakji.makerdao.0_0_0.OptimismL2GovernanceRelay_Rely":                     &OptimismL2GovernanceRelay.Rely{},
+		"lotus.makerdao.0_0_0.OptimismL2DaiTokenBridge_Approve":                   &OptimismL2DaiTokenBridge.Approve{},
+		"lotus.makerdao.0_0_0.OptimismL2DaiTokenBridge_Deny":                      &OptimismL2DaiTokenBridge.Deny{},
+		"lotus.makerdao.0_0_0.OptimismL2DaiTokenBridge_Rely":                      &OptimismL2DaiTokenBridge.Rely{},
+		"lotus.makerdao.0_0_0.OptimismL2GovernanceRelay_Closed":                   &OptimismL2GovernanceRelay.Closed{},
+		"lotus.makerdao.0_0_0.OptimismL2GovernanceRelay_Deny":                     &OptimismL2GovernanceRelay.Deny{},
+		"lotus.makerdao.0_0_0.OptimismL2GovernanceRelay_ERC20DepositInitiated":    &OptimismL2GovernanceRelay.ERC20DepositInitiated{},
+		"lotus.makerdao.0_0_0.OptimismL2GovernanceRelay_ERC20WithdrawalFinalized": &OptimismL2GovernanceRelay.ERC20WithdrawalFinalized{},
+		"lotus.makerdao.0_0_0.OptimismL2GovernanceRelay_Rely":                     &OptimismL2GovernanceRelay.Rely{},
 	},
 }
 

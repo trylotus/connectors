@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 
-	"github.com/nakji-network/connector/config"
-	"github.com/nakji-network/connectors/mai"
+	"github.com/trylotus/connector/config"
+	"github.com/trylotus/connectors/mai"
 
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/pflag"
@@ -30,7 +30,7 @@ func parseConfig() (config.IConfig, error) {
 	pflag.StringP("blockchain", "c", "polygon", "blockchain to connect to e.g. ethereum")
 	pflag.Int64P("from-block", "f", 0, "block number to start backfill from (optional")
 	pflag.Int64P("num-blocks", "b", 0, "number of blocks to backfill (optional)")
-	pflag.StringP("author", "a", "nakji", "author of the connector (optional)")
+	pflag.StringP("author", "a", "lotus", "author of the connector (optional)")
 	pflag.Parse()
 
 	conf := config.GetConfig()

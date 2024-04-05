@@ -1,5 +1,5 @@
 [package]
-name = "nakji_near_client"
+name = "lotus_near_client"
 version = "0.1.0"
 edition = "2021"
 

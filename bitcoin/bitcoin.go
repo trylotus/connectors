@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/nakji-network/connector"
+	"github.com/trylotus/connector"
 
 	"github.com/btcsuite/btcd/btcjson"
 	"github.com/btcsuite/btcd/chaincfg/chainhash"
@@ -15,7 +15,7 @@ import (
 )
 
 type BitcoinConnector struct {
-	*connector.Connector // embed Nakji connector.Connector into your custom connector to get access to all its methods
+	*connector.Connector // embed Lotus connector.Connector into your custom connector to get access to all its methods
 	client               BTCClient
 	hashChan             chan chainhash.Hash
 	callback             func()

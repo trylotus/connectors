@@ -2,7 +2,7 @@ use std::{process, thread};
 
 use clap::{Parser, Subcommand};
 use crossbeam_channel::{bounded, Sender};
-use nakji_near_client::{
+use lotus_near_client::{
     lake_stream,
     near_proto::{Block, ExecutionOutcome, Receipt, Transaction},
     types::handle::NearHandler,

@@ -1,8 +1,7 @@
-
 package MCDDog
 
 import (
-	"github.com/nakji-network/connector/common"
+	"github.com/trylotus/connector/common"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -23,14 +22,14 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Bark{
-				Ts:   timestamp,
-				Ilk:  e.Ilk[:],
-				Urn:  e.Urn.Bytes(),
-				Ink:  e.Ink.Bytes(),
-				Art:  e.Art.Bytes(),
-				Due:  e.Due.Bytes(),
-				Clip:  e.Clip.Bytes(),
-				Id:  e.Id.Bytes(),
+			Ts:   timestamp,
+			Ilk:  e.Ilk[:],
+			Urn:  e.Urn.Bytes(),
+			Ink:  e.Ink.Bytes(),
+			Art:  e.Art.Bytes(),
+			Due:  e.Due.Bytes(),
+			Clip: e.Clip.Bytes(),
+			Id:   e.Id.Bytes(),
 		}
 	case "Cage":
 		e := new(MCDDOGCage)
@@ -40,7 +39,7 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Cage{
-				Ts:   timestamp,
+			Ts: timestamp,
 		}
 	case "Deny":
 		e := new(MCDDOGDeny)
@@ -50,8 +49,8 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Deny{
-				Ts:   timestamp,
-				Usr:  e.Usr.Bytes(),
+			Ts:  timestamp,
+			Usr: e.Usr.Bytes(),
 		}
 	case "Digs":
 		e := new(MCDDOGDigs)
@@ -61,9 +60,9 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Digs{
-				Ts:   timestamp,
-				Ilk:  e.Ilk[:],
-				Rad:  e.Rad.Bytes(),
+			Ts:  timestamp,
+			Ilk: e.Ilk[:],
+			Rad: e.Rad.Bytes(),
 		}
 	case "File":
 		e := new(MCDDOGFile)
@@ -73,9 +72,9 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &File{
-				Ts:   timestamp,
-				What:  e.What[:],
-				Data:  e.Data.Bytes(),
+			Ts:   timestamp,
+			What: e.What[:],
+			Data: e.Data.Bytes(),
 		}
 	case "File0":
 		e := new(MCDDOGFile0)
@@ -85,9 +84,9 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &File0{
-				Ts:   timestamp,
-				What:  e.What[:],
-				Data:  e.Data.Bytes(),
+			Ts:   timestamp,
+			What: e.What[:],
+			Data: e.Data.Bytes(),
 		}
 	case "File1":
 		e := new(MCDDOGFile1)
@@ -97,10 +96,10 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &File1{
-				Ts:   timestamp,
-				Ilk:  e.Ilk[:],
-				What:  e.What[:],
-				Data:  e.Data.Bytes(),
+			Ts:   timestamp,
+			Ilk:  e.Ilk[:],
+			What: e.What[:],
+			Data: e.Data.Bytes(),
 		}
 	case "File2":
 		e := new(MCDDOGFile2)
@@ -110,10 +109,10 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &File2{
-				Ts:   timestamp,
-				Ilk:  e.Ilk[:],
-				What:  e.What[:],
-				Clip:  e.Clip.Bytes(),
+			Ts:   timestamp,
+			Ilk:  e.Ilk[:],
+			What: e.What[:],
+			Clip: e.Clip.Bytes(),
 		}
 	case "Rely":
 		e := new(MCDDOGRely)
@@ -123,8 +122,8 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Rely{
-				Ts:   timestamp,
-				Usr:  e.Usr.Bytes(),
+			Ts:  timestamp,
+			Usr: e.Usr.Bytes(),
 		}
 	}
 	return nil

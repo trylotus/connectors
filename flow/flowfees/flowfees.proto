@@ -3,7 +3,7 @@ package flowfees;
 
 import "google/protobuf/timestamp.proto";
 
-option go_package = "github.com/nakji-network/connectors/flow/flowfees";
+option go_package = "github.com/trylotus/connectors/flow/flowfees";
 
 message TokensDeposited {
     google.protobuf.Timestamp   ts              = 1;

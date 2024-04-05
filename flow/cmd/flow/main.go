@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/nakji-network/connector"
-	"github.com/nakji-network/connector/config"
-	"github.com/nakji-network/connector/kafkautils"
-	"github.com/nakji-network/connectors/flow"
+	"github.com/trylotus/connector"
+	"github.com/trylotus/connector/config"
+	"github.com/trylotus/connector/kafkautils"
+	"github.com/trylotus/connectors/flow"
 
 	"github.com/onflow/flow-go-sdk/access/grpc"
 	"github.com/rs/zerolog/log"

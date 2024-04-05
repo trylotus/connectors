@@ -1,8 +1,7 @@
-
 package RWAConduit
 
 import (
-	"github.com/nakji-network/connector/common"
+	"github.com/trylotus/connector/common"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -23,7 +22,7 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Cage{
-				Ts:   timestamp,
+			Ts: timestamp,
 		}
 	case "Cull":
 		e := new(RWACONDUITCull)
@@ -33,8 +32,8 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Cull{
-				Ts:   timestamp,
-				Tab:  e.Tab.Bytes(),
+			Ts:  timestamp,
+			Tab: e.Tab.Bytes(),
 		}
 	case "Deny":
 		e := new(RWACONDUITDeny)
@@ -44,8 +43,8 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Deny{
-				Ts:   timestamp,
-				Usr:  e.Usr.Bytes(),
+			Ts:  timestamp,
+			Usr: e.Usr.Bytes(),
 		}
 	case "Draw":
 		e := new(RWACONDUITDraw)
@@ -55,8 +54,8 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Draw{
-				Ts:   timestamp,
-				Wad:  e.Wad.Bytes(),
+			Ts:  timestamp,
+			Wad: e.Wad.Bytes(),
 		}
 	case "Exit":
 		e := new(RWACONDUITExit)
@@ -66,8 +65,8 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Exit{
-				Ts:   timestamp,
-				Wad:  e.Wad.Bytes(),
+			Ts:  timestamp,
+			Wad: e.Wad.Bytes(),
 		}
 	case "File":
 		e := new(RWACONDUITFile)
@@ -77,9 +76,9 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &File{
-				Ts:   timestamp,
-				What:  e.What[:],
-				Data:  e.Data.Bytes(),
+			Ts:   timestamp,
+			What: e.What[:],
+			Data: e.Data.Bytes(),
 		}
 	case "Join":
 		e := new(RWACONDUITJoin)
@@ -89,8 +88,8 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Join{
-				Ts:   timestamp,
-				Wad:  e.Wad.Bytes(),
+			Ts:  timestamp,
+			Wad: e.Wad.Bytes(),
 		}
 	case "Migrate":
 		e := new(RWACONDUITMigrate)
@@ -100,8 +99,8 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Migrate{
-				Ts:   timestamp,
-				Dst:  e.Dst.Bytes(),
+			Ts:  timestamp,
+			Dst: e.Dst.Bytes(),
 		}
 	case "Recover":
 		e := new(RWACONDUITRecover)
@@ -111,9 +110,9 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Recover{
-				Ts:   timestamp,
-				Recovered:  e.Recovered.Bytes(),
-				PayBack:  e.PayBack.Bytes(),
+			Ts:        timestamp,
+			Recovered: e.Recovered.Bytes(),
+			PayBack:   e.PayBack.Bytes(),
 		}
 	case "Rely":
 		e := new(RWACONDUITRely)
@@ -123,8 +122,8 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Rely{
-				Ts:   timestamp,
-				Usr:  e.Usr.Bytes(),
+			Ts:  timestamp,
+			Usr: e.Usr.Bytes(),
 		}
 	case "Tell":
 		e := new(RWACONDUITTell)
@@ -134,8 +133,8 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Tell{
-				Ts:   timestamp,
-				Wad:  e.Wad.Bytes(),
+			Ts:  timestamp,
+			Wad: e.Wad.Bytes(),
 		}
 	case "Unwind":
 		e := new(RWACONDUITUnwind)
@@ -145,8 +144,8 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Unwind{
-				Ts:   timestamp,
-				PayBack:  e.PayBack.Bytes(),
+			Ts:      timestamp,
+			PayBack: e.PayBack.Bytes(),
 		}
 	case "Wipe":
 		e := new(RWACONDUITWipe)
@@ -156,8 +155,8 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Wipe{
-				Ts:   timestamp,
-				Wad:  e.Wad.Bytes(),
+			Ts:  timestamp,
+			Wad: e.Wad.Bytes(),
 		}
 	}
 	return nil

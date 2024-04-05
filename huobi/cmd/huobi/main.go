@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/nakji-network/connector"
-	"github.com/nakji-network/connectors/huobi"
-	"github.com/nakji-network/connectors/huobi/market"
+	"github.com/trylotus/connector"
+	"github.com/trylotus/connectors/huobi"
+	"github.com/trylotus/connectors/huobi/market"
 
 	"github.com/rs/zerolog/log"
 )

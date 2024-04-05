@@ -1,8 +1,7 @@
-
 package MCDPSMGUSDA
 
 import (
-	"github.com/nakji-network/connector/common"
+	"github.com/trylotus/connector/common"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -23,10 +22,10 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &BuyGem{
-				Ts:   timestamp,
-				Owner:  e.Owner.Bytes(),
-				Value:  e.Value.Bytes(),
-				Fee:  e.Fee.Bytes(),
+			Ts:    timestamp,
+			Owner: e.Owner.Bytes(),
+			Value: e.Value.Bytes(),
+			Fee:   e.Fee.Bytes(),
 		}
 	case "Deny":
 		e := new(MCDPSMGUSDADeny)
@@ -36,8 +35,8 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Deny{
-				Ts:   timestamp,
-				Usr:  e.Usr.Bytes(),
+			Ts:  timestamp,
+			Usr: e.Usr.Bytes(),
 		}
 	case "File":
 		e := new(MCDPSMGUSDAFile)
@@ -47,9 +46,9 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &File{
-				Ts:   timestamp,
-				What:  e.What[:],
-				Data:  e.Data.Bytes(),
+			Ts:   timestamp,
+			What: e.What[:],
+			Data: e.Data.Bytes(),
 		}
 	case "Rely":
 		e := new(MCDPSMGUSDARely)
@@ -59,8 +58,8 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &Rely{
-				Ts:   timestamp,
-				Usr:  e.Usr.Bytes(),
+			Ts:  timestamp,
+			Usr: e.Usr.Bytes(),
 		}
 	case "SellGem":
 		e := new(MCDPSMGUSDASellGem)
@@ -70,10 +69,10 @@ func (sc *SmartContract) Message(eventName string, contractAbi *abi.ABI, vLog ty
 		}
 
 		return &SellGem{
-				Ts:   timestamp,
-				Owner:  e.Owner.Bytes(),
-				Value:  e.Value.Bytes(),
-				Fee:  e.Fee.Bytes(),
+			Ts:    timestamp,
+			Owner: e.Owner.Bytes(),
+			Value: e.Value.Bytes(),
+			Fee:   e.Fee.Bytes(),
 		}
 	}
 	return nil

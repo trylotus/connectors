@@ -3,7 +3,7 @@ package lockedtokens;
 
 import "google/protobuf/timestamp.proto";
 
-option go_package = "github.com/nakji-network/connectors/flow/lockedtokens";
+option go_package = "github.com/trylotus/connectors/flow/lockedtokens";
 
 message SharedAccountRegistered {
     google.protobuf.Timestamp   ts              = 1;
