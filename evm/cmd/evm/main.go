@@ -62,6 +62,7 @@ func validateFlags(conf config.IConfig) error {
 		"arbitrum":  true,
 		"avalanche": true,
 		"bsc":       true,
+		"cyber":     true,
 		"ethereum":  true,
 		"fantom":    true,
 		"harmony":   true,
