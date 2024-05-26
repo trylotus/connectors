@@ -25,6 +25,7 @@ func main() {
 		lendingpool.NewContract(aave.LendingPoolContractAddr),
 	}
 
+	// Create a context that cancels on interrupt signal
 	ctx, cancel := context.WithCancel(context.Background())
 	go func() {
 		interrupt := make(chan os.Signal, 1)
@@ -48,20 +49,10 @@ func main() {
 	if *fromBlock > 0 {
 		go func() {
 			msgs := c.Backfill(ctx, *fromBlock, *fromBlock+*numBlocks)
-			for msg := range msgs {
-				c.EventSink <- &kafkautils.Message{
-					MsgType:  kafkautils.MsgTypeBf,
-					ProtoMsg: msg,
-				}
-			}
+			c.StreamProtoMessages(kafkautils.MsgTypeBf, msgs)
 		}()
 	}
 
 	msgs := c.Subscribe(ctx)
-	for msg := range msgs {
-		c.EventSink <- &kafkautils.Message{
-			MsgType:  kafkautils.MsgTypeFct,
-			ProtoMsg: msg,
-		}
-	}
+	c.StreamProtoMessages(kafkautils.MsgTypeFct, msgs)
 }

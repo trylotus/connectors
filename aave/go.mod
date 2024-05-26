@@ -6,8 +6,8 @@ require (
 	github.com/ethereum/go-ethereum v1.14.3
 	github.com/rs/zerolog v1.28.0
 	github.com/spf13/pflag v1.0.5
-	github.com/trylotus/connector v0.0.0-20240525112805-50a5234dd4a6
-	github.com/trylotus/connector/chain/ethereum v0.0.0-20240525112805-50a5234dd4a6
+	github.com/trylotus/connector v0.0.0-20240526033710-bd5eb1dae23f
+	github.com/trylotus/connector/chain/ethereum v0.0.0-20240526033710-bd5eb1dae23f
 	go.uber.org/automaxprocs v1.5.2
 	google.golang.org/protobuf v1.33.0
 )

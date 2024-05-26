@@ -441,8 +441,16 @@ github.com/tklauser/numcpus v0.6.1 h1:ng9scYS7az0Bk4OZLvrNXNSAO2Pxr1XXRAPyjhIx+F
 github.com/tklauser/numcpus v0.6.1/go.mod h1:1XfjsgE2zo8GVw7POkMbHENHzVg3GzmoZ9fESEdAacY=
 github.com/trylotus/connector v0.0.0-20240525112805-50a5234dd4a6 h1:vMvBuiF9KktXUxqK975GZLBxQkZ/P5E4DuvWvpGQIJs=
 github.com/trylotus/connector v0.0.0-20240525112805-50a5234dd4a6/go.mod h1:z0PWJvxc2I+fDLXf11OYq3hPVj3XPi5it/BjuAVG7KQ=
+github.com/trylotus/connector v0.0.0-20240526033258-db959d9687bb h1:ZX1jxUaZdGKpBw39t9QKO7ctf8hH9M/taamkTnCdI4E=
+github.com/trylotus/connector v0.0.0-20240526033258-db959d9687bb/go.mod h1:z0PWJvxc2I+fDLXf11OYq3hPVj3XPi5it/BjuAVG7KQ=
+github.com/trylotus/connector v0.0.0-20240526033710-bd5eb1dae23f h1:jD4z2RMz+etvsDeJz0Tose/FeYLf0oDCbjCJ2XwCtpI=
+github.com/trylotus/connector v0.0.0-20240526033710-bd5eb1dae23f/go.mod h1:z0PWJvxc2I+fDLXf11OYq3hPVj3XPi5it/BjuAVG7KQ=
 github.com/trylotus/connector/chain/ethereum v0.0.0-20240525112805-50a5234dd4a6 h1:Az/aUvJo0eskyMhtbavRoAowVhZvEk05bBqVMk8sDA0=
 github.com/trylotus/connector/chain/ethereum v0.0.0-20240525112805-50a5234dd4a6/go.mod h1:xIWr1HlJXGY/Sh7MweZDMABLN7u8Q0SY0YUxT8cvnhU=
+github.com/trylotus/connector/chain/ethereum v0.0.0-20240526033258-db959d9687bb h1:nO83Dj37bs09OrnK0u4n1XfpzvXWUcQumhir3EXjfzM=
+github.com/trylotus/connector/chain/ethereum v0.0.0-20240526033258-db959d9687bb/go.mod h1:xIWr1HlJXGY/Sh7MweZDMABLN7u8Q0SY0YUxT8cvnhU=
+github.com/trylotus/connector/chain/ethereum v0.0.0-20240526033710-bd5eb1dae23f h1:A7N0pfNsgg67JRrTfStn+ot61wZBa8fai633a/XI0pI=
+github.com/trylotus/connector/chain/ethereum v0.0.0-20240526033710-bd5eb1dae23f/go.mod h1:i7NanFBEIr49i9HmfOAhbwYxLnkRsE/cz4oYfW9RC1Y=
 github.com/tyler-smith/go-bip39 v1.1.0 h1:5eUemwrMargf3BSLRRCalXT93Ns6pQJIjYQN2nyfOP8=
 github.com/tyler-smith/go-bip39 v1.1.0/go.mod h1:gUYDtqQw1JS3ZJ8UWVcGTGqqr6YIN3CWg+kkNaLt55U=
 github.com/urfave/cli/v2 v2.25.7 h1:VAzn5oq403l5pHjc4OhD54+XGO9cdKVL/7lDjF+iKUs=
