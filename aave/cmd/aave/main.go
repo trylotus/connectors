@@ -3,12 +3,12 @@ package main
 import (
 	"context"
 	"os"
-	"os/signal"
 	"time"
 
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/pflag"
 	connector "github.com/trylotus/connector/chain/ethereum"
+	"github.com/trylotus/connector/common"
 	"github.com/trylotus/connector/kafkautils"
 	"github.com/trylotus/connectors/aave"
 	"github.com/trylotus/connectors/aave/lendingpool"
@@ -17,6 +17,7 @@ import (
 
 func main() {
 	fromBlock := pflag.Uint64P("from-block", "f", 0, "block number to start backfill from (optional)")
+	toBlock := pflag.Uint64P("to-block", "t", 0, "block number to backfill to (optional)")
 	numBlocks := pflag.Uint64P("num-blocks", "b", 0, "number of blocks to backfill (optional)")
 
 	pflag.Parse()
@@ -25,16 +26,9 @@ func main() {
 		lendingpool.NewContract(aave.LendingPoolContractAddr),
 	}
 
-	// Create a context that cancels on interrupt signal
-	ctx, cancel := context.WithCancel(context.Background())
-	go func() {
-		interrupt := make(chan os.Signal, 1)
-		signal.Notify(interrupt, os.Interrupt)
-
-		<-interrupt
-		log.Info().Msg("connector shutdown")
-		cancel()
-	}()
+	// Create a context that cancels upon receiving interrupt signal
+	ctx, cancel := common.ContextWithSignal(context.Background(), os.Interrupt)
+	defer cancel()
 
 	c := connector.NewConnector(ctx, "ethereum", contracts)
 
@@ -46,13 +40,23 @@ func main() {
 	// Register topic and protobuf type mappings
 	c.RegisterProtos(kafkautils.MsgTypeFct, aave.TopicTypes...)
 
-	if *fromBlock > 0 {
+	if *fromBlock > 0 || *toBlock > 0 || *numBlocks > 0 {
 		go func() {
-			msgs := c.Backfill(ctx, *fromBlock, *fromBlock+*numBlocks)
+			msgs, err := c.BackfillWithOption(ctx, common.BackfillOption{
+				FromBlock: *fromBlock,
+				ToBlock:   *toBlock,
+				NumBlocks: *numBlocks,
+			})
+			if err != nil {
+				log.Error().Err(err).Msg("invalid backfill option")
+				return
+			}
 			c.StreamProtoMessages(kafkautils.MsgTypeBf, msgs)
 		}()
 	}
 
 	msgs := c.Subscribe(ctx)
 	c.StreamProtoMessages(kafkautils.MsgTypeFct, msgs)
+
+	log.Info().Msg("connector shutdown")
 }
