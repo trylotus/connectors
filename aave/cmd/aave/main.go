@@ -19,6 +19,7 @@ func main() {
 	fromBlock := pflag.Uint64P("from-block", "f", 0, "block number to start backfill from (optional)")
 	toBlock := pflag.Uint64P("to-block", "t", 0, "block number to backfill to (optional)")
 	numBlocks := pflag.Uint64P("num-blocks", "b", 0, "number of blocks to backfill (optional)")
+	subscribe := pflag.BoolP("subscribe", "s", true, "whether to subscribe to new blockchain events (default: true)")
 
 	pflag.Parse()
 
@@ -42,21 +43,28 @@ func main() {
 
 	if *fromBlock > 0 || *toBlock > 0 || *numBlocks > 0 {
 		go func() {
-			msgs, err := c.BackfillWithOption(ctx, common.BackfillOption{
+			opt := common.BackfillOption{
 				FromBlock: *fromBlock,
 				ToBlock:   *toBlock,
 				NumBlocks: *numBlocks,
-			})
+			}
+			msgs, err := c.BackfillWithOption(ctx, opt)
 			if err != nil {
 				log.Error().Err(err).Msg("invalid backfill option")
 				return
 			}
-			c.StreamProtoMessages(kafkautils.MsgTypeBf, msgs)
+			if err := c.StreamProtoMessages(ctx, kafkautils.MsgTypeBf, msgs); err != nil {
+				log.Error().Err(err).Msg("failed to send historical events to kafka")
+			}
 		}()
 	}
 
-	msgs := c.Subscribe(ctx)
-	c.StreamProtoMessages(kafkautils.MsgTypeFct, msgs)
+	if *subscribe {
+		msgs := c.Subscribe(ctx)
+		if err := c.StreamProtoMessages(ctx, kafkautils.MsgTypeFct, msgs); err != nil {
+			log.Error().Err(err).Msg("failed to send live events to kafka")
+		}
+	}
 
 	log.Info().Msg("connector shutdown")
 }

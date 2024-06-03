@@ -439,10 +439,10 @@ github.com/tklauser/go-sysconf v0.3.12 h1:0QaGUFOdQaIVdPgfITYzaTegZvdCjmYO52cSFA
 github.com/tklauser/go-sysconf v0.3.12/go.mod h1:Ho14jnntGE1fpdOqQEEaiKRpvIavV0hSfmBq8nJbHYI=
 github.com/tklauser/numcpus v0.6.1 h1:ng9scYS7az0Bk4OZLvrNXNSAO2Pxr1XXRAPyjhIx+Fk=
 github.com/tklauser/numcpus v0.6.1/go.mod h1:1XfjsgE2zo8GVw7POkMbHENHzVg3GzmoZ9fESEdAacY=
-github.com/trylotus/connector v0.0.0-20240530165602-43d93a326917 h1:0jugtY7vB3u8pSl3pOQWbJOlOtGB1F8eFzkNNP1Wanc=
-github.com/trylotus/connector v0.0.0-20240530165602-43d93a326917/go.mod h1:QcteBRsJ0xiL56mcoI24mopqQBCUUKe7F0xXupAH0bY=
-github.com/trylotus/connector/chain/ethereum v0.0.0-20240530165833-11d224ad2ad4 h1:HoqXOuVkpc5XMxT2EyjNqhQumTqteg14jbuhgJxk0ds=
-github.com/trylotus/connector/chain/ethereum v0.0.0-20240530165833-11d224ad2ad4/go.mod h1:+ux7uPPk8VqNbnNKNjQgw3ympuv+kX6M2l2jMXcSMiM=
+github.com/trylotus/connector v0.0.0-20240603085822-c42721a4c039 h1:X5a6TypRbwLgtbELQBBW74vK3OHD5MMmisS3EbJSC2s=
+github.com/trylotus/connector v0.0.0-20240603085822-c42721a4c039/go.mod h1:QcteBRsJ0xiL56mcoI24mopqQBCUUKe7F0xXupAH0bY=
+github.com/trylotus/connector/chain/ethereum v0.0.0-20240603085822-c42721a4c039 h1:My/URMw38ivXDPSU0LMp01qqO4qA6VYaXU87Jnz1Dd0=
+github.com/trylotus/connector/chain/ethereum v0.0.0-20240603085822-c42721a4c039/go.mod h1:Zo4MuT16qUwQjcD9Wn5vGJ4dYo/IU0zuJOvFICvSm4M=
 github.com/tyler-smith/go-bip39 v1.1.0 h1:5eUemwrMargf3BSLRRCalXT93Ns6pQJIjYQN2nyfOP8=
 github.com/tyler-smith/go-bip39 v1.1.0/go.mod h1:gUYDtqQw1JS3ZJ8UWVcGTGqqr6YIN3CWg+kkNaLt55U=
 github.com/urfave/cli/v2 v2.25.7 h1:VAzn5oq403l5pHjc4OhD54+XGO9cdKVL/7lDjF+iKUs=
