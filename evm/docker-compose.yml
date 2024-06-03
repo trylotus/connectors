@@ -1,0 +1,7 @@
+version: '3'
+
+services:
+  connector-cyber:
+    build: .
+    image: connector-evm
+    command: -c cyber
