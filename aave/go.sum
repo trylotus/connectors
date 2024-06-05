@@ -441,8 +441,12 @@ github.com/tklauser/numcpus v0.6.1 h1:ng9scYS7az0Bk4OZLvrNXNSAO2Pxr1XXRAPyjhIx+F
 github.com/tklauser/numcpus v0.6.1/go.mod h1:1XfjsgE2zo8GVw7POkMbHENHzVg3GzmoZ9fESEdAacY=
 github.com/trylotus/connector v0.0.0-20240603085822-c42721a4c039 h1:X5a6TypRbwLgtbELQBBW74vK3OHD5MMmisS3EbJSC2s=
 github.com/trylotus/connector v0.0.0-20240603085822-c42721a4c039/go.mod h1:QcteBRsJ0xiL56mcoI24mopqQBCUUKe7F0xXupAH0bY=
+github.com/trylotus/connector v0.0.0-20240605155344-fbf078e41cb5 h1:wLJxje56HQd/sPAvIJqB9NONNAKp3L300VVGjN5S7z0=
+github.com/trylotus/connector v0.0.0-20240605155344-fbf078e41cb5/go.mod h1:QcteBRsJ0xiL56mcoI24mopqQBCUUKe7F0xXupAH0bY=
 github.com/trylotus/connector/chain/ethereum v0.0.0-20240603085822-c42721a4c039 h1:My/URMw38ivXDPSU0LMp01qqO4qA6VYaXU87Jnz1Dd0=
 github.com/trylotus/connector/chain/ethereum v0.0.0-20240603085822-c42721a4c039/go.mod h1:Zo4MuT16qUwQjcD9Wn5vGJ4dYo/IU0zuJOvFICvSm4M=
+github.com/trylotus/connector/chain/ethereum v0.0.0-20240605161909-5175b8d7be18 h1:A9sLLHcVeN7k0jsM+wUvuDRbYTywgK/DYpDBsyl2QWs=
+github.com/trylotus/connector/chain/ethereum v0.0.0-20240605161909-5175b8d7be18/go.mod h1:d5B4CpDO6akEfwX6HJcxKWUdjndjblUxAmXPJI6L5Gw=
 github.com/tyler-smith/go-bip39 v1.1.0 h1:5eUemwrMargf3BSLRRCalXT93Ns6pQJIjYQN2nyfOP8=
 github.com/tyler-smith/go-bip39 v1.1.0/go.mod h1:gUYDtqQw1JS3ZJ8UWVcGTGqqr6YIN3CWg+kkNaLt55U=
 github.com/urfave/cli/v2 v2.25.7 h1:VAzn5oq403l5pHjc4OhD54+XGO9cdKVL/7lDjF+iKUs=
