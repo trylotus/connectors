@@ -1,0 +1,7 @@
+version: '3'
+services:
+  connector:
+    build: .
+    container_name: cyber-connector
+    image: lotus/cyber-connector
+    restart: always
