@@ -1,4 +1,4 @@
-FROM golang:1.21-alpine3.20 as builder
+FROM --platform=linux/amd64 golang:1.21-alpine3.20 as builder
 
 RUN apk add --no-cache build-base linux-headers gcc musl-dev git openssh-client
 
@@ -27,7 +27,7 @@ ENV GOFLAGS="-tags=musl"
 RUN go mod tidy
 RUN go build -o bin cmd/evm/main.go
 
-FROM alpine:3.20
+FROM --platform=linux/amd64 alpine:3.20
 
 RUN apk add --no-cache musl
 
