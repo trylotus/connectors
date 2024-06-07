@@ -1,0 +1,7 @@
+version: '3'
+services:
+  connector:
+    build: .
+    container_name: evm-connector
+    image: lotus/evm-connector
+    restart: always
