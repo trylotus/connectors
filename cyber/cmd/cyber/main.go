@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"os"
+	"sync"
 	"time"
 
 	"github.com/rs/zerolog/log"
@@ -40,8 +41,14 @@ func main() {
 	// Register topic and protobuf type mappings
 	c.RegisterProtos(kafkautils.MsgTypeFct, cyber.TopicTypes...)
 
+	var wg sync.WaitGroup
+
 	if *fromBlock > 0 || *toBlock > 0 || *numBlocks > 0 {
+		wg.Add(1)
+
 		go func() {
+			defer wg.Done()
+
 			opt := common.BackfillOption{
 				FromBlock: *fromBlock,
 				ToBlock:   *toBlock,
@@ -53,11 +60,17 @@ func main() {
 	}
 
 	if *subscribe {
-		msgs := c.Subscribe(ctx)
-		c.StreamProtoMessages(ctx, kafkautils.MsgTypeFct, msgs)
+		wg.Add(1)
+
+		go func() {
+			defer wg.Done()
+
+			msgs := c.Subscribe(ctx)
+			c.StreamProtoMessages(ctx, kafkautils.MsgTypeFct, msgs)
+		}()
 	}
 
-	<-ctx.Done()
+	wg.Wait()
 
 	log.Info().Msg("connector shutdown")
 }
