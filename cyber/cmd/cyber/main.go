@@ -11,9 +11,10 @@ import (
 	connector "github.com/trylotus/connector/chain/ethereum"
 	"github.com/trylotus/connector/common"
 	"github.com/trylotus/connector/kafkautils"
-	"github.com/trylotus/connectors/cyber"
 	"github.com/trylotus/connectors/cyber/xo"
 )
+
+const XOContractAddr = "0x84583e7d2d92d87d5b3bac850ab4bad37ae568e8"
 
 func main() {
 	fromBlock := pflag.Uint64P("from-block", "f", 0, "block number to start backfill from (optional)")
@@ -24,7 +25,7 @@ func main() {
 	pflag.Parse()
 
 	contracts := []connector.SmartContract{
-		xo.NewContract(cyber.XOContractAddr),
+		xo.NewContract(XOContractAddr),
 	}
 
 	// Create a context that cancels upon receiving interrupt signal
@@ -39,7 +40,7 @@ func main() {
 	c.Config.SetDefault("waitBlocks", 4)
 
 	// Register topic and protobuf type mappings
-	c.RegisterProtos(kafkautils.MsgTypeFct, cyber.TopicTypes...)
+	go c.RegisterDescriptor(ctx, xo.File_xo_proto)
 
 	var wg sync.WaitGroup
 
