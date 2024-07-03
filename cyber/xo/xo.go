@@ -48,7 +48,7 @@ func (c *SmartContract) Message(vLog types.Log, ts *timestamppb.Timestamp) (prot
 			TxHash:      vLog.TxHash.Bytes(),
 			UserId:      event.UserId.String(),
 			Denom:       event.Denom.String(),
-			Amount:      event.Amount.Bytes(),
+			Amount:      event.Amount.String(),
 		}, nil
 	case "RoleAdminChanged":
 		event := new(XoRoleAdminChanged)

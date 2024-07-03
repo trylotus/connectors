@@ -8,19 +8,19 @@ import "google/protobuf/timestamp.proto";
 option go_package = "github.com/trylotus/connectors/xo";
 
 message PaidDM {
-  option (lotus.v1alpha1.composite).index = { unique: true; fields: ["ts", "blockNumber", "txHash", "index"]; };
+  option (lotus.v1alpha1.composite).index = { unique: true; fields: ["ts", "blockNumber", "txHash", "index"] };
 
   google.protobuf.Timestamp ts = 1;
-  uint64 blockNumber = 2 [ (lotus.v1alpha1.index) = { unique: true; } ];
+  uint64 blockNumber = 2 [ (lotus.v1alpha1.index) = { unique: true } ];
   uint64 index = 3;
   bytes txHash = 4;
   string userId = 5;
   string denom = 6;
-  bytes amount = 7; // uint256
+  string amount = 7 [ (lotus.v1alpha1.numeric) = { precision: 78 } ]; // uint256
 }
 
 message RoleAdminChanged {
-  option (lotus.v1alpha1.composite).index = { unique: true; fields: ["ts", "blockNumber", "txHash", "index"]; };
+  option (lotus.v1alpha1.composite).index = { unique: true; fields: ["ts", "blockNumber", "txHash", "index"] };
 
   google.protobuf.Timestamp ts = 1;
   uint64 blockNumber = 2;
@@ -32,7 +32,7 @@ message RoleAdminChanged {
 }
 
 message SBTUpdated {
-  option (lotus.v1alpha1.composite).index = { unique: true; fields: ["ts", "blockNumber", "txHash", "index"]; };
+  option (lotus.v1alpha1.composite).index = { unique: true; fields: ["ts", "blockNumber", "txHash", "index"] };
 
   google.protobuf.Timestamp ts = 1;
   uint64 blockNumber = 2;
@@ -42,7 +42,7 @@ message SBTUpdated {
 }
 
 message NewGoodVibes {
-  option (lotus.v1alpha1.composite).index = { unique: true; fields: ["ts", "blockNumber", "txHash", "index"]; };
+  option (lotus.v1alpha1.composite).index = { unique: true; fields: ["ts", "blockNumber", "txHash", "index"] };
 
   google.protobuf.Timestamp ts = 1;
   uint64 blockNumber = 2;
@@ -52,7 +52,7 @@ message NewGoodVibes {
 }
 
 message Post {
-  option (lotus.v1alpha1.composite).index = { unique: true; fields: ["ts", "blockNumber", "txHash", "index"]; };
+  option (lotus.v1alpha1.composite).index = { unique: true; fields: ["ts", "blockNumber", "txHash", "index"] };
 
   google.protobuf.Timestamp ts = 1;
   uint64 blockNumber = 2;
@@ -63,7 +63,7 @@ message Post {
 }
 
 message RoleGranted {
-  option (lotus.v1alpha1.composite).index = { unique: true; fields: ["ts", "blockNumber", "txHash", "index"]; };
+  option (lotus.v1alpha1.composite).index = { unique: true; fields: ["ts", "blockNumber", "txHash", "index"] };
 
   google.protobuf.Timestamp ts = 1;
   uint64 blockNumber = 2;
@@ -75,7 +75,7 @@ message RoleGranted {
 }
 
 message Initialized {
-  option (lotus.v1alpha1.composite).index = { unique: true; fields: ["ts", "blockNumber", "txHash", "index"]; };
+  option (lotus.v1alpha1.composite).index = { unique: true; fields: ["ts", "blockNumber", "txHash", "index"] };
 
   google.protobuf.Timestamp ts = 1;
   uint64 blockNumber = 2;
@@ -85,7 +85,7 @@ message Initialized {
 }
 
 message NewMutualLike {
-  option (lotus.v1alpha1.composite).index = { unique: true; fields: ["ts", "blockNumber", "txHash", "index"]; };
+  option (lotus.v1alpha1.composite).index = { unique: true; fields: ["ts", "blockNumber", "txHash", "index"] };
 
   google.protobuf.Timestamp ts = 1;
   uint64 blockNumber = 2;
@@ -96,7 +96,7 @@ message NewMutualLike {
 }
 
 message RoleRevoked {
-  option (lotus.v1alpha1.composite).index = { unique: true; fields: ["ts", "blockNumber", "txHash", "index"]; };
+  option (lotus.v1alpha1.composite).index = { unique: true; fields: ["ts", "blockNumber", "txHash", "index"] };
 
   google.protobuf.Timestamp ts = 1;
   uint64 blockNumber = 2;
@@ -108,7 +108,7 @@ message RoleRevoked {
 }
 
 message Swiped {
-  option (lotus.v1alpha1.composite).index = { unique: true; fields: ["ts", "blockNumber", "txHash", "index"]; };
+  option (lotus.v1alpha1.composite).index = { unique: true; fields: ["ts", "blockNumber", "txHash", "index"] };
 
   google.protobuf.Timestamp ts = 1;
   uint64 blockNumber = 2;
