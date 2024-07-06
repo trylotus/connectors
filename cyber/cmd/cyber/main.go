@@ -40,7 +40,7 @@ func main() {
 	c.Config.SetDefault("waitBlocks", 4)
 
 	// Register topic and protobuf type mappings
-	go c.RegisterDescriptor(ctx, xo.File_xo_proto)
+	go c.RegisterDescriptor(ctx, xo.File_xo_xo_proto)
 
 	var wg sync.WaitGroup
 

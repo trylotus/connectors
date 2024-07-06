@@ -1,6 +1,6 @@
 module github.com/trylotus/connectors/cyber
 
-go 1.21
+go 1.22.4
 
 require (
 	github.com/ethereum/go-ethereum v1.14.3
@@ -8,7 +8,8 @@ require (
 	github.com/spf13/pflag v1.0.5
 	github.com/trylotus/connector v0.0.0-20240616113100-ddeac9174b4e
 	github.com/trylotus/connector/chain/ethereum v0.0.0-20240616113100-ddeac9174b4e
-	google.golang.org/protobuf v1.33.0
+	github.com/trylotus/go-lotus-proto v0.0.0-20240705105836-fe0de57e04e8
+	google.golang.org/protobuf v1.34.2
 )
 
 require (
