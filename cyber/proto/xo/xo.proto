@@ -1,0 +1,199 @@
+syntax = "proto3";
+
+package xo;
+
+import "google/protobuf/timestamp.proto";
+import "lotus/lotus.proto";
+
+option go_package = "github.com/trylotus/connectors/xo";
+
+message PaidDM {
+  option (lotus.composite).index = {
+    unique: true
+    fields: [
+      "ts",
+      "block_number",
+      "tx_hash",
+      "index"
+    ]
+  };
+
+  google.protobuf.Timestamp ts = 1;
+  uint64 block_number = 2;
+  uint64 index = 3;
+  bytes tx_hash = 4;
+  string user_id = 5;
+  string denom = 6;
+  string amount = 7 [(lotus.numeric) = {precision: 78}]; // uint256
+}
+
+message RoleAdminChanged {
+  option (lotus.composite).index = {
+    unique: true
+    fields: [
+      "ts",
+      "block_number",
+      "tx_hash",
+      "index"
+    ]
+  };
+
+  google.protobuf.Timestamp ts = 1;
+  uint64 block_number = 2;
+  uint64 index = 3;
+  bytes tx_hash = 4;
+  bytes role = 5;
+  bytes previous_admin_role = 6;
+  bytes new_admin_role = 7;
+}
+
+message SBTUpdated {
+  option (lotus.composite).index = {
+    unique: true
+    fields: [
+      "ts",
+      "block_number",
+      "tx_hash",
+      "index"
+    ]
+  };
+
+  google.protobuf.Timestamp ts = 1;
+  uint64 block_number = 2;
+  uint64 index = 3;
+  bytes tx_hash = 4;
+  string post_id = 5;
+}
+
+message NewGoodVibes {
+  option (lotus.composite).index = {
+    unique: true
+    fields: [
+      "ts",
+      "block_number",
+      "tx_hash",
+      "index"
+    ]
+  };
+
+  google.protobuf.Timestamp ts = 1;
+  uint64 block_number = 2;
+  uint64 index = 3;
+  bytes tx_hash = 4;
+  string post_id = 5;
+}
+
+message Post {
+  option (lotus.composite).index = {
+    unique: true
+    fields: [
+      "ts",
+      "block_number",
+      "tx_hash",
+      "index"
+    ]
+  };
+
+  google.protobuf.Timestamp ts = 1;
+  uint64 block_number = 2;
+  uint64 index = 3;
+  bytes tx_hash = 4;
+  bytes poster = 5;
+  string post_id = 6;
+}
+
+message RoleGranted {
+  option (lotus.composite).index = {
+    unique: true
+    fields: [
+      "ts",
+      "block_number",
+      "tx_hash",
+      "index"
+    ]
+  };
+
+  google.protobuf.Timestamp ts = 1;
+  uint64 block_number = 2;
+  uint64 index = 3;
+  bytes tx_hash = 4;
+  bytes role = 5;
+  bytes account = 6;
+  bytes sender = 7;
+}
+
+message Initialized {
+  option (lotus.composite).index = {
+    unique: true
+    fields: [
+      "ts",
+      "block_number",
+      "tx_hash",
+      "index"
+    ]
+  };
+
+  google.protobuf.Timestamp ts = 1;
+  uint64 block_number = 2;
+  uint64 index = 3;
+  bytes tx_hash = 4;
+  uint64 version = 5;
+}
+
+message NewMutualLike {
+  option (lotus.composite).index = {
+    unique: true
+    fields: [
+      "ts",
+      "block_number",
+      "tx_hash",
+      "index"
+    ]
+  };
+
+  google.protobuf.Timestamp ts = 1;
+  uint64 block_number = 2;
+  uint64 index = 3;
+  bytes tx_hash = 4;
+  string my_id = 5;
+  string target_id = 6;
+}
+
+message RoleRevoked {
+  option (lotus.composite).index = {
+    unique: true
+    fields: [
+      "ts",
+      "block_number",
+      "tx_hash",
+      "index"
+    ]
+  };
+
+  google.protobuf.Timestamp ts = 1;
+  uint64 block_number = 2;
+  uint64 index = 3;
+  bytes tx_hash = 4;
+  bytes role = 5;
+  bytes account = 6;
+  bytes sender = 7;
+}
+
+message Swiped {
+  option (lotus.composite).index = {
+    unique: true
+    fields: [
+      "ts",
+      "block_number",
+      "tx_hash",
+      "index"
+    ]
+  };
+
+  google.protobuf.Timestamp ts = 1;
+  uint64 block_number = 2;
+  uint64 index = 3;
+  bytes tx_hash = 4;
+  bytes sender = 5;
+  string swiped_user_id = 6;
+}
