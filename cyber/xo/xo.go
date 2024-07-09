@@ -40,14 +40,13 @@ func (c *SmartContract) Message(vLog types.Log, ts *timestamppb.Timestamp) (prot
 		if err := common.UnpackLog(c.Abi, event, ev.Name, vLog); err != nil {
 			return nil, fmt.Errorf("error unpacking event: %s", ev.Name)
 		}
-
 		return &PaidDM{
 			Ts:          ts,
 			BlockNumber: vLog.BlockNumber,
-			Index:       uint64(vLog.Index),
 			TxHash:      vLog.TxHash.Bytes(),
-			UserId:      event.UserId.String(),
-			Denom:       event.Denom.String(),
+			Index:       uint64(vLog.Index),
+			UserId:      event.UserId.Bytes(),
+			Denom:       event.Denom.Bytes(),
 			Amount:      event.Amount.String(),
 		}, nil
 	case "RoleAdminChanged":
@@ -58,8 +57,8 @@ func (c *SmartContract) Message(vLog types.Log, ts *timestamppb.Timestamp) (prot
 		return &RoleAdminChanged{
 			Ts:                ts,
 			BlockNumber:       vLog.BlockNumber,
-			Index:             uint64(vLog.Index),
 			TxHash:            vLog.TxHash.Bytes(),
+			Index:             uint64(vLog.Index),
 			Role:              event.Role[:],
 			PreviousAdminRole: event.PreviousAdminRole[:],
 			NewAdminRole:      event.NewAdminRole[:],
@@ -72,9 +71,9 @@ func (c *SmartContract) Message(vLog types.Log, ts *timestamppb.Timestamp) (prot
 		return &SBTUpdated{
 			Ts:          ts,
 			BlockNumber: vLog.BlockNumber,
-			Index:       uint64(vLog.Index),
 			TxHash:      vLog.TxHash.Bytes(),
-			PostId:      event.PostId.String(),
+			Index:       uint64(vLog.Index),
+			PostId:      event.PostId.Bytes(),
 		}, nil
 	case "NewGoodVibes":
 		event := new(XoNewGoodVibes)
@@ -84,9 +83,9 @@ func (c *SmartContract) Message(vLog types.Log, ts *timestamppb.Timestamp) (prot
 		return &NewGoodVibes{
 			Ts:          ts,
 			BlockNumber: vLog.BlockNumber,
-			Index:       uint64(vLog.Index),
 			TxHash:      vLog.TxHash.Bytes(),
-			PostId:      event.PostId.String(),
+			Index:       uint64(vLog.Index),
+			PostId:      event.PostId.Bytes(),
 		}, nil
 	case "Post":
 		event := new(XoPost)
@@ -96,10 +95,10 @@ func (c *SmartContract) Message(vLog types.Log, ts *timestamppb.Timestamp) (prot
 		return &Post{
 			Ts:          ts,
 			BlockNumber: vLog.BlockNumber,
-			Index:       uint64(vLog.Index),
 			TxHash:      vLog.TxHash.Bytes(),
+			Index:       uint64(vLog.Index),
 			Poster:      event.Poster.Bytes(),
-			PostId:      event.PostId.String(),
+			PostId:      event.PostId.Bytes(),
 		}, nil
 	case "RoleGranted":
 		event := new(XoRoleGranted)
@@ -109,8 +108,8 @@ func (c *SmartContract) Message(vLog types.Log, ts *timestamppb.Timestamp) (prot
 		return &RoleGranted{
 			Ts:          ts,
 			BlockNumber: vLog.BlockNumber,
-			Index:       uint64(vLog.Index),
 			TxHash:      vLog.TxHash.Bytes(),
+			Index:       uint64(vLog.Index),
 			Role:        event.Role[:],
 			Account:     event.Account.Bytes(),
 			Sender:      event.Sender.Bytes(),
@@ -123,8 +122,8 @@ func (c *SmartContract) Message(vLog types.Log, ts *timestamppb.Timestamp) (prot
 		return &Initialized{
 			Ts:          ts,
 			BlockNumber: vLog.BlockNumber,
-			Index:       uint64(vLog.Index),
 			TxHash:      vLog.TxHash.Bytes(),
+			Index:       uint64(vLog.Index),
 			Version:     event.Version,
 		}, nil
 	case "NewMutualLike":
@@ -135,10 +134,10 @@ func (c *SmartContract) Message(vLog types.Log, ts *timestamppb.Timestamp) (prot
 		return &NewMutualLike{
 			Ts:          ts,
 			BlockNumber: vLog.BlockNumber,
-			Index:       uint64(vLog.Index),
 			TxHash:      vLog.TxHash.Bytes(),
-			MyId:        event.MyId.String(),
-			TargetId:    event.TargetId.String(),
+			Index:       uint64(vLog.Index),
+			MyId:        event.MyId.Bytes(),
+			TargetId:    event.TargetId.Bytes(),
 		}, nil
 	case "RoleRevoked":
 		event := new(XoRoleRevoked)
@@ -148,8 +147,8 @@ func (c *SmartContract) Message(vLog types.Log, ts *timestamppb.Timestamp) (prot
 		return &RoleRevoked{
 			Ts:          ts,
 			BlockNumber: vLog.BlockNumber,
-			Index:       uint64(vLog.Index),
 			TxHash:      vLog.TxHash.Bytes(),
+			Index:       uint64(vLog.Index),
 			Role:        event.Role[:],
 			Account:     event.Account.Bytes(),
 			Sender:      event.Sender.Bytes(),
@@ -162,10 +161,10 @@ func (c *SmartContract) Message(vLog types.Log, ts *timestamppb.Timestamp) (prot
 		return &Swiped{
 			Ts:           ts,
 			BlockNumber:  vLog.BlockNumber,
-			Index:        uint64(vLog.Index),
 			TxHash:       vLog.TxHash.Bytes(),
+			Index:        uint64(vLog.Index),
 			Sender:       event.Sender.Bytes(),
-			SwipedUserId: event.SwipedUserId.String(),
+			SwipedUserId: event.SwipedUserId.Bytes(),
 		}, nil
 	default:
 		return nil, fmt.Errorf("invalid event: %s", ev.Name)
