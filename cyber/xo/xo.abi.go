@@ -26,11 +26,12 @@ var (
 	_ = common.Big1
 	_ = types.BloomLookup
 	_ = event.NewSubscription
+	_ = abi.ConvertType
 )
 
 // XoMetaData contains all meta data concerning the Xo contract.
 var XoMetaData = &bind.MetaData{
-	ABI: "[{\"inputs\":[],\"name\":\"AccessControlBadConfirmation\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"neededRole\",\"type\":\"bytes32\"}],\"name\":\"AccessControlUnauthorizedAccount\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"InvalidInitialization\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"NotInitializing\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"ReentrancyGuardReentrantCall\",\"type\":\"error\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint64\",\"name\":\"version\",\"type\":\"uint64\"}],\"name\":\"Initialized\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"string\",\"name\":\"postId\",\"type\":\"string\"}],\"name\":\"NewGoodVibes\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"string\",\"name\":\"myId\",\"type\":\"string\"},{\"indexed\":true,\"internalType\":\"string\",\"name\":\"targetId\",\"type\":\"string\"}],\"name\":\"NewMutualLike\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"string\",\"name\":\"userId\",\"type\":\"string\"},{\"indexed\":true,\"internalType\":\"string\",\"name\":\"denom\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"PaidDM\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"poster\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"string\",\"name\":\"postId\",\"type\":\"string\"}],\"name\":\"Post\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"previousAdminRole\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"newAdminRole\",\"type\":\"bytes32\"}],\"name\":\"RoleAdminChanged\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"}],\"name\":\"RoleGranted\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"}],\"name\":\"RoleRevoked\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"string\",\"name\":\"postId\",\"type\":\"string\"}],\"name\":\"SBTUpdated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"string\",\"name\":\"swipedUserId\",\"type\":\"string\"},{\"indexed\":true,\"internalType\":\"string\",\"name\":\"cardId\",\"type\":\"string\"}],\"name\":\"Swiped\",\"type\":\"event\"},{\"stateMutability\":\"payable\",\"type\":\"fallback\"},{\"inputs\":[],\"name\":\"DEFAULT_ADMIN_ROLE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"}],\"name\":\"getRoleAdmin\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"postId\",\"type\":\"string\"}],\"name\":\"goodVibes\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"grantRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"hasRole\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_admin\",\"type\":\"address\"}],\"name\":\"initialize\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"swipedUserId\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"cardId\",\"type\":\"string\"}],\"name\":\"like\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"myId\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"targetId\",\"type\":\"string\"}],\"name\":\"mutualLiked\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"userId\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"denom\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"paidDM\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"postId\",\"type\":\"string\"}],\"name\":\"post\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"callerConfirmation\",\"type\":\"address\"}],\"name\":\"renounceRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"revokeRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"tokenId\",\"type\":\"string\"}],\"name\":\"sbtUpdated\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes4\",\"name\":\"interfaceId\",\"type\":\"bytes4\"}],\"name\":\"supportsInterface\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"stateMutability\":\"payable\",\"type\":\"receive\"}]",
+	ABI: "[{\"inputs\":[],\"name\":\"AccessControlBadConfirmation\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"neededRole\",\"type\":\"bytes32\"}],\"name\":\"AccessControlUnauthorizedAccount\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"InvalidInitialization\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"NotInitializing\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"ReentrancyGuardReentrantCall\",\"type\":\"error\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint64\",\"name\":\"version\",\"type\":\"uint64\"}],\"name\":\"Initialized\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"string\",\"name\":\"postId\",\"type\":\"string\"}],\"name\":\"NewGoodVibes\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"string\",\"name\":\"myId\",\"type\":\"string\"},{\"indexed\":true,\"internalType\":\"string\",\"name\":\"targetId\",\"type\":\"string\"}],\"name\":\"NewMutualLike\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"string\",\"name\":\"userId\",\"type\":\"string\"},{\"indexed\":true,\"internalType\":\"string\",\"name\":\"denom\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"PaidDM\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"poster\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"string\",\"name\":\"postId\",\"type\":\"string\"}],\"name\":\"Post\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"previousAdminRole\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"newAdminRole\",\"type\":\"bytes32\"}],\"name\":\"RoleAdminChanged\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"}],\"name\":\"RoleGranted\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"}],\"name\":\"RoleRevoked\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"string\",\"name\":\"postId\",\"type\":\"string\"}],\"name\":\"SBTUpdated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"string\",\"name\":\"userId\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"streak\",\"type\":\"uint256\"}],\"name\":\"SaveStreak\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"string\",\"name\":\"userId\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"streak\",\"type\":\"uint256\"}],\"name\":\"Streak\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"string\",\"name\":\"swipedUserId\",\"type\":\"string\"},{\"indexed\":true,\"internalType\":\"string\",\"name\":\"cardId\",\"type\":\"string\"}],\"name\":\"Swiped\",\"type\":\"event\"},{\"stateMutability\":\"payable\",\"type\":\"fallback\"},{\"inputs\":[],\"name\":\"DEFAULT_ADMIN_ROLE\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"}],\"name\":\"getRoleAdmin\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"postId\",\"type\":\"string\"}],\"name\":\"goodVibes\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"grantRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"hasRole\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_admin\",\"type\":\"address\"}],\"name\":\"initialize\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"swipedUserId\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"cardId\",\"type\":\"string\"}],\"name\":\"like\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"myId\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"targetId\",\"type\":\"string\"}],\"name\":\"mutualLiked\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"userId\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"denom\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"paidDM\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"postId\",\"type\":\"string\"}],\"name\":\"post\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"callerConfirmation\",\"type\":\"address\"}],\"name\":\"renounceRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes32\",\"name\":\"role\",\"type\":\"bytes32\"},{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"revokeRole\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"userId\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"userStreak\",\"type\":\"uint256\"}],\"name\":\"saveStreak\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"tokenId\",\"type\":\"string\"}],\"name\":\"sbtUpdated\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"userId\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"userStreak\",\"type\":\"uint256\"}],\"name\":\"streak\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bytes4\",\"name\":\"interfaceId\",\"type\":\"bytes4\"}],\"name\":\"supportsInterface\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"stateMutability\":\"payable\",\"type\":\"receive\"}]",
 }
 
 // XoABI is the input ABI used to generate the binding from.
@@ -134,11 +135,11 @@ func NewXoFilterer(address common.Address, filterer bind.ContractFilterer) (*XoF
 
 // bindXo binds a generic wrapper to an already deployed contract.
 func bindXo(address common.Address, caller bind.ContractCaller, transactor bind.ContractTransactor, filterer bind.ContractFilterer) (*bind.BoundContract, error) {
-	parsed, err := abi.JSON(strings.NewReader(XoABI))
+	parsed, err := XoMetaData.GetAbi()
 	if err != nil {
 		return nil, err
 	}
-	return bind.NewBoundContract(address, parsed, caller, transactor, filterer), nil
+	return bind.NewBoundContract(address, *parsed, caller, transactor, filterer), nil
 }
 
 // Call invokes the (constant) contract method with params as input values and
@@ -492,6 +493,27 @@ func (_Xo *XoTransactorSession) RevokeRole(role [32]byte, account common.Address
 	return _Xo.Contract.RevokeRole(&_Xo.TransactOpts, role, account)
 }
 
+// SaveStreak is a paid mutator transaction binding the contract method 0x63636565.
+//
+// Solidity: function saveStreak(string userId, uint256 userStreak) payable returns()
+func (_Xo *XoTransactor) SaveStreak(opts *bind.TransactOpts, userId string, userStreak *big.Int) (*types.Transaction, error) {
+	return _Xo.contract.Transact(opts, "saveStreak", userId, userStreak)
+}
+
+// SaveStreak is a paid mutator transaction binding the contract method 0x63636565.
+//
+// Solidity: function saveStreak(string userId, uint256 userStreak) payable returns()
+func (_Xo *XoSession) SaveStreak(userId string, userStreak *big.Int) (*types.Transaction, error) {
+	return _Xo.Contract.SaveStreak(&_Xo.TransactOpts, userId, userStreak)
+}
+
+// SaveStreak is a paid mutator transaction binding the contract method 0x63636565.
+//
+// Solidity: function saveStreak(string userId, uint256 userStreak) payable returns()
+func (_Xo *XoTransactorSession) SaveStreak(userId string, userStreak *big.Int) (*types.Transaction, error) {
+	return _Xo.Contract.SaveStreak(&_Xo.TransactOpts, userId, userStreak)
+}
+
 // SbtUpdated is a paid mutator transaction binding the contract method 0x78fea6ac.
 //
 // Solidity: function sbtUpdated(string tokenId) payable returns()
@@ -511,6 +533,27 @@ func (_Xo *XoSession) SbtUpdated(tokenId string) (*types.Transaction, error) {
 // Solidity: function sbtUpdated(string tokenId) payable returns()
 func (_Xo *XoTransactorSession) SbtUpdated(tokenId string) (*types.Transaction, error) {
 	return _Xo.Contract.SbtUpdated(&_Xo.TransactOpts, tokenId)
+}
+
+// Streak is a paid mutator transaction binding the contract method 0x7d2ceabb.
+//
+// Solidity: function streak(string userId, uint256 userStreak) payable returns()
+func (_Xo *XoTransactor) Streak(opts *bind.TransactOpts, userId string, userStreak *big.Int) (*types.Transaction, error) {
+	return _Xo.contract.Transact(opts, "streak", userId, userStreak)
+}
+
+// Streak is a paid mutator transaction binding the contract method 0x7d2ceabb.
+//
+// Solidity: function streak(string userId, uint256 userStreak) payable returns()
+func (_Xo *XoSession) Streak(userId string, userStreak *big.Int) (*types.Transaction, error) {
+	return _Xo.Contract.Streak(&_Xo.TransactOpts, userId, userStreak)
+}
+
+// Streak is a paid mutator transaction binding the contract method 0x7d2ceabb.
+//
+// Solidity: function streak(string userId, uint256 userStreak) payable returns()
+func (_Xo *XoTransactorSession) Streak(userId string, userStreak *big.Int) (*types.Transaction, error) {
+	return _Xo.Contract.Streak(&_Xo.TransactOpts, userId, userStreak)
 }
 
 // Fallback is a paid mutator transaction binding the contract fallback function.
@@ -1917,6 +1960,296 @@ func (_Xo *XoFilterer) WatchSBTUpdated(opts *bind.WatchOpts, sink chan<- *XoSBTU
 func (_Xo *XoFilterer) ParseSBTUpdated(log types.Log) (*XoSBTUpdated, error) {
 	event := new(XoSBTUpdated)
 	if err := _Xo.contract.UnpackLog(event, "SBTUpdated", log); err != nil {
+		return nil, err
+	}
+	event.Raw = log
+	return event, nil
+}
+
+// XoSaveStreakIterator is returned from FilterSaveStreak and is used to iterate over the raw logs and unpacked data for SaveStreak events raised by the Xo contract.
+type XoSaveStreakIterator struct {
+	Event *XoSaveStreak // Event containing the contract specifics and raw log
+
+	contract *bind.BoundContract // Generic contract to use for unpacking event data
+	event    string              // Event name to use for unpacking event data
+
+	logs chan types.Log        // Log channel receiving the found contract events
+	sub  ethereum.Subscription // Subscription for errors, completion and termination
+	done bool                  // Whether the subscription completed delivering logs
+	fail error                 // Occurred error to stop iteration
+}
+
+// Next advances the iterator to the subsequent event, returning whether there
+// are any more events found. In case of a retrieval or parsing error, false is
+// returned and Error() can be queried for the exact failure.
+func (it *XoSaveStreakIterator) Next() bool {
+	// If the iterator failed, stop iterating
+	if it.fail != nil {
+		return false
+	}
+	// If the iterator completed, deliver directly whatever's available
+	if it.done {
+		select {
+		case log := <-it.logs:
+			it.Event = new(XoSaveStreak)
+			if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+				it.fail = err
+				return false
+			}
+			it.Event.Raw = log
+			return true
+
+		default:
+			return false
+		}
+	}
+	// Iterator still in progress, wait for either a data or an error event
+	select {
+	case log := <-it.logs:
+		it.Event = new(XoSaveStreak)
+		if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+			it.fail = err
+			return false
+		}
+		it.Event.Raw = log
+		return true
+
+	case err := <-it.sub.Err():
+		it.done = true
+		it.fail = err
+		return it.Next()
+	}
+}
+
+// Error returns any retrieval or parsing error occurred during filtering.
+func (it *XoSaveStreakIterator) Error() error {
+	return it.fail
+}
+
+// Close terminates the iteration process, releasing any pending underlying
+// resources.
+func (it *XoSaveStreakIterator) Close() error {
+	it.sub.Unsubscribe()
+	return nil
+}
+
+// XoSaveStreak represents a SaveStreak event raised by the Xo contract.
+type XoSaveStreak struct {
+	UserId common.Hash
+	Streak *big.Int
+	Raw    types.Log // Blockchain specific contextual infos
+}
+
+// FilterSaveStreak is a free log retrieval operation binding the contract event 0x1d2df96e42c4c3f93d3981d88ce0d421908431e13bebb6ae932eaca845b39b4b.
+//
+// Solidity: event SaveStreak(string indexed userId, uint256 streak)
+func (_Xo *XoFilterer) FilterSaveStreak(opts *bind.FilterOpts, userId []string) (*XoSaveStreakIterator, error) {
+
+	var userIdRule []interface{}
+	for _, userIdItem := range userId {
+		userIdRule = append(userIdRule, userIdItem)
+	}
+
+	logs, sub, err := _Xo.contract.FilterLogs(opts, "SaveStreak", userIdRule)
+	if err != nil {
+		return nil, err
+	}
+	return &XoSaveStreakIterator{contract: _Xo.contract, event: "SaveStreak", logs: logs, sub: sub}, nil
+}
+
+// WatchSaveStreak is a free log subscription operation binding the contract event 0x1d2df96e42c4c3f93d3981d88ce0d421908431e13bebb6ae932eaca845b39b4b.
+//
+// Solidity: event SaveStreak(string indexed userId, uint256 streak)
+func (_Xo *XoFilterer) WatchSaveStreak(opts *bind.WatchOpts, sink chan<- *XoSaveStreak, userId []string) (event.Subscription, error) {
+
+	var userIdRule []interface{}
+	for _, userIdItem := range userId {
+		userIdRule = append(userIdRule, userIdItem)
+	}
+
+	logs, sub, err := _Xo.contract.WatchLogs(opts, "SaveStreak", userIdRule)
+	if err != nil {
+		return nil, err
+	}
+	return event.NewSubscription(func(quit <-chan struct{}) error {
+		defer sub.Unsubscribe()
+		for {
+			select {
+			case log := <-logs:
+				// New log arrived, parse the event and forward to the user
+				event := new(XoSaveStreak)
+				if err := _Xo.contract.UnpackLog(event, "SaveStreak", log); err != nil {
+					return err
+				}
+				event.Raw = log
+
+				select {
+				case sink <- event:
+				case err := <-sub.Err():
+					return err
+				case <-quit:
+					return nil
+				}
+			case err := <-sub.Err():
+				return err
+			case <-quit:
+				return nil
+			}
+		}
+	}), nil
+}
+
+// ParseSaveStreak is a log parse operation binding the contract event 0x1d2df96e42c4c3f93d3981d88ce0d421908431e13bebb6ae932eaca845b39b4b.
+//
+// Solidity: event SaveStreak(string indexed userId, uint256 streak)
+func (_Xo *XoFilterer) ParseSaveStreak(log types.Log) (*XoSaveStreak, error) {
+	event := new(XoSaveStreak)
+	if err := _Xo.contract.UnpackLog(event, "SaveStreak", log); err != nil {
+		return nil, err
+	}
+	event.Raw = log
+	return event, nil
+}
+
+// XoStreakIterator is returned from FilterStreak and is used to iterate over the raw logs and unpacked data for Streak events raised by the Xo contract.
+type XoStreakIterator struct {
+	Event *XoStreak // Event containing the contract specifics and raw log
+
+	contract *bind.BoundContract // Generic contract to use for unpacking event data
+	event    string              // Event name to use for unpacking event data
+
+	logs chan types.Log        // Log channel receiving the found contract events
+	sub  ethereum.Subscription // Subscription for errors, completion and termination
+	done bool                  // Whether the subscription completed delivering logs
+	fail error                 // Occurred error to stop iteration
+}
+
+// Next advances the iterator to the subsequent event, returning whether there
+// are any more events found. In case of a retrieval or parsing error, false is
+// returned and Error() can be queried for the exact failure.
+func (it *XoStreakIterator) Next() bool {
+	// If the iterator failed, stop iterating
+	if it.fail != nil {
+		return false
+	}
+	// If the iterator completed, deliver directly whatever's available
+	if it.done {
+		select {
+		case log := <-it.logs:
+			it.Event = new(XoStreak)
+			if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+				it.fail = err
+				return false
+			}
+			it.Event.Raw = log
+			return true
+
+		default:
+			return false
+		}
+	}
+	// Iterator still in progress, wait for either a data or an error event
+	select {
+	case log := <-it.logs:
+		it.Event = new(XoStreak)
+		if err := it.contract.UnpackLog(it.Event, it.event, log); err != nil {
+			it.fail = err
+			return false
+		}
+		it.Event.Raw = log
+		return true
+
+	case err := <-it.sub.Err():
+		it.done = true
+		it.fail = err
+		return it.Next()
+	}
+}
+
+// Error returns any retrieval or parsing error occurred during filtering.
+func (it *XoStreakIterator) Error() error {
+	return it.fail
+}
+
+// Close terminates the iteration process, releasing any pending underlying
+// resources.
+func (it *XoStreakIterator) Close() error {
+	it.sub.Unsubscribe()
+	return nil
+}
+
+// XoStreak represents a Streak event raised by the Xo contract.
+type XoStreak struct {
+	UserId common.Hash
+	Streak *big.Int
+	Raw    types.Log // Blockchain specific contextual infos
+}
+
+// FilterStreak is a free log retrieval operation binding the contract event 0x1efb0ae80ec0009194da5969b16d7d40e84d6665e6472ee6e883bfb15b9f53cb.
+//
+// Solidity: event Streak(string indexed userId, uint256 streak)
+func (_Xo *XoFilterer) FilterStreak(opts *bind.FilterOpts, userId []string) (*XoStreakIterator, error) {
+
+	var userIdRule []interface{}
+	for _, userIdItem := range userId {
+		userIdRule = append(userIdRule, userIdItem)
+	}
+
+	logs, sub, err := _Xo.contract.FilterLogs(opts, "Streak", userIdRule)
+	if err != nil {
+		return nil, err
+	}
+	return &XoStreakIterator{contract: _Xo.contract, event: "Streak", logs: logs, sub: sub}, nil
+}
+
+// WatchStreak is a free log subscription operation binding the contract event 0x1efb0ae80ec0009194da5969b16d7d40e84d6665e6472ee6e883bfb15b9f53cb.
+//
+// Solidity: event Streak(string indexed userId, uint256 streak)
+func (_Xo *XoFilterer) WatchStreak(opts *bind.WatchOpts, sink chan<- *XoStreak, userId []string) (event.Subscription, error) {
+
+	var userIdRule []interface{}
+	for _, userIdItem := range userId {
+		userIdRule = append(userIdRule, userIdItem)
+	}
+
+	logs, sub, err := _Xo.contract.WatchLogs(opts, "Streak", userIdRule)
+	if err != nil {
+		return nil, err
+	}
+	return event.NewSubscription(func(quit <-chan struct{}) error {
+		defer sub.Unsubscribe()
+		for {
+			select {
+			case log := <-logs:
+				// New log arrived, parse the event and forward to the user
+				event := new(XoStreak)
+				if err := _Xo.contract.UnpackLog(event, "Streak", log); err != nil {
+					return err
+				}
+				event.Raw = log
+
+				select {
+				case sink <- event:
+				case err := <-sub.Err():
+					return err
+				case <-quit:
+					return nil
+				}
+			case err := <-sub.Err():
+				return err
+			case <-quit:
+				return nil
+			}
+		}
+	}), nil
+}
+
+// ParseStreak is a log parse operation binding the contract event 0x1efb0ae80ec0009194da5969b16d7d40e84d6665e6472ee6e883bfb15b9f53cb.
+//
+// Solidity: event Streak(string indexed userId, uint256 streak)
+func (_Xo *XoFilterer) ParseStreak(log types.Log) (*XoStreak, error) {
+	event := new(XoStreak)
+	if err := _Xo.contract.UnpackLog(event, "Streak", log); err != nil {
 		return nil, err
 	}
 	event.Raw = log

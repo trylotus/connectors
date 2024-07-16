@@ -196,4 +196,43 @@ message Swiped {
   uint64 index = 4;
   bytes sender = 5 [(lotus.bytes).format = FORMAT_TYPE_HEX];
   bytes swiped_user_id = 6 [(lotus.bytes).format = FORMAT_TYPE_HEX];
+  bytes card_id = 7 [(lotus.bytes).format = FORMAT_TYPE_HEX];
+}
+
+message Streak {
+  option (lotus.composite).index = {
+    unique: true
+    fields: [
+      "ts",
+      "block_number",
+      "tx_hash",
+      "index"
+    ]
+  };
+
+  google.protobuf.Timestamp ts = 1;
+  uint64 block_number = 2;
+  bytes tx_hash = 3 [(lotus.bytes).format = FORMAT_TYPE_HEX];
+  uint64 index = 4;
+  bytes user_id = 5 [(lotus.bytes).format = FORMAT_TYPE_HEX];
+  string streak = 6 [(lotus.numeric) = {precision: 78}]; // uint256
+}
+
+message SaveStreak {
+  option (lotus.composite).index = {
+    unique: true
+    fields: [
+      "ts",
+      "block_number",
+      "tx_hash",
+      "index"
+    ]
+  };
+
+  google.protobuf.Timestamp ts = 1;
+  uint64 block_number = 2;
+  bytes tx_hash = 3 [(lotus.bytes).format = FORMAT_TYPE_HEX];
+  uint64 index = 4;
+  bytes user_id = 5 [(lotus.bytes).format = FORMAT_TYPE_HEX];
+  string streak = 6 [(lotus.numeric) = {precision: 78}]; // uint256
 }

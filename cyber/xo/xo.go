@@ -165,6 +165,33 @@ func (c *SmartContract) Message(vLog types.Log, ts *timestamppb.Timestamp) (prot
 			Index:        uint64(vLog.Index),
 			Sender:       event.Sender.Bytes(),
 			SwipedUserId: event.SwipedUserId.Bytes(),
+			CardId:       event.CardId.Bytes(),
+		}, nil
+	case "Streak":
+		event := new(XoStreak)
+		if err := common.UnpackLog(c.Abi, event, ev.Name, vLog); err != nil {
+			return nil, fmt.Errorf("error unpacking event: %s", ev.Name)
+		}
+		return &Streak{
+			Ts:          ts,
+			BlockNumber: vLog.BlockNumber,
+			TxHash:      vLog.TxHash.Bytes(),
+			Index:       uint64(vLog.Index),
+			UserId:      event.UserId.Bytes(),
+			Streak:      event.Streak.String(),
+		}, nil
+	case "SaveStreak":
+		event := new(XoSaveStreak)
+		if err := common.UnpackLog(c.Abi, event, ev.Name, vLog); err != nil {
+			return nil, fmt.Errorf("error unpacking event: %s", ev.Name)
+		}
+		return &SaveStreak{
+			Ts:          ts,
+			BlockNumber: vLog.BlockNumber,
+			TxHash:      vLog.TxHash.Bytes(),
+			Index:       uint64(vLog.Index),
+			UserId:      event.UserId.Bytes(),
+			Streak:      event.Streak.String(),
 		}, nil
 	default:
 		return nil, fmt.Errorf("invalid event: %s", ev.Name)
