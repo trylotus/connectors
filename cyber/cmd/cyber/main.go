@@ -3,24 +3,29 @@ package main
 import (
 	"context"
 	"os"
-	"sync"
 	"time"
 
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/pflag"
 	connector "github.com/trylotus/connector/chain/ethereum"
 	"github.com/trylotus/connector/common"
-	"github.com/trylotus/connector/kafkautils"
 	"github.com/trylotus/connectors/cyber/xo"
 )
 
 const XOContractAddr = "0x84583e7d2d92d87d5b3bac850ab4bad37ae568e8"
 
 func main() {
-	fromBlock := pflag.Uint64P("from-block", "f", 0, "block number to start backfill from (optional)")
-	toBlock := pflag.Uint64P("to-block", "t", 0, "block number to backfill to (optional)")
-	numBlocks := pflag.Uint64P("num-blocks", "b", 0, "number of blocks to backfill (optional)")
-	subscribe := pflag.BoolP("subscribe", "s", true, "whether to subscribe to new blockchain events")
+	var (
+		fromBlock uint64
+		toBlock   uint64
+		numBlocks uint64
+		subscribe bool
+	)
+
+	pflag.Uint64VarP(&fromBlock, "from-block", "f", 0, "block number to start backfill from (optional)")
+	pflag.Uint64VarP(&toBlock, "to-block", "t", 0, "block number to backfill to (optional)")
+	pflag.Uint64VarP(&numBlocks, "num-blocks", "b", 0, "number of blocks to backfill (optional)")
+	pflag.BoolVarP(&subscribe, "subscribe", "s", true, "whether to subscribe to new blockchain events")
 
 	pflag.Parse()
 
@@ -42,36 +47,7 @@ func main() {
 	// Register topic and protobuf type mappings
 	go c.RegisterDescriptor(ctx, xo.File_xo_xo_proto)
 
-	var wg sync.WaitGroup
-
-	if *fromBlock > 0 || *toBlock > 0 || *numBlocks > 0 {
-		wg.Add(1)
-
-		go func() {
-			defer wg.Done()
-
-			opt := common.BackfillOption{
-				FromBlock: *fromBlock,
-				ToBlock:   *toBlock,
-				NumBlocks: *numBlocks,
-			}
-			msgs := c.BackfillWithOption(ctx, opt)
-			c.StreamProtoMessages(ctx, kafkautils.MsgTypeBf, msgs)
-		}()
-	}
-
-	if *subscribe {
-		wg.Add(1)
-
-		go func() {
-			defer wg.Done()
-
-			msgs := c.Subscribe(ctx)
-			c.StreamProtoMessages(ctx, kafkautils.MsgTypeFct, msgs)
-		}()
-	}
-
-	wg.Wait()
+	c.Start(ctx, subscribe, fromBlock, toBlock, numBlocks)
 
 	log.Info().Msg("connector shutdown")
 }
