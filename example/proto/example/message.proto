@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package example;
+
+import "google/protobuf/timestamp.proto";
+import "lotus/lotus.proto";
+
+option go_package = "github.com/trylotus/connectors/example";
+
+message Message {
+  option (lotus.composite).index = {
+    unique: true
+    fields: [
+      "ts",
+      "tx_hash",
+      "index"
+    ]
+  };
+
+  option (lotus.composite).index = {
+    fields: [
+      "tx_hash",
+      "index"
+    ]
+  };
+
+  google.protobuf.Timestamp ts = 1;
+  uint64 block_number = 2 [(lotus.index) = {}];
+  bytes tx_hash = 3 [(lotus.bytes).format = FORMAT_TYPE_HEX];
+  uint64 index = 4;
+  bytes data = 5;
+}

@@ -1,0 +1,7 @@
+version: '3'
+services:
+  connector:
+    build: .
+    container_name: example-connector
+    image: lotus/example-connector
+    restart: always

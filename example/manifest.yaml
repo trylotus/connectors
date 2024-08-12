@@ -1,0 +1,7 @@
+name: example
+author: lotus
+version: "0.0.0"
+
+outputPath: example
+package: example
+owner: lotus
