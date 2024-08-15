@@ -1,0 +1,1 @@
+&lt;abi 2 proto file content goes here&gt;
