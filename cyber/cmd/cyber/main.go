@@ -12,7 +12,7 @@ import (
 	"github.com/trylotus/connectors/cyber/xo"
 )
 
-const XOContractAddr = "{{.ContractAddress}}"
+const XOContractAddr = "0xf332761c673b59B21fF6dfa8adA44d78c12dEF09"
 
 func main() {
 	var (
