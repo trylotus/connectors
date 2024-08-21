@@ -1,0 +1,7 @@
+log:
+  level: debug
+  format: console
+kafka:
+  url: localhost:9092
+registry:
+  url: http://localhost:8081
