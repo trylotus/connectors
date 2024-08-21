@@ -3,18 +3,21 @@ package main
 import (
 	"context"
 	"os"
-	"time"
 
+	"github.com/joho/godotenv"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/pflag"
-	connector "github.com/trylotus/connector/chain/ethereum"
-	"github.com/trylotus/connector/common"
 	"github.com/trylotus/connectors/cyber/xo"
+	"github.com/trylotus/go-connector"
+	"github.com/trylotus/go-connector/common"
+	"github.com/trylotus/go-connector/source/evm"
 )
 
 const XOContractAddr = "0x84583e7d2d92d87d5b3bac850ab4bad37ae568e8"
 
 func main() {
+	godotenv.Load()
+
 	var (
 		fromBlock uint64
 		toBlock   uint64
@@ -29,25 +32,26 @@ func main() {
 
 	pflag.Parse()
 
-	contracts := []connector.SmartContract{
+	contracts := []evm.SmartContract{
 		xo.NewContract(XOContractAddr),
 	}
+
+	source := evm.NewSource(os.Getenv("RPC_URL"), contracts)
+
+	c := connector.NewConnector(source)
 
 	// Create a context that cancels upon receiving interrupt signal
 	ctx, cancel := common.ContextWithSignal(context.Background(), os.Interrupt)
 	defer cancel()
 
-	c := connector.NewConnector(ctx, "cyber", contracts)
-
-	c.Config.SetDefault("cyber.author", "lotus")
-	c.Config.SetDefault("cyber.version", "0_0_0")
-	c.Config.SetDefault("blockTime", 15*time.Second)
-	c.Config.SetDefault("waitBlocks", 4)
-
 	// Register topic and protobuf type mappings
 	go c.RegisterDescriptor(ctx, xo.File_xo_xo_proto)
 
+	if err := c.Connect(ctx); err != nil {
+		log.Fatal().Err(err).Msg("Failed to connect")
+	}
+
 	c.Start(ctx, subscribe, fromBlock, toBlock, numBlocks)
 
-	log.Info().Msg("connector shutdown")
+	log.Info().Msg("Connector shutdown")
 }
