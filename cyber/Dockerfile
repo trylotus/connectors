@@ -33,7 +33,7 @@ RUN apk add --no-cache musl
 
 WORKDIR /app
 
-COPY local.yaml .
+COPY config.yaml .
 COPY manifest.yaml .
 COPY --from=builder /src/bin .
 
