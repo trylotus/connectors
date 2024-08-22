@@ -16,7 +16,7 @@ import (
 const XOContractAddr = "0x84583e7d2d92d87d5b3bac850ab4bad37ae568e8"
 
 func main() {
-	godotenv.Load()
+	_ = godotenv.Load()
 
 	var (
 		fromBlock uint64

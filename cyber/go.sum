@@ -303,10 +303,10 @@ github.com/tklauser/go-sysconf v0.3.12 h1:0QaGUFOdQaIVdPgfITYzaTegZvdCjmYO52cSFA
 github.com/tklauser/go-sysconf v0.3.12/go.mod h1:Ho14jnntGE1fpdOqQEEaiKRpvIavV0hSfmBq8nJbHYI=
 github.com/tklauser/numcpus v0.6.1 h1:ng9scYS7az0Bk4OZLvrNXNSAO2Pxr1XXRAPyjhIx+Fk=
 github.com/tklauser/numcpus v0.6.1/go.mod h1:1XfjsgE2zo8GVw7POkMbHENHzVg3GzmoZ9fESEdAacY=
-github.com/trylotus/go-connector v0.0.0-20240821064726-6157eab350c3 h1:Hxm6Mb0V+7+p+BeCSb0cIHVjjCNFEq575QAgUFCabzQ=
-github.com/trylotus/go-connector v0.0.0-20240821064726-6157eab350c3/go.mod h1:5qdwiDs3Vd70MdBy3DutJfDbpWaig/MFI3Ebm2NinEg=
-github.com/trylotus/go-connector/source/evm v0.0.0-20240821064726-6157eab350c3 h1:CMBA7FAz4wyxapjyQSuR9P3iAqcVMZx3sx8VNA3mGzA=
-github.com/trylotus/go-connector/source/evm v0.0.0-20240821064726-6157eab350c3/go.mod h1:FIOyOreS40Dy3mTnpZCUJHmYj1z6xSCav8jF5S8UCxM=
+github.com/trylotus/go-connector v0.0.0-20240822040808-b97dc81e2492 h1:zXat4S5Rp650KGyLiXjpPLLq6MrmcH0+tmsTqEfEbn8=
+github.com/trylotus/go-connector v0.0.0-20240822040808-b97dc81e2492/go.mod h1:5qdwiDs3Vd70MdBy3DutJfDbpWaig/MFI3Ebm2NinEg=
+github.com/trylotus/go-connector/source/evm v0.0.0-20240822040808-b97dc81e2492 h1:bICspWJfx8VMSrHmpEnjUTexc/w2WZv6/TM5FNXK4FE=
+github.com/trylotus/go-connector/source/evm v0.0.0-20240822040808-b97dc81e2492/go.mod h1:FIOyOreS40Dy3mTnpZCUJHmYj1z6xSCav8jF5S8UCxM=
 github.com/trylotus/go-lotus-proto v1.0.0 h1:SBDpW6y/urM8Lm/0vxQ7VY4jPotkWdapaD40Q1agahc=
 github.com/trylotus/go-lotus-proto v1.0.0/go.mod h1:mI2GBScdwZNQC8k9zfDt/ufdl9PhqyqhoUDu9DcJVuI=
 github.com/tyler-smith/go-bip39 v1.1.0 h1:5eUemwrMargf3BSLRRCalXT93Ns6pQJIjYQN2nyfOP8=
