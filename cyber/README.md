@@ -3,6 +3,7 @@ Navigating on-chain data is complex and slow, making it a resource-heavy task fo
 
 Lotus solves the above problems by featuring a modular design that allows for incremental updates and customization to meet specific data requirements. At its core, Lotus **connectors** are modules that facilitate data movement and interaction within the pipeline, linking data sources, message queues, and databases. This modularity makes the Lotus system adaptable, upgradable, and scalable, catering to the diverse data needs of decentralized applications (dApps).
 
+ajisdfjdsaf asifjasd ioajsdfioadsjf
 ## 🔗 Connectors
 Lotus connectors are essential for managing data flow in Lotus's data pipeline. They serve as the link between data sources, message queues, and databases, enhancing Lotus's modularity, upgradeability, and scalability.
 
