@@ -1,4 +1,4 @@
-FROM --platform=linux/amd64 golang:1.22.5-alpine3.20 as builder
+FROM --platform=linux/amd64 golang:1.23.0-alpine3.20 AS builder
 
 RUN apk add --no-cache build-base linux-headers gcc musl-dev git openssh-client
 
@@ -33,7 +33,7 @@ RUN apk add --no-cache musl
 
 WORKDIR /app
 
-COPY local.yaml .
+COPY config.yaml .
 COPY manifest.yaml .
 COPY --from=builder /src/bin .
 
