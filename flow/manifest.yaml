@@ -1,7 +1,0 @@
-name: flow
-author: lotus
-version: "0.0.0"
-
-outputPath: flow
-package: flow
-owner: lotus
