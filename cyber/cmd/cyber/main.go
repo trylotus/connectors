@@ -18,9 +18,7 @@ const XOContractAddr = "0x84583e7d2d92d87d5b3bac850ab4bad37ae568e8"
 func main() {
 	_ = godotenv.Load()
 
-	if err := connector.InitLogging(); err != nil {
-		log.Fatal().Err(err).Msg("Failed to init logging")
-	}
+	connector.InitLogging()
 
 	var (
 		fromBlock uint64
