@@ -18,6 +18,10 @@ const XOContractAddr = "0x84583e7d2d92d87d5b3bac850ab4bad37ae568e8"
 func main() {
 	_ = godotenv.Load()
 
+	if err := connector.InitLogging(); err != nil {
+		log.Fatal().Err(err).Msg("Failed to init logging")
+	}
+
 	var (
 		fromBlock uint64
 		toBlock   uint64
@@ -36,20 +40,16 @@ func main() {
 		xo.NewContract(XOContractAddr),
 	}
 
-	source := evm.NewSource(os.Getenv("RPC_URL"), contracts)
-
-	c := connector.NewConnector(source)
-
 	// Create a context that cancels upon receiving interrupt signal
 	ctx, cancel := common.ContextWithSignal(context.Background(), os.Interrupt)
 	defer cancel()
 
+	source := evm.NewSource(ctx, os.Getenv("RPC_URL"), contracts)
+
+	c := connector.NewConnector(source)
+
 	// Register topic and protobuf type mappings
 	go c.RegisterDescriptor(ctx, xo.File_xo_xo_proto)
-
-	if err := c.Connect(ctx); err != nil {
-		log.Fatal().Err(err).Msg("Failed to connect")
-	}
 
 	c.Start(ctx, subscribe, fromBlock, toBlock, numBlocks)
 

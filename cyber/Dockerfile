@@ -31,9 +31,12 @@ FROM --platform=linux/amd64 alpine:3.20
 
 RUN apk add --no-cache musl
 
-WORKDIR /app
+ENV LOG_LEVEL=debug
+ENV LOG_FORMAT=console
+ENV KAFKA_BROKERS=localhost:9092
+ENV REGISTRY_URL=http://localhost:8081
+ENV RPC_URL=wss://cyber-ws.alt.technology
 
-COPY config.yaml .
 COPY manifest.yaml .
 COPY --from=builder /src/bin .
 
