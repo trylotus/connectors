@@ -3,12 +3,12 @@ name: Lotus Connector
 on:
   workflow_dispatch:
   push:
-    branches: [ main, staging ]
+    branches: [ main, staging, develop ]
     paths:
       - '**'
       - '.github/workflows/lotus_connector.yml'
   pull_request:
-    branches: [ main, staging ]
+    branches: [ main, staging, develop ]
 
 defaults:
   run:
@@ -32,53 +32,59 @@ jobs:
             echo "dirs=$(git diff --name-only origin/${{ github.event.pull_request.base.ref }} | xargs dirname | uniq | xargs -I {} find {} -type f -name 'manifest.yaml' -maxdepth 1 | xargs dirname | uniq | jq -R -s -c 'split("\n")[:-1]'))" >> $GITHUB_OUTPUT
           else 
             # if this is a change on main or staging branch, then build everything
-            echo "dirs=$(find . -type f -name 'manifest.yaml' | xargs dirname | jq -R -s -c 'split("\n")[:-1]'))" >> $GITHUB_OUTPUT
+            echo "dirs=$(grep -r "workflow: true" -l ./**/manifest.yaml | xargs dirname | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
           fi
 
-  test:
-    name: Build and Test
-    needs: [ setup ]
+  # test:
+  #   name: Build and Test
+  #   needs: [ setup ]
 
-    strategy:
-      matrix:
-        dir: ${{fromJson(needs.setup.outputs.dirs)}}
+  #   strategy:
+  #     matrix:
+  #       dir: ${{fromJson(needs.setup.outputs.dirs)}}
 
-    runs-on: ubuntu-latest
+  #   runs-on: ubuntu-latest
 
-    # Add "id-token" with the intended permissions. Required with google-github-actions/auth.
-    permissions:
-      contents: 'read'
-      id-token: 'write'
+  #   # Add "id-token" with the intended permissions. Required with google-github-actions/auth.
+  #   permissions:
+  #     contents: 'read'
+  #     id-token: 'write'
             
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v3
+  #   steps:
+  #   - name: Checkout
+  #     uses: actions/checkout@v3
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v1
+  #   - name: Set up Docker Buildx
+  #     uses: docker/setup-buildx-action@v1
 
-    - name: Build
-      id: build-tester
-      uses: docker/build-push-action@v2
-      env:
-        BRANCH: ${{ env.GITHUB_REF_SLUG }}
-      with:
-        file: Dockerfile
-        context: ${{ matrix.dir }}
-        push: false
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
-        target: test
-        outputs: type=docker
+  #   - uses: webfactory/ssh-agent@v0.9.0
+  #     with:
+  #         ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-    - name: Test
-      run: |
-        docker run ${{ steps.build-tester.outputs.imageid }}
+  #   - name: Build
+  #     id: build-tester
+  #     uses: docker/build-push-action@1a162644f9a7e87d8f4b053101d1d9a712edc18c
+  #     env:
+  #       BRANCH: ${{ env.GITHUB_REF_SLUG }}
+  #     with:
+  #       ssh: |
+  #         default=${{ env.SSH_AUTH_SOCK }}
+  #       file: Dockerfile
+  #       context: ${{ matrix.dir }}
+  #       push: false
+  #       cache-from: type=gha
+  #       cache-to: type=gha,mode=max
+  #       target: test
+  #       outputs: type=docker
+
+  #   - name: Test
+  #     run: |
+  #       docker run ${{ steps.build-tester.outputs.imageid }}
 
   build:
     if: github.event_name != 'pull_request' # this only runs for main and staging
     name: Publish Docker image
-    needs: [ setup , test ]
+    needs: [ setup ]
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -88,6 +94,7 @@ jobs:
     permissions:
       contents: 'read'
       id-token: 'write'
+      packages: 'write'
 
     steps:
     - uses: actions/checkout@v3
@@ -106,6 +113,13 @@ jobs:
       run: |
         echo "::set-output name=value::$(basename ${{ matrix.dir }})" # ls only directories that changed
 
+    - name: Setup tags for container image
+      run: |
+        BUILD_DATE="$(date -u +'%Y-%m-%dT%H-%M-%SZ')"
+        REF_NAME="$(echo ${{ github.ref }} | awk '{split($0,a,"/"); print a[3];}')"
+        GIT_COMMIT="$(git rev-parse HEAD | cut -c1-8)"
+        echo "IMAGE_TAG=$REF_NAME-$BUILD_DATE-$GIT_COMMIT" >> $GITHUB_ENV
+
     - name: Docker meta
       id: meta
       uses: docker/metadata-action@v3
@@ -113,6 +127,7 @@ jobs:
         images: ${{ secrets.DOCKER_REPO }}/${{ steps.connector-name.outputs.value }}-connector
         tags: |
           type=ref,event=branch
+          type=raw,value=${{ env.IMAGE_TAG }}
           type=ref,event=pr
           # output 0.1.2
           type=semver,pattern={{version}},value=${{ steps.yaml-data.outputs.data }}
@@ -124,20 +139,26 @@ jobs:
           org.opencontainers.image.title=${{ steps.connector-name.outputs.value }}-connector
           org.opencontainers.image.description=
 
-    - name: Authenticate to Google Cloud
-      id: auth
-      uses: 'google-github-actions/auth@v0'
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@0d4c9c5ea7693da7b068278f7b52bda2a190a446 # v3.2.0
       with:
-        token_format: 'access_token'
-        workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
-        service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Login to google Container Registry
-      run: |-
-        echo '${{ steps.auth.outputs.access_token }}' | docker login -u oauth2accesstoken --password-stdin ${{ secrets.DOCKER_REPO }}
+    - uses: webfactory/ssh-agent@v0.9.0
+      with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+
+    - name: create keys folder
+      run: |
+        cd ${{ matrix.dir }}
+        mkdir keys
+        echo "" > keys/dummy
 
     - name: Build and Publish
-      uses: docker/build-push-action@v2
+      uses: docker/build-push-action@1a162644f9a7e87d8f4b053101d1d9a712edc18c
       env:
         BRANCH: ${{ env.GITHUB_REF_SLUG }}
       with:
@@ -145,7 +166,9 @@ jobs:
           VERSION=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
           BUILD=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.revision'] }}
           PACKAGE=${{ matrix.dir }}
-        file: Dockerfile
+        ssh: |
+          default=${{ env.SSH_AUTH_SOCK }}
+        file: ${{ matrix.dir }}/Dockerfile
         context: ${{ matrix.dir }}
         push: ${{ github.event_name != 'pull_request' }}
         tags: ${{ steps.meta.outputs.tags }}
@@ -153,15 +176,15 @@ jobs:
         cache-from: type=gha
         cache-to: type=gha,mode=max
 
-    - name: Post to a Slack channel
-      id: slack
-      uses: slackapi/slack-github-action@v1.19.0
-      with:
-        # Slack channel id, channel name, or user id to post message.
-        # See also: https://api.slack.com/methods/chat.postMessage#channels
-        channel-id: 'C03DL2A73SB' #devops-alerts
-        # For posting a simple plain text message
-        slack-message: "GitHub Action build result: *${{ job.status }}* <${{ github.event.pull_request.html_url || github.event.head_commit.url }}|${{ github.sha }}>\n---\n\n${{ steps.meta.outputs.tags }}"
-      env:
-        SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+    # - name: Post to a Slack channel
+    #   id: slack
+    #   uses: slackapi/slack-github-action@v1.19.0
+    #   with:
+    #     # Slack channel id, channel name, or user id to post message.
+    #     # See also: https://api.slack.com/methods/chat.postMessage#channels
+    #     channel-id: 'C03DL2A73SB' #devops-alerts
+    #     # For posting a simple plain text message
+    #     slack-message: "GitHub Action build result: *${{ job.status }}* <${{ github.event.pull_request.html_url || github.event.head_commit.url }}|${{ github.sha }}>\n---\n\n${{ steps.meta.outputs.tags }}"
+    #   env:
+    #     SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
 

@@ -15,7 +15,7 @@ COPY go.sum .
 
 ENV GOPRIVATE="github.com/trylotus/*"
 
-RUN go mod download
+RUN --mount=type=ssh go mod download
 
 COPY . .
 
@@ -30,6 +30,8 @@ RUN go build -o bin cmd/cyber/main.go
 FROM --platform=linux/amd64 alpine:3.20
 
 RUN apk add --no-cache musl
+
+WORKDIR /connector
 
 ENV LOG_LEVEL=debug
 ENV LOG_FORMAT=console
