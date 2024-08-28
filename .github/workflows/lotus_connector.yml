@@ -113,6 +113,11 @@ jobs:
       run: |
         echo "::set-output name=value::$(basename ${{ matrix.dir }})" # ls only directories that changed
 
+    - name: Setup tags for container image
+      run: |
+        BUILD_DATE="$(date -u +'%Y-%m-%dT%H-%M-%SZ')"
+        echo "IMAGE_TAG=${{ env.REF_NAME }}-$BUILD_DATE-${{ env.GIT_COMMIT }}" >> $GITHUB_ENV
+
     - name: Docker meta
       id: meta
       uses: docker/metadata-action@v3
@@ -120,6 +125,7 @@ jobs:
         images: ${{ secrets.DOCKER_REPO }}/${{ steps.connector-name.outputs.value }}-connector
         tags: |
           type=ref,event=branch
+          type=raw,value=${{ env.IMAGE_TAG }}
           type=ref,event=pr
           # output 0.1.2
           type=semver,pattern={{version}},value=${{ steps.yaml-data.outputs.data }}
