@@ -116,7 +116,9 @@ jobs:
     - name: Setup tags for container image
       run: |
         BUILD_DATE="$(date -u +'%Y-%m-%dT%H-%M-%SZ')"
-        echo "IMAGE_TAG=${{ env.REF_NAME }}-$BUILD_DATE-${{ env.GIT_COMMIT }}" >> $GITHUB_ENV
+        REF_NAME="$(echo ${{ github.ref }} | awk '{split($0,a,"/"); print a[3];}')"
+        GIT_COMMIT="$(git rev-parse HEAD | cut -c1-8)"
+        echo "IMAGE_TAG=$REF_NAME-$BUILD_DATE-$GIT_COMMIT" >> $GITHUB_ENV
 
     - name: Docker meta
       id: meta
