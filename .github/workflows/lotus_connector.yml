@@ -32,7 +32,7 @@ jobs:
             echo "dirs=$(git diff --name-only origin/${{ github.event.pull_request.base.ref }} | xargs dirname | uniq | xargs -I {} find {} -type f -name 'manifest.yaml' -maxdepth 1 | xargs dirname | uniq | jq -R -s -c 'split("\n")[:-1]'))" >> $GITHUB_OUTPUT
           else 
             # if this is a change on main or staging branch, then build everything
-            echo "dirs=$(find . -type f -name 'manifest.yaml' | xargs dirname | jq -R -s -c 'split("\n")[:-1]'))" >> $GITHUB_OUTPUT
+            echo "dirs=$(grep -r "worklow: true" -l ./**/manifest.yaml | xargs dirname | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
           fi
 
   # test:
