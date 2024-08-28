@@ -1,4 +1,4 @@
 name: cyber
 author: lotus
 version: "0.0.0"
-worklow: true
+workflow: true
