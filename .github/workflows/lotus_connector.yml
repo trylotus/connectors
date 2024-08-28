@@ -63,12 +63,12 @@ jobs:
 
     - name: Build
       id: build-tester
-      uses: docker/build-push-action@v2
-      ssh: |
-        default=${{ env.SSH_AUTH_SOCK }}
+      uses: docker/build-push-action@1a162644f9a7e87d8f4b053101d1d9a712edc18c
       env:
         BRANCH: ${{ env.GITHUB_REF_SLUG }}
       with:
+        ssh: |
+          default=${{ env.SSH_AUTH_SOCK }}
         file: Dockerfile
         context: ${{ matrix.dir }}
         push: false
@@ -142,7 +142,7 @@ jobs:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
     - name: Build and Publish
-      uses: docker/build-push-action@v2
+      uses: docker/build-push-action@1a162644f9a7e87d8f4b053101d1d9a712edc18c
       env:
         BRANCH: ${{ env.GITHUB_REF_SLUG }}
       with:
