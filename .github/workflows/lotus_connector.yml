@@ -152,7 +152,7 @@ jobs:
           PACKAGE=${{ matrix.dir }}
         ssh: |
           default=${{ env.SSH_AUTH_SOCK }}
-        file: Dockerfile
+        file: ${{ matrix.dir }}/Dockerfile
         context: ${{ matrix.dir }}
         push: ${{ github.event_name != 'pull_request' }}
         tags: ${{ steps.meta.outputs.tags }}

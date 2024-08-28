@@ -15,7 +15,7 @@ COPY go.sum .
 
 ENV GOPRIVATE="github.com/trylotus/*"
 
-RUN go mod download
+RUN --mount=type=ssh go mod download
 
 COPY . .
 
