@@ -5,11 +5,11 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
-	"github.com/rs/zerolog/log"
 	"github.com/spf13/pflag"
 	"github.com/trylotus/connectors/cyber/xo"
 	"github.com/trylotus/go-connector"
 	"github.com/trylotus/go-connector/common"
+	"github.com/trylotus/go-connector/log"
 	"github.com/trylotus/go-connector/source/evm"
 )
 
@@ -18,19 +18,15 @@ const XOContractAddr = "0x84583e7d2d92d87d5b3bac850ab4bad37ae568e8"
 func main() {
 	_ = godotenv.Load()
 
-	connector.InitLogging()
-
 	var (
-		fromBlock uint64
-		toBlock   uint64
-		numBlocks uint64
-		subscribe bool
+		subscribe     bool
+		subscribeFrom int64
+		backfill      common.List
 	)
 
-	pflag.Uint64VarP(&fromBlock, "from-block", "f", 0, "block number to start backfill from (optional)")
-	pflag.Uint64VarP(&toBlock, "to-block", "t", 0, "block number to backfill to (optional)")
-	pflag.Uint64VarP(&numBlocks, "num-blocks", "b", 0, "number of blocks to backfill (optional)")
+	pflag.VarP(&backfill, "backfill", "b", "comma separated list of block numbers to backfill (optional)")
 	pflag.BoolVarP(&subscribe, "subscribe", "s", true, "whether to subscribe to new blockchain events")
+	pflag.Int64VarP(&subscribeFrom, "subscribe-from", "f", 0, "block number to subscribe from (default latest block)")
 
 	pflag.Parse()
 
@@ -38,18 +34,27 @@ func main() {
 		xo.NewContract(XOContractAddr),
 	}
 
-	// Create a context that cancels upon receiving interrupt signal
 	ctx, cancel := common.ContextWithSignal(context.Background(), os.Interrupt)
 	defer cancel()
 
 	source := evm.NewSource(ctx, os.Getenv("RPC_URL"), contracts)
 
-	c := connector.NewConnector(source)
+	c := connector.NewConnector(source, connector.WithDefaultOptions())
 
-	// Register topic and protobuf type mappings
 	go c.RegisterDescriptor(ctx, xo.File_xo_xo_proto)
 
-	c.Start(ctx, subscribe, fromBlock, toBlock, numBlocks)
+	if subscribe {
+		c.Subscribe(ctx, subscribeFrom)
+	}
+
+	if !backfill.IsEmpty() {
+		c.Backfill(ctx, backfill)
+	}
+
+	if err := c.Run(ctx); err != nil {
+		log.Error().Err(err).Msg("Connector shutdown")
+		return
+	}
 
 	log.Info().Msg("Connector shutdown")
 }
