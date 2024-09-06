@@ -7,6 +7,8 @@ on:
     paths:
       - '**'
       - '.github/workflows/lotus_connector.yml'
+    tags:
+      - '*/v[0-9]+.[0-9]+.[0-9]+'
   pull_request:
     branches: [ main, staging, develop ]
 
@@ -20,12 +22,19 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       dirs: ${{ steps.matrix.outputs.dirs }}
+      version: ${{ steps.matrix.outputs.version }}
     steps:
       - uses: actions/checkout@v3
         # Run jobs.build for every directory that contains a manifest.yaml
       - id: matrix
         run: |
-          if [ ${{ github.event_name }} == 'pull_request' ]
+          if [[ ${{ github.ref_type }} == 'tag' ]]; then
+            CONNECTOR_NAME=$(echo ${{ github.ref }} | sed -E 's|^refs/tags/([a-zA-Z_]+)/v[0-9]+\.[0-9]+\.[0-9]+$|\1|')
+            CONNECTOR_VERSION=$(echo ${{ github.ref }} | sed -E 's|^refs/tags/[a-zA-Z_]+/(v[0-9]+\.[0-9]+\.[0-9]+$)|\1|')
+            echo "CONNECTOR_NAME=${CONNECTOR_NAME}" >> $GITHUB_ENV
+            echo "dirs=['./$CONNECTOR_NAME']" >> $GITHUB_OUTPUT
+            echo "version=$CONNECTOR_VERSION" >> $GITHUB_OUTPUT
+          elif [ ${{ github.event_name }} == 'pull_request' ]
           then 
             # if this is a pull request, then only look at directories different from the target branch to save some time
             git fetch origin $GITHUB_BASE_REF --depth=1
@@ -129,6 +138,7 @@ jobs:
           type=ref,event=branch
           type=raw,value=${{ env.IMAGE_TAG }}
           type=ref,event=pr
+          type=raw,value=${{ needs.setup.outputs.version }}
           # output 0.1.2
           type=semver,pattern={{version}},value=${{ steps.yaml-data.outputs.data }}
           # output 0.1
