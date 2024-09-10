@@ -13,7 +13,7 @@ import (
 	"github.com/trylotus/go-connector/source/evm"
 )
 
-const XOContractAddr = "{{.ContractAddress}}"
+const XOContractAddr = "0x1F98431c8aD98523631AE4a59f267346ea31F984"
 
 func main() {
 	_ = godotenv.Load()
