@@ -1,4 +1,4 @@
-name: cyber
+name: {{.ConnectorName}}
 author: lotus
 version: "0.0.0"
 workflow: true

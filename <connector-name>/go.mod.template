@@ -1,4 +1,4 @@
-module github.com/trylotus/connectors/cyber
+module github.com/trylotus/connectors/{{.ConnectorName}}
 
 go 1.23.0
 
