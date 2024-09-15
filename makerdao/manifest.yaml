@@ -1,7 +1,0 @@
-name: makerdao
-author: lotus
-version: "0.0.0"
-
-outputPath: makerdao
-package: makerdao
-owner: lotus

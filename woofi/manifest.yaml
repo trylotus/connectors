@@ -1,7 +1,0 @@
-name: woofi
-author: lotus
-version: "0.0.0"
-
-outputPath: woofi
-package: woofi
-owner: lotus

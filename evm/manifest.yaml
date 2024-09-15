@@ -1,7 +1,0 @@
-name: evm
-author: lotus
-version: "0.0.0"
-
-outputPath: evm
-package: evm
-owner: lotus

@@ -6,14 +6,14 @@ import (
 
 	"github.com/joho/godotenv"
 	"github.com/spf13/pflag"
-	"github.com/trylotus/connectors/cyber/xo"
+	"github.com/trylotus/connectors/cyber/contracts/defaultct"
 	"github.com/trylotus/go-connector"
 	"github.com/trylotus/go-connector/common"
 	"github.com/trylotus/go-connector/log"
 	"github.com/trylotus/go-connector/source/evm"
 )
 
-const XOContractAddr = "0x84583e7d2d92d87d5b3bac850ab4bad37ae568e8"
+const ContractAddr = "0x84583e7d2d92d87d5b3bac850ab4bad37ae568e8"
 
 func main() {
 	_ = godotenv.Load()
@@ -31,7 +31,7 @@ func main() {
 	pflag.Parse()
 
 	contracts := []evm.SmartContract{
-		xo.NewContract(XOContractAddr),
+		defaultct.NewContract(ContractAddr),
 	}
 
 	ctx, cancel := common.ContextWithSignal(context.Background(), os.Interrupt)
@@ -41,7 +41,7 @@ func main() {
 
 	c := connector.NewConnector(source, connector.WithDefaultOptions())
 
-	go c.RegisterDescriptor(ctx, xo.File_xo_xo_proto)
+	go c.RegisterDescriptor(ctx, defaultct.File_defaultct_contract_proto)
 
 	if subscribe {
 		c.Subscribe(ctx, subscribeFrom)

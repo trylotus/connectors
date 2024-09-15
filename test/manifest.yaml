@@ -1,7 +1,0 @@
-name: test
-author: lotus
-version: "0.0.0"
-
-outputPath: test
-package: test
-owner: lotus

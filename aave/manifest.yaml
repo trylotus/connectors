@@ -1,7 +1,0 @@
-name: aave
-author: lotus
-version: "0.0.0"
-
-outputPath: aave
-package: aave
-owner: lotus

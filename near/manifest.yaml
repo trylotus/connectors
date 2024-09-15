@@ -1,7 +1,0 @@
-name: near
-author: lotus
-version: "0.0.0"
-
-outputPath: near
-package: near
-owner: lotus
