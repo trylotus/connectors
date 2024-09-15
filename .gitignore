@@ -22,3 +22,5 @@ local.yaml
 *.proto.desc
 
 .vscode
+
+.idea
