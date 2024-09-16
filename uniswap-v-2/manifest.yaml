@@ -1,4 +1,4 @@
-name: {{.ConnectorName}}
+name: uniswap-v-2
 author: lotus
 version: "0.0.0"
 workflow: true
