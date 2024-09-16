@@ -6,14 +6,14 @@ import (
 
 	"github.com/joho/godotenv"
 	"github.com/spf13/pflag"
-	"github.com/trylotus/connectors/{{.ConnectorName}}/contracts/defaultct"
+	"github.com/trylotus/connectors/newconnector/contracts/defaultct"
 	"github.com/trylotus/go-connector"
 	"github.com/trylotus/go-connector/common"
 	"github.com/trylotus/go-connector/log"
 	"github.com/trylotus/go-connector/source/evm"
 )
 
-const ContractAddr = "{{.ContractAddress}}"
+const ContractAddr = "0x4200000000000000000000000000000000000015"
 
 func main() {
 	_ = godotenv.Load()
