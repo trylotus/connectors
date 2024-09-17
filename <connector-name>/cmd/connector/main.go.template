@@ -6,14 +6,22 @@ import (
 
 	"github.com/joho/godotenv"
 	"github.com/spf13/pflag"
-	"github.com/trylotus/connectors/{{.ConnectorName}}/contracts/defaultct"
+
 	"github.com/trylotus/go-connector"
 	"github.com/trylotus/go-connector/common"
 	"github.com/trylotus/go-connector/log"
 	"github.com/trylotus/go-connector/source/evm"
+
+    {{range $idx, $contractData := .ContractList }}
+	"github.com/trylotus/connectors/{{.ConnectorName}}/contracts/{{contractData.ContractName}}"
+    {{end}}
 )
 
-const ContractAddr = "{{.ContractAddress}}"
+var ContractList = []evm.SmartContract{
+    {{range $idx, $contractData := .ContractList }}
+        {{$contractData.ContractName}}.NewContract("{{$contractData.ContractAddress}}"),
+    {{end}}
+}
 
 func main() {
 	_ = godotenv.Load()
@@ -30,18 +38,18 @@ func main() {
 
 	pflag.Parse()
 
-	contracts := []evm.SmartContract{
-		defaultct.NewContract(ContractAddr),
-	}
-
 	ctx, cancel := common.ContextWithSignal(context.Background(), os.Interrupt)
 	defer cancel()
 
-	source := evm.NewSource(ctx, os.Getenv("RPC_URL"), contracts)
+	source := evm.NewSource(ctx, os.Getenv("RPC_URL"), ContractList)
 
 	c := connector.NewConnector(source, connector.WithDefaultOptions())
 
-	go c.RegisterDescriptor(ctx, defaultct.File_defaultct_contract_proto)
+	go c.RegisterDescriptor(ctx,
+        {{range $idx, $contractData := .ContractList }}
+            {{$contractData.ContractName}}.File_{{$contractData.ContractName}}_contract_proto,
+        {{end}}
+	)
 
 	if subscribe {
 		c.Subscribe(ctx, subscribeFrom)
