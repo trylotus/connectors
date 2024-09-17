@@ -1,0 +1,7 @@
+version: '3'
+services:
+  connector:
+    build: .
+    container_name: concon-1726615067-connector
+    image: lotus/concon-1726615067-connector
+    restart: always
