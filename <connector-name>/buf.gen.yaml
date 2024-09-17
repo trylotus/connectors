@@ -4,4 +4,4 @@ plugins:
     out: contracts
     opt: paths=source_relative
 inputs:
-  - directory: contracts
+  - directory: proto

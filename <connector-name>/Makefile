@@ -13,4 +13,9 @@ gen_proto:
 	buf generate
 
 gen_abi:
-	abigen --abi=./contracts/defaultct/contract.abi --pkg=defaultct --out=./contracts/defaultct/contract.abi.go --type ABI
+	@find ./contracts -name '*.abi' | while read abi_file; do \
+		pkg_name=$$(basename $$(dirname $$abi_file)); \
+		out_file=$$(dirname $$abi_file)/$$(basename $$abi_file .abi).abi.go; \
+		echo "Generating ABI for $$abi_file into $$out_file"; \
+		abigen --abi=$$abi_file --pkg=$$pkg_name --out=$$out_file --type ABI; \
+	done
