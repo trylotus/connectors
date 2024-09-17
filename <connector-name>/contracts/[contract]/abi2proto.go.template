@@ -1,4 +1,4 @@
-package defaultct
+package {{.ContractName}}
 
 import (
 	"fmt"
