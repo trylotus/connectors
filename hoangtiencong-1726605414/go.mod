@@ -1,4 +1,4 @@
-module github.com/trylotus/connectors/{{.ConnectorName}}
+module github.com/trylotus/connectors/hoangtiencong-1726605414
 
 go 1.23.0
 
