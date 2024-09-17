@@ -1,0 +1,7 @@
+version: '3'
+services:
+  connector:
+    build: .
+    container_name: today-1726615973-connector
+    image: lotus/today-1726615973-connector
+    restart: always
