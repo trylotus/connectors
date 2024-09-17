@@ -1,4 +1,4 @@
-module github.com/trylotus/connectors/{{.ConnectorName}}
+module github.com/trylotus/connectors/aisdfijsadf-1726614744
 
 go 1.23.0
 

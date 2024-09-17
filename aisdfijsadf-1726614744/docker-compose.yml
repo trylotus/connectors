@@ -1,0 +1,7 @@
+version: '3'
+services:
+  connector:
+    build: .
+    container_name: aisdfijsadf-1726614744-connector
+    image: lotus/aisdfijsadf-1726614744-connector
+    restart: always
