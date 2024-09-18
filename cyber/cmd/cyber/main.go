@@ -37,7 +37,16 @@ func main() {
 	ctx, cancel := common.ContextWithSignal(context.Background(), os.Interrupt)
 	defer cancel()
 
-	source := evm.NewSource(ctx, os.Getenv("RPC_URL"), contracts)
+	rpcUrl := os.Getenv("RPC_URL")
+
+	log.Info().Str("url", rpcUrl).Msg("Connecting to RPC")
+
+	client, err := evm.DialContext(ctx, rpcUrl)
+	if err != nil {
+		log.Fatal().Err(err).Str("url", rpcUrl).Msg("Failed to connect to RPC")
+	}
+
+	source := evm.NewSource(client, contracts)
 
 	c := connector.NewConnector(source, connector.WithDefaultOptions())
 
