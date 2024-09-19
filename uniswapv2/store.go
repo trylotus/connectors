@@ -141,7 +141,7 @@ func (s *Store) GetPairByNumber(ctx context.Context, number int64) (*Pair, error
 }
 
 func (s *Store) AddToken(ctx context.Context, token *Token) error {
-	s.pairCache.Add(token.Address, token)
+	s.tokenCache.Add(token.Address, token)
 
 	_, err := s.db.NamedExecContext(ctx, "INSERT INTO tokens (address, name, symbol, decimals) VALUES (:address, :name, :symbol, :decimals) ON CONFLICT DO NOTHING", token)
 
