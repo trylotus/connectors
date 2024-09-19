@@ -1,0 +1,7 @@
+version: '3'
+services:
+  connector:
+    build: .
+    container_name: hoangtiencong-1726760758-connector
+    image: lotus/hoangtiencong-1726760758-connector
+    restart: always
