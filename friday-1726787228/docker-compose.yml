@@ -1,0 +1,7 @@
+version: '3'
+services:
+  connector:
+    build: .
+    container_name: friday-1726787228-connector
+    image: lotus/friday-1726787228-connector
+    restart: always
