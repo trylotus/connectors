@@ -64,7 +64,7 @@ case "{{ $eventData.EventName }}":
 		Ts:          ts,
 		BlockNumber: vLog.BlockNumber,
 		TxHash:      vLog.TxHash.Bytes(),
-		Index:       uint64(vLog.Index),
+		LogIndex:       uint64(vLog.Index),
 {{ range $leftSide, $rightSide := $eventData.GoProtoStructFieldInit }}
 		{{$leftSide}}: {{$rightSide}},{{end}}
 	}
