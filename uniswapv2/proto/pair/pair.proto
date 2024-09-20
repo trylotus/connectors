@@ -15,20 +15,20 @@ message Approval {
     fields: [
       "ts",
       "tx_hash",
-      "index"
+      "log_index"
     ]
   };
   option (lotus.composite).index = {
     fields: [
       "tx_hash",
-      "index"
+      "log_index"
     ]
   };
 
   google.protobuf.Timestamp ts = 1;
   uint64 block_number = 2 [(lotus.index) = {}];
   bytes tx_hash = 3 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}];
-  uint64 index = 4;
+  uint64 log_index = 4;
   bytes owner = 5 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}];
   bytes spender = 6 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}];
   string value = 7 [(lotus.numeric) = {}];
@@ -40,20 +40,20 @@ message Burn {
     fields: [
       "ts",
       "tx_hash",
-      "index"
+      "log_index"
     ]
   };
   option (lotus.composite).index = {
     fields: [
       "tx_hash",
-      "index"
+      "log_index"
     ]
   };
 
   google.protobuf.Timestamp ts = 1;
   uint64 block_number = 2 [(lotus.index) = {}];
   bytes tx_hash = 3 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}];
-  uint64 index = 4;
+  uint64 log_index = 4;
   bytes sender = 5 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}];
   string amount0 = 6 [(lotus.numeric) = {}];
   string amount1 = 7 [(lotus.numeric) = {}];
@@ -66,20 +66,20 @@ message Mint {
     fields: [
       "ts",
       "tx_hash",
-      "index"
+      "log_index"
     ]
   };
   option (lotus.composite).index = {
     fields: [
       "tx_hash",
-      "index"
+      "log_index"
     ]
   };
 
   google.protobuf.Timestamp ts = 1;
   uint64 block_number = 2 [(lotus.index) = {}];
   bytes tx_hash = 3 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}];
-  uint64 index = 4;
+  uint64 log_index = 4;
   bytes sender = 5 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}];
   string amount0 = 6 [(lotus.numeric) = {}];
   string amount1 = 7 [(lotus.numeric) = {}];
@@ -91,20 +91,20 @@ message Swap {
     fields: [
       "ts",
       "tx_hash",
-      "index"
+      "log_index"
     ]
   };
   option (lotus.composite).index = {
     fields: [
       "tx_hash",
-      "index"
+      "log_index"
     ]
   };
 
   google.protobuf.Timestamp ts = 1;
   uint64 block_number = 2 [(lotus.index) = {}];
   bytes tx_hash = 3 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}];
-  uint64 index = 4;
+  uint64 log_index = 4;
   bytes sender = 5 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}];
   string amount0_in = 6 [(lotus.numeric) = {}];
   string amount1_in = 7 [(lotus.numeric) = {}];
@@ -119,20 +119,20 @@ message Sync {
     fields: [
       "ts",
       "tx_hash",
-      "index"
+      "log_index"
     ]
   };
   option (lotus.composite).index = {
     fields: [
       "tx_hash",
-      "index"
+      "log_index"
     ]
   };
 
   google.protobuf.Timestamp ts = 1;
   uint64 block_number = 2 [(lotus.index) = {}];
   bytes tx_hash = 3 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}];
-  uint64 index = 4;
+  uint64 log_index = 4;
   string reserve0 = 5 [(lotus.numeric) = {}];
   string reserve1 = 6 [(lotus.numeric) = {}];
 }
@@ -143,20 +143,20 @@ message Transfer {
     fields: [
       "ts",
       "tx_hash",
-      "index"
+      "log_index"
     ]
   };
   option (lotus.composite).index = {
     fields: [
       "tx_hash",
-      "index"
+      "log_index"
     ]
   };
 
   google.protobuf.Timestamp ts = 1;
   uint64 block_number = 2 [(lotus.index) = {}];
   bytes tx_hash = 3 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}];
-  uint64 index = 4;
+  uint64 log_index = 4;
   bytes from = 5 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}];
   bytes to = 6 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}];
   string value = 7 [(lotus.numeric) = {}];

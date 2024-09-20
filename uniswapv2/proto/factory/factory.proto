@@ -15,20 +15,20 @@ message PairCreated {
     fields: [
       "ts",
       "tx_hash",
-      "index"
+      "log_index"
     ]
   };
   option (lotus.composite).index = {
     fields: [
       "tx_hash",
-      "index"
+      "log_index"
     ]
   };
 
   google.protobuf.Timestamp ts = 1;
   uint64 block_number = 2 [(lotus.index) = {}];
   bytes tx_hash = 3 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}];
-  uint64 index = 4;
+  uint64 log_index = 4;
   bytes token0 = 5 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}];
   bytes token1 = 6 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}];
   bytes pair = 7 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}];
