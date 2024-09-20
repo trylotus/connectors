@@ -18,7 +18,7 @@ type SmartContract struct {
 }
 
 func NewContract(addr string) *SmartContract {
-	contractAbi, err := abi.JSON(strings.NewReader(ABIMetaData.ABI))
+	contractAbi, err := abi.JSON(strings.NewReader({{$.ContractName | ToCamel}}MetaData.ABI))
 	if err != nil {
 		log.Fatal().Err(err).Msg("error reading abi")
 	}

@@ -17,5 +17,5 @@ gen_abi:
 		pkg_name=$$(basename $$(dirname $$abi_file)); \
 		out_file=$$(dirname $$abi_file)/$$(basename $$abi_file .abi).abi.go; \
 		echo "Generating ABI for $$abi_file into $$out_file"; \
-		abigen --abi=$$abi_file --pkg=$$pkg_name --out=$$out_file --type ABI; \
+		abigen --abi=$$abi_file --pkg=$$pkg_name --out=$$out_file; \
 	done
