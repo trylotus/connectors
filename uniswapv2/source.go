@@ -111,10 +111,10 @@ func (s *Source) subscribeFactory(ctx context.Context, msgCh chan<- proto.Messag
 				BlockNumber: event.Raw.BlockNumber,
 				TxHash:      event.Raw.TxHash.Bytes(),
 				Index:       uint64(event.Raw.Index),
-				Arg_3:       event.Arg3.String(),
+				Arg3:        event.Arg3.String(),
 				Pair:        event.Pair.Bytes(),
-				Token_0:     event.Token0.Bytes(),
-				Token_1:     event.Token1.Bytes(),
+				Token0:      event.Token0.Bytes(),
+				Token1:      event.Token1.Bytes(),
 			}
 
 			msgCh <- msg
@@ -184,7 +184,6 @@ func (s *Source) subscribePairs(ctx context.Context, pairs []ethcommon.Address, 
 					log.Error().Err(err).Str("address", p.Token0).Msg("Failed to get token0")
 					continue
 				}
-
 				token1, err := s.GetToken(ctx, ethcommon.HexToAddress(p.Token0))
 				if err != nil {
 					log.Error().Err(err).Str("address", p.Token0).Msg("Failed to get token1")
@@ -200,8 +199,8 @@ func (s *Source) subscribePairs(ctx context.Context, pairs []ethcommon.Address, 
 					TxHash:      vLog.TxHash.Bytes(),
 					Index:       uint64(vLog.Index),
 					Sender:      event.Sender.Bytes(),
-					Amount_0:    floatString(amount0),
-					Amount_1:    floatString(amount1),
+					Amount0:     floatString(amount0),
+					Amount1:     floatString(amount1),
 				}
 			case pair.PairSwap:
 				token0, err := s.GetToken(ctx, ethcommon.HexToAddress(p.Token0))
@@ -209,7 +208,6 @@ func (s *Source) subscribePairs(ctx context.Context, pairs []ethcommon.Address, 
 					log.Error().Err(err).Str("address", p.Token0).Msg("Failed to get token0")
 					continue
 				}
-
 				token1, err := s.GetToken(ctx, ethcommon.HexToAddress(p.Token0))
 				if err != nil {
 					log.Error().Err(err).Str("address", p.Token0).Msg("Failed to get token1")
@@ -226,10 +224,10 @@ func (s *Source) subscribePairs(ctx context.Context, pairs []ethcommon.Address, 
 					BlockNumber: vLog.BlockNumber,
 					TxHash:      vLog.TxHash.Bytes(),
 					Index:       uint64(vLog.Index),
-					Amount_0In:  floatString(amount0In),
-					Amount_0Out: floatString(amount0Out),
-					Amount_1In:  floatString(amount1In),
-					Amount_1Out: floatString(amount1Out),
+					Amount0In:   floatString(amount0In),
+					Amount0Out:  floatString(amount0Out),
+					Amount1In:   floatString(amount1In),
+					Amount1Out:  floatString(amount1Out),
 					Sender:      event.Sender.Bytes(),
 					To:          event.To.Bytes(),
 				}
@@ -239,7 +237,6 @@ func (s *Source) subscribePairs(ctx context.Context, pairs []ethcommon.Address, 
 					log.Error().Err(err).Str("address", p.Token0).Msg("Failed to get token0")
 					continue
 				}
-
 				token1, err := s.GetToken(ctx, ethcommon.HexToAddress(p.Token0))
 				if err != nil {
 					log.Error().Err(err).Str("address", p.Token0).Msg("Failed to get token1")
@@ -254,17 +251,12 @@ func (s *Source) subscribePairs(ctx context.Context, pairs []ethcommon.Address, 
 					BlockNumber: vLog.BlockNumber,
 					TxHash:      vLog.TxHash.Bytes(),
 					Index:       uint64(vLog.Index),
-					Reserve_0:   floatString(reserve0),
-					Reserve_1:   floatString(reserve1),
+					Reserve0:    floatString(reserve0),
+					Reserve1:    floatString(reserve1),
 				}
 			case pair.PairTransfer:
-				lpToken, err := s.GetToken(ctx, vLog.Address)
-				if err != nil {
-					log.Error().Err(err).Str("address", p.Token0).Msg("Failed to get lp token")
-					continue
-				}
-
-				value := tokenAmount(event.Value, lpToken.Decimals)
+				// Uniswapv2 LP token decimals is always 18
+				value := tokenAmount(event.Value, 18)
 
 				msgCh <- &pair.Transfer{
 					Ts:          ts,
@@ -276,13 +268,8 @@ func (s *Source) subscribePairs(ctx context.Context, pairs []ethcommon.Address, 
 					Value:       floatString(value),
 				}
 			case pair.PairApproval:
-				lpToken, err := s.GetToken(ctx, vLog.Address)
-				if err != nil {
-					log.Error().Err(err).Str("address", p.Token0).Msg("Failed to get lp token")
-					continue
-				}
-
-				value := tokenAmount(event.Value, lpToken.Decimals)
+				// Uniswapv2 LP token decimals is always 18
+				value := tokenAmount(event.Value, 18)
 
 				msgCh <- &pair.Approval{
 					Ts:          ts,
@@ -299,7 +286,6 @@ func (s *Source) subscribePairs(ctx context.Context, pairs []ethcommon.Address, 
 					log.Error().Err(err).Str("address", p.Token0).Msg("Failed to get token0")
 					continue
 				}
-
 				token1, err := s.GetToken(ctx, ethcommon.HexToAddress(p.Token0))
 				if err != nil {
 					log.Error().Err(err).Str("address", p.Token0).Msg("Failed to get token1")
@@ -315,8 +301,8 @@ func (s *Source) subscribePairs(ctx context.Context, pairs []ethcommon.Address, 
 					TxHash:      vLog.TxHash.Bytes(),
 					Index:       uint64(vLog.Index),
 					Sender:      event.Sender.Bytes(),
-					Amount_0:    floatString(amount0),
-					Amount_1:    floatString(amount1),
+					Amount0:     floatString(amount0),
+					Amount1:     floatString(amount1),
 					To:          event.To.Bytes(),
 				}
 			default:

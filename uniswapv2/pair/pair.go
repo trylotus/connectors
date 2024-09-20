@@ -85,8 +85,8 @@ func Message(vLog types.Log, ts *timestamppb.Timestamp) (proto.Message, error) {
 			BlockNumber: vLog.BlockNumber,
 			TxHash:      vLog.TxHash.Bytes(),
 			Index:       uint64(vLog.Index),
-			Amount_0:    event.Amount0.String(),
-			Amount_1:    event.Amount1.String(),
+			Amount0:     event.Amount0.String(),
+			Amount1:     event.Amount1.String(),
 			Sender:      event.Sender.Bytes(),
 		}, nil
 	case "Swap":
@@ -99,10 +99,10 @@ func Message(vLog types.Log, ts *timestamppb.Timestamp) (proto.Message, error) {
 			BlockNumber: vLog.BlockNumber,
 			TxHash:      vLog.TxHash.Bytes(),
 			Index:       uint64(vLog.Index),
-			Amount_0In:  event.Amount0In.String(),
-			Amount_0Out: event.Amount0Out.String(),
-			Amount_1In:  event.Amount1In.String(),
-			Amount_1Out: event.Amount1Out.String(),
+			Amount0In:   event.Amount0In.String(),
+			Amount0Out:  event.Amount0Out.String(),
+			Amount1In:   event.Amount1In.String(),
+			Amount1Out:  event.Amount1Out.String(),
 			Sender:      event.Sender.Bytes(),
 			To:          event.To.Bytes(),
 		}, nil
@@ -116,8 +116,8 @@ func Message(vLog types.Log, ts *timestamppb.Timestamp) (proto.Message, error) {
 			BlockNumber: vLog.BlockNumber,
 			TxHash:      vLog.TxHash.Bytes(),
 			Index:       uint64(vLog.Index),
-			Reserve_0:   event.Reserve0.String(),
-			Reserve_1:   event.Reserve1.String(),
+			Reserve0:    event.Reserve0.String(),
+			Reserve1:    event.Reserve1.String(),
 		}, nil
 	case "Transfer":
 		event := new(PairTransfer)
@@ -157,8 +157,8 @@ func Message(vLog types.Log, ts *timestamppb.Timestamp) (proto.Message, error) {
 			BlockNumber: vLog.BlockNumber,
 			TxHash:      vLog.TxHash.Bytes(),
 			Index:       uint64(vLog.Index),
-			Amount_0:    event.Amount0.String(),
-			Amount_1:    event.Amount1.String(),
+			Amount0:     event.Amount0.String(),
+			Amount1:     event.Amount1.String(),
 			Sender:      event.Sender.Bytes(),
 			To:          event.To.Bytes(),
 		}, nil

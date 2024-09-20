@@ -29,8 +29,8 @@ message PairCreated {
   uint64 block_number = 2 [(lotus.index) = {}];
   bytes tx_hash = 3 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}];
   uint64 index = 4;
-  bytes token_0 = 5 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // original type: address
-  bytes token_1 = 6 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // original type: address
-  bytes pair = 7 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // original type: address
-  string arg_3 = 8 [(lotus.numeric) = {precision: 78}]; // original type: uint256
+  bytes token0 = 5 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}];
+  bytes token1 = 6 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}];
+  bytes pair = 7 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}];
+  string arg3 = 8 [(lotus.numeric) = {precision: 78}]; // uint256
 }

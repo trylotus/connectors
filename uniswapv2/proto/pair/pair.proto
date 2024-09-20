@@ -55,8 +55,8 @@ message Burn {
   bytes tx_hash = 3 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}];
   uint64 index = 4;
   bytes sender = 5 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}];
-  string amount_0 = 6 [(lotus.numeric) = {}];
-  string amount_1 = 7 [(lotus.numeric) = {}];
+  string amount0 = 6 [(lotus.numeric) = {}];
+  string amount1 = 7 [(lotus.numeric) = {}];
   bytes to = 8 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}];
 }
 
@@ -81,8 +81,8 @@ message Mint {
   bytes tx_hash = 3 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}];
   uint64 index = 4;
   bytes sender = 5 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}];
-  string amount_0 = 6 [(lotus.numeric) = {}];
-  string amount_1 = 7 [(lotus.numeric) = {}];
+  string amount0 = 6 [(lotus.numeric) = {}];
+  string amount1 = 7 [(lotus.numeric) = {}];
 }
 
 message Swap {
@@ -106,10 +106,10 @@ message Swap {
   bytes tx_hash = 3 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}];
   uint64 index = 4;
   bytes sender = 5 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}];
-  string amount_0_in = 6 [(lotus.numeric) = {}];
-  string amount_1_in = 7 [(lotus.numeric) = {}];
-  string amount_0_out = 8 [(lotus.numeric) = {}];
-  string amount_1_out = 9 [(lotus.numeric) = {}];
+  string amount0_in = 6 [(lotus.numeric) = {}];
+  string amount1_in = 7 [(lotus.numeric) = {}];
+  string amount0_out = 8 [(lotus.numeric) = {}];
+  string amount1_out = 9 [(lotus.numeric) = {}];
   bytes to = 10 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}];
 }
 
@@ -133,8 +133,8 @@ message Sync {
   uint64 block_number = 2 [(lotus.index) = {}];
   bytes tx_hash = 3 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}];
   uint64 index = 4;
-  string reserve_0 = 5 [(lotus.numeric) = {}];
-  string reserve_1 = 6 [(lotus.numeric) = {}];
+  string reserve0 = 5 [(lotus.numeric) = {}];
+  string reserve1 = 6 [(lotus.numeric) = {}];
 }
 
 message Transfer {
