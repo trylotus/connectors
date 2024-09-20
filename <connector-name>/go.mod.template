@@ -7,8 +7,8 @@ require (
 	github.com/joho/godotenv v1.5.1
 	github.com/rs/zerolog v1.33.0
 	github.com/spf13/pflag v1.0.5
-	github.com/trylotus/go-connector v1.0.0
-	github.com/trylotus/go-connector/source/evm v1.0.0
+	github.com/trylotus/go-connector v1.1.0
+	github.com/trylotus/go-connector/source/evm v1.1.1
 	github.com/trylotus/go-lotus-proto v1.0.0
 	google.golang.org/protobuf v1.34.2
 )
