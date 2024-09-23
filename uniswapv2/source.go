@@ -354,6 +354,7 @@ func (s *Source) GetTokens(ctx context.Context, addresses ...ethcommon.Address) 
 		address := addresses[i]
 
 		go func(i int) {
+			defer wg.Done()
 			tokens[i], errs[i] = s.GetToken(ctx, address)
 		}(i)
 	}
