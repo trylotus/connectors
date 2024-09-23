@@ -106,15 +106,31 @@ func (s *Source) subscribeFactory(ctx context.Context, msgCh chan<- proto.Messag
 				log.Error().Err(err).Msg("Failed to get block time")
 			}
 
+			tokens, errs := s.GetTokens(ctx, event.Token0, event.Token1)
+			if errs[0] != nil {
+				log.Error().Err(errs[0]).Str("address", event.Token0.String()).Msg("Failed to get token0")
+				return
+			}
+			if errs[1] != nil {
+				log.Error().Err(errs[1]).Str("address", event.Token1.String()).Msg("Failed to get token1")
+				return
+			}
+
 			msg := &factory.PairCreated{
-				Ts:          &timestamppb.Timestamp{Seconds: int64(t)},
-				BlockNumber: event.Raw.BlockNumber,
-				TxHash:      event.Raw.TxHash.Bytes(),
-				LogIndex:    uint64(event.Raw.Index),
-				Arg3:        event.Arg3.String(),
-				Pair:        event.Pair.Bytes(),
-				Token0:      event.Token0.Bytes(),
-				Token1:      event.Token1.Bytes(),
+				Ts:             &timestamppb.Timestamp{Seconds: int64(t)},
+				BlockNumber:    event.Raw.BlockNumber,
+				TxHash:         event.Raw.TxHash.Bytes(),
+				LogIndex:       uint64(event.Raw.Index),
+				Token0:         event.Token0.Bytes(),
+				Token1:         event.Token1.Bytes(),
+				Pair:           event.Pair.Bytes(),
+				Arg3:           event.Arg3.String(),
+				Token0Name:     tokens[0].Name,
+				Token0Symbol:   tokens[0].Symbol,
+				Token0Decimals: uint32(tokens[0].Decimals),
+				Token1Name:     tokens[1].Name,
+				Token1Symbol:   tokens[1].Symbol,
+				Token1Decimals: uint32(tokens[1].Decimals),
 			}
 
 			msgCh <- msg
@@ -150,165 +166,171 @@ func (s *Source) subscribePairs(ctx context.Context, pairs []ethcommon.Address, 
 			errCh <- err
 			return
 		case vLog := <-logCh:
-			t, err := s.client.BlockTime(ctx, vLog.BlockNumber)
-			if err != nil {
-				log.Error().Err(err).Msg("Failed to get block time")
-				continue
-			}
-
-			ts := &timestamppb.Timestamp{Seconds: int64(t)}
-
-			event, err := pair.UnpackLog(vLog)
-			if err != nil {
-				log.Error().Err(err).Msg("Failed to unpack pair log")
-				continue
-			}
-
-			p, err := s.store.GetPair(ctx, vLog.Address.String())
-			if err != nil {
-				log.Error().Err(err).Str("address", vLog.Address.String()).Msg("Failed to get pair from store")
-			}
-
-			if p == nil {
-				p, err = s.GetPair(ctx, vLog.Address)
-				if err != nil {
-					log.Error().Err(err).Str("address", vLog.Address.String()).Msg("Failed to get pair from RPC")
-					continue
-				}
-			}
-
-			switch event := event.(type) {
-			case pair.PairMint:
-				token0, err := s.GetToken(ctx, ethcommon.HexToAddress(p.Token0))
-				if err != nil {
-					log.Error().Err(err).Str("address", p.Token0).Msg("Failed to get token0")
-					continue
-				}
-				token1, err := s.GetToken(ctx, ethcommon.HexToAddress(p.Token0))
-				if err != nil {
-					log.Error().Err(err).Str("address", p.Token0).Msg("Failed to get token1")
-					continue
-				}
-
-				amount0 := tokenAmount(event.Amount0, token0.Decimals)
-				amount1 := tokenAmount(event.Amount1, token1.Decimals)
-
-				msgCh <- &pair.Mint{
-					Ts:          ts,
-					BlockNumber: vLog.BlockNumber,
-					TxHash:      vLog.TxHash.Bytes(),
-					LogIndex:    uint64(vLog.Index),
-					Sender:      event.Sender.Bytes(),
-					Amount0:     floatString(amount0),
-					Amount1:     floatString(amount1),
-				}
-			case pair.PairSwap:
-				token0, err := s.GetToken(ctx, ethcommon.HexToAddress(p.Token0))
-				if err != nil {
-					log.Error().Err(err).Str("address", p.Token0).Msg("Failed to get token0")
-					continue
-				}
-				token1, err := s.GetToken(ctx, ethcommon.HexToAddress(p.Token0))
-				if err != nil {
-					log.Error().Err(err).Str("address", p.Token0).Msg("Failed to get token1")
-					continue
-				}
-
-				amount0In := tokenAmount(event.Amount0In, token0.Decimals)
-				amount0Out := tokenAmount(event.Amount0Out, token0.Decimals)
-				amount1In := tokenAmount(event.Amount1In, token1.Decimals)
-				amount1Out := tokenAmount(event.Amount1Out, token1.Decimals)
-
-				msgCh <- &pair.Swap{
-					Ts:          ts,
-					BlockNumber: vLog.BlockNumber,
-					TxHash:      vLog.TxHash.Bytes(),
-					LogIndex:    uint64(vLog.Index),
-					Amount0In:   floatString(amount0In),
-					Amount0Out:  floatString(amount0Out),
-					Amount1In:   floatString(amount1In),
-					Amount1Out:  floatString(amount1Out),
-					Sender:      event.Sender.Bytes(),
-					To:          event.To.Bytes(),
-				}
-			case pair.PairSync:
-				token0, err := s.GetToken(ctx, ethcommon.HexToAddress(p.Token0))
-				if err != nil {
-					log.Error().Err(err).Str("address", p.Token0).Msg("Failed to get token0")
-					continue
-				}
-				token1, err := s.GetToken(ctx, ethcommon.HexToAddress(p.Token0))
-				if err != nil {
-					log.Error().Err(err).Str("address", p.Token0).Msg("Failed to get token1")
-					continue
-				}
-
-				reserve0 := tokenAmount(event.Reserve0, token0.Decimals)
-				reserve1 := tokenAmount(event.Reserve1, token1.Decimals)
-
-				msgCh <- &pair.Sync{
-					Ts:          ts,
-					BlockNumber: vLog.BlockNumber,
-					TxHash:      vLog.TxHash.Bytes(),
-					LogIndex:    uint64(vLog.Index),
-					Reserve0:    floatString(reserve0),
-					Reserve1:    floatString(reserve1),
-				}
-			case pair.PairTransfer:
-				// Uniswapv2 LP token decimals is always 18
-				value := tokenAmount(event.Value, 18)
-
-				msgCh <- &pair.Transfer{
-					Ts:          ts,
-					BlockNumber: vLog.BlockNumber,
-					TxHash:      vLog.TxHash.Bytes(),
-					LogIndex:    uint64(vLog.Index),
-					From:        event.From.Bytes(),
-					To:          event.To.Bytes(),
-					Value:       floatString(value),
-				}
-			case pair.PairApproval:
-				// Uniswapv2 LP token decimals is always 18
-				value := tokenAmount(event.Value, 18)
-
-				msgCh <- &pair.Approval{
-					Ts:          ts,
-					BlockNumber: vLog.BlockNumber,
-					TxHash:      vLog.TxHash.Bytes(),
-					LogIndex:    uint64(vLog.Index),
-					Owner:       event.Owner.Bytes(),
-					Spender:     event.Spender.Bytes(),
-					Value:       floatString(value),
-				}
-			case pair.PairBurn:
-				token0, err := s.GetToken(ctx, ethcommon.HexToAddress(p.Token0))
-				if err != nil {
-					log.Error().Err(err).Str("address", p.Token0).Msg("Failed to get token0")
-					continue
-				}
-				token1, err := s.GetToken(ctx, ethcommon.HexToAddress(p.Token0))
-				if err != nil {
-					log.Error().Err(err).Str("address", p.Token0).Msg("Failed to get token1")
-					continue
-				}
-
-				amount0 := tokenAmount(event.Amount0, token0.Decimals)
-				amount1 := tokenAmount(event.Amount1, token1.Decimals)
-
-				msgCh <- &pair.Burn{
-					Ts:          ts,
-					BlockNumber: vLog.BlockNumber,
-					TxHash:      vLog.TxHash.Bytes(),
-					LogIndex:    uint64(vLog.Index),
-					Sender:      event.Sender.Bytes(),
-					Amount0:     floatString(amount0),
-					Amount1:     floatString(amount1),
-					To:          event.To.Bytes(),
-				}
-			default:
-				log.Error().Str("event", reflect.TypeOf(event).String()).Msg("Unhandled event")
-			}
+			s.processPairLog(ctx, vLog, msgCh)
 		}
+	}
+}
+
+func (s *Source) processPairLog(ctx context.Context, vLog types.Log, msgCh chan<- proto.Message) {
+	t, err := s.client.BlockTime(ctx, vLog.BlockNumber)
+	if err != nil {
+		log.Error().Err(err).Msg("Failed to get block time")
+		return
+	}
+
+	ts := &timestamppb.Timestamp{Seconds: int64(t)}
+
+	event, err := pair.UnpackLog(vLog)
+	if err != nil {
+		log.Error().Err(err).Msg("Failed to unpack pair log")
+		return
+	}
+
+	p, err := s.store.GetPair(ctx, vLog.Address.String())
+	if err != nil {
+		log.Error().Err(err).Str("address", vLog.Address.String()).Msg("Failed to get pair from store")
+	}
+
+	if p == nil {
+		p, err = s.GetPair(ctx, vLog.Address)
+		if err != nil {
+			log.Error().Err(err).Str("address", vLog.Address.String()).Msg("Failed to get pair from RPC")
+			return
+		}
+	}
+
+	switch event := event.(type) {
+	case pair.PairMint:
+		tokens, errs := s.GetTokens(ctx, ethcommon.HexToAddress(p.Token0), ethcommon.HexToAddress(p.Token1))
+		if errs[0] != nil {
+			log.Error().Err(errs[0]).Str("address", p.Token0).Msg("Failed to get token0")
+			return
+		}
+		if errs[1] != nil {
+			log.Error().Err(errs[1]).Str("address", p.Token1).Msg("Failed to get token1")
+			return
+		}
+
+		amount0 := tokenAmount(event.Amount0, tokens[0].Decimals)
+		amount1 := tokenAmount(event.Amount1, tokens[1].Decimals)
+
+		msgCh <- &pair.Mint{
+			Ts:          ts,
+			BlockNumber: vLog.BlockNumber,
+			TxHash:      vLog.TxHash.Bytes(),
+			LogIndex:    uint64(vLog.Index),
+			Pair:        vLog.Address.Bytes(),
+			Sender:      event.Sender.Bytes(),
+			Amount0:     floatString(amount0),
+			Amount1:     floatString(amount1),
+		}
+	case pair.PairSwap:
+		tokens, errs := s.GetTokens(ctx, ethcommon.HexToAddress(p.Token0), ethcommon.HexToAddress(p.Token1))
+		if errs[0] != nil {
+			log.Error().Err(errs[0]).Str("address", p.Token0).Msg("Failed to get token0")
+			return
+		}
+		if errs[1] != nil {
+			log.Error().Err(errs[1]).Str("address", p.Token1).Msg("Failed to get token1")
+			return
+		}
+
+		amount0In := tokenAmount(event.Amount0In, tokens[0].Decimals)
+		amount0Out := tokenAmount(event.Amount0Out, tokens[0].Decimals)
+		amount1In := tokenAmount(event.Amount1In, tokens[1].Decimals)
+		amount1Out := tokenAmount(event.Amount1Out, tokens[1].Decimals)
+
+		msgCh <- &pair.Swap{
+			Ts:          ts,
+			BlockNumber: vLog.BlockNumber,
+			TxHash:      vLog.TxHash.Bytes(),
+			LogIndex:    uint64(vLog.Index),
+			Pair:        vLog.Address.Bytes(),
+			Amount0In:   floatString(amount0In),
+			Amount0Out:  floatString(amount0Out),
+			Amount1In:   floatString(amount1In),
+			Amount1Out:  floatString(amount1Out),
+			Sender:      event.Sender.Bytes(),
+			To:          event.To.Bytes(),
+		}
+	case pair.PairSync:
+		tokens, errs := s.GetTokens(ctx, ethcommon.HexToAddress(p.Token0), ethcommon.HexToAddress(p.Token1))
+		if errs[0] != nil {
+			log.Error().Err(errs[0]).Str("address", p.Token0).Msg("Failed to get token0")
+			return
+		}
+		if errs[1] != nil {
+			log.Error().Err(errs[1]).Str("address", p.Token1).Msg("Failed to get token1")
+			return
+		}
+
+		reserve0 := tokenAmount(event.Reserve0, tokens[0].Decimals)
+		reserve1 := tokenAmount(event.Reserve1, tokens[1].Decimals)
+
+		msgCh <- &pair.Sync{
+			Ts:          ts,
+			BlockNumber: vLog.BlockNumber,
+			TxHash:      vLog.TxHash.Bytes(),
+			LogIndex:    uint64(vLog.Index),
+			Pair:        vLog.Address.Bytes(),
+			Reserve0:    floatString(reserve0),
+			Reserve1:    floatString(reserve1),
+		}
+	case pair.PairTransfer:
+		// Uniswapv2 LP token decimals is always 18
+		value := tokenAmount(event.Value, 18)
+
+		msgCh <- &pair.Transfer{
+			Ts:          ts,
+			BlockNumber: vLog.BlockNumber,
+			TxHash:      vLog.TxHash.Bytes(),
+			LogIndex:    uint64(vLog.Index),
+			Pair:        vLog.Address.Bytes(),
+			From:        event.From.Bytes(),
+			To:          event.To.Bytes(),
+			Value:       floatString(value),
+		}
+	case pair.PairApproval:
+		// Uniswapv2 LP token decimals is always 18
+		value := tokenAmount(event.Value, 18)
+
+		msgCh <- &pair.Approval{
+			Ts:          ts,
+			BlockNumber: vLog.BlockNumber,
+			TxHash:      vLog.TxHash.Bytes(),
+			LogIndex:    uint64(vLog.Index),
+			Pair:        vLog.Address.Bytes(),
+			Owner:       event.Owner.Bytes(),
+			Spender:     event.Spender.Bytes(),
+			Value:       floatString(value),
+		}
+	case pair.PairBurn:
+		tokens, errs := s.GetTokens(ctx, ethcommon.HexToAddress(p.Token0), ethcommon.HexToAddress(p.Token1))
+		if errs[0] != nil {
+			log.Error().Err(errs[0]).Str("address", p.Token0).Msg("Failed to get token0")
+			return
+		}
+		if errs[1] != nil {
+			log.Error().Err(errs[1]).Str("address", p.Token1).Msg("Failed to get token1")
+			return
+		}
+
+		amount0 := tokenAmount(event.Amount0, tokens[0].Decimals)
+		amount1 := tokenAmount(event.Amount1, tokens[1].Decimals)
+
+		msgCh <- &pair.Burn{
+			Ts:          ts,
+			BlockNumber: vLog.BlockNumber,
+			TxHash:      vLog.TxHash.Bytes(),
+			LogIndex:    uint64(vLog.Index),
+			Pair:        vLog.Address.Bytes(),
+			Sender:      event.Sender.Bytes(),
+			Amount0:     floatString(amount0),
+			Amount1:     floatString(amount1),
+			To:          event.To.Bytes(),
+		}
+	default:
+		log.Error().Str("event", reflect.TypeOf(event).String()).Msg("Unhandled event")
 	}
 }
 
@@ -318,6 +340,27 @@ func (s *Source) AllPairs(ctx context.Context) []ethcommon.Address {
 	})
 
 	return s.pairs
+}
+
+func (s *Source) GetTokens(ctx context.Context, addresses ...ethcommon.Address) ([]*Token, []error) {
+	tokens := make([]*Token, len(addresses))
+	errs := make([]error, len(addresses))
+
+	var wg sync.WaitGroup
+
+	wg.Add(len(addresses))
+
+	for i := range addresses {
+		address := addresses[i]
+
+		go func(i int) {
+			tokens[i], errs[i] = s.GetToken(ctx, address)
+		}(i)
+	}
+
+	wg.Wait()
+
+	return tokens, errs
 }
 
 func (s *Source) GetToken(ctx context.Context, address ethcommon.Address) (*Token, error) {
