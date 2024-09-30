@@ -2,6 +2,7 @@ package uniswapv2
 
 import (
 	"context"
+	"fmt"
 	"math/big"
 	"reflect"
 	"strings"
@@ -12,6 +13,7 @@ import (
 	ethcommon "github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/trylotus/go-connector"
+	"github.com/trylotus/go-connector/common"
 	"github.com/trylotus/go-connector/log"
 	"github.com/trylotus/go-connector/source/evm"
 	"github.com/trylotus/uniswapv2/erc20"
@@ -22,32 +24,51 @@ import (
 )
 
 const (
-	pairPageSize    = 100000
-	concurrenyLimit = 5
+	defaultConcurrenyLimit      = 5
+	defaultBlockRangeLimit      = 2048
+	defaultQueryPageSize        = 2048
+	defaultSubscriptionPageSize = 100000
 )
 
 type Source struct {
 	client *evm.Client
 	store  *Store
 
-	factoryContract  *factory.Factory
-	pairs            []ethcommon.Address
-	loadAllPairsOnce sync.Once
+	concurrecyLimit      int64 // Limit mumber of pairs can be loaded concurrently
+	blockRangeLimit      int64 // Limit number of blocks per query
+	queryPageSize        int64 // Limit number of pairs per query
+	subscriptionPageSize int64 // Limit number of pairs per subscription
+
+	factoryContract     *factory.Factory
+	factoryContractAddr ethcommon.Address
+	pairs               []ethcommon.Address
+	loadAllPairsOnce    sync.Once
 }
 
 var _ connector.Source = (*Source)(nil)
 
-func NewSource(client *evm.Client, store *Store, factoryContractAddr string) *Source {
+func NewSource(client *evm.Client, store *Store, factoryContractAddr string, opts ...Option) connector.Source {
 	factoryContract, err := factory.NewFactory(ethcommon.HexToAddress(factoryContractAddr), client)
 	if err != nil {
 		log.Fatal().Err(err).Str("contract", factoryContractAddr).Msg("Failed to create factory contract")
 	}
 
-	return &Source{
-		client:          client,
-		store:           store,
-		factoryContract: factoryContract,
+	source := &Source{
+		client:               client,
+		store:                store,
+		factoryContract:      factoryContract,
+		factoryContractAddr:  ethcommon.HexToAddress(factoryContractAddr),
+		concurrecyLimit:      defaultConcurrenyLimit,
+		blockRangeLimit:      defaultBlockRangeLimit,
+		queryPageSize:        defaultQueryPageSize,
+		subscriptionPageSize: defaultSubscriptionPageSize,
 	}
+
+	for _, opt := range opts {
+		opt(source)
+	}
+
+	return source
 }
 
 func (s *Source) BlockNumber(ctx context.Context) (int64, error) {
@@ -59,27 +80,121 @@ func (s *Source) BlockNumber(ctx context.Context) (int64, error) {
 	return int64(n), nil
 }
 
-func (s *Source) Query(ctx context.Context, fromBlock int64, toBlock int64) (<-chan proto.Message, <-chan error) {
-	panic("unimplemented")
-}
-
-func (s *Source) Subscribe(ctx context.Context) (<-chan proto.Message, <-chan error) {
-	msgCh := make(chan proto.Message, 2048)
-	errCh := make(chan error, 1)
-
-	go s.subscribeFactory(ctx, msgCh, errCh)
+func (s *Source) Query(ctx context.Context, fromBlock int64, toBlock int64, msgCh chan<- proto.Message, errCh chan<- error) {
+	if fromBlock > toBlock {
+		fromBlock, toBlock = toBlock, fromBlock
+	}
 
 	pairs := s.AllPairs(ctx)
 
-	for i := 0; i < len(pairs); i += pairPageSize {
-		j := i + pairPageSize
+	for chunkHead := fromBlock; chunkHead <= toBlock; chunkHead += s.queryPageSize {
+		chunkTail := chunkHead + s.queryPageSize - 1
+		if chunkTail > toBlock {
+			chunkTail = toBlock
+		}
+
+		log.Info().Int64("from", chunkHead).Int64("to", chunkTail).Msg("Query")
+
+		s.queryFactory(ctx, chunkHead, chunkTail, msgCh, errCh)
+
+		for i := 0; i < len(pairs); i += int(s.queryPageSize) {
+			j := i + int(s.queryPageSize)
+			if j > len(pairs) {
+				j = len(pairs)
+			}
+			s.queryPairs(ctx, chunkHead, chunkTail, pairs[i:j], msgCh, errCh)
+		}
+	}
+}
+
+func (s *Source) queryFactory(ctx context.Context, fromBlock int64, toBlock int64, msgCh chan<- proto.Message, errCh chan<- error) {
+	filter := ethereum.FilterQuery{
+		Addresses: []ethcommon.Address{s.factoryContractAddr},
+		FromBlock: big.NewInt(fromBlock),
+		ToBlock:   big.NewInt(toBlock),
+	}
+
+	retryCtx := common.ContextWithConditionalRetry(ctx, evm.IsRetryableError)
+
+	logs, err := common.RetryT(retryCtx, func() ([]types.Log, error) {
+		return s.client.FilterLogs(ctx, filter)
+	})
+
+	if err != nil {
+		errCh <- err
+		return
+	}
+
+	for _, vLog := range logs {
+		event, err := s.factoryContract.ParsePairCreated(vLog)
+		if err != nil {
+			log.Error().Err(err).Msg("Failed to parse factory log")
+			continue
+		}
+
+		msg, err := s.parsePairCreatedEvent(ctx, event)
+		if err != nil {
+			log.Error().Err(err).Msg("Failed to parse factory pair created event")
+			continue
+		}
+
+		msgCh <- msg
+	}
+}
+
+func (s *Source) queryPairs(ctx context.Context, fromBlock int64, toBlock int64, pairs []ethcommon.Address, msgCh chan<- proto.Message, errCh chan<- error) {
+	filter := ethereum.FilterQuery{
+		Addresses: pairs,
+		FromBlock: big.NewInt(fromBlock),
+		ToBlock:   big.NewInt(toBlock),
+	}
+
+	retryCtx := common.ContextWithConditionalRetry(ctx, evm.IsRetryableError)
+
+	logs, err := common.RetryT(retryCtx, func() ([]types.Log, error) {
+		return s.client.FilterLogs(ctx, filter)
+	})
+
+	if err != nil {
+		errCh <- err
+		return
+	}
+
+	for _, vLog := range logs {
+		msg, err := s.parsePairLog(ctx, vLog)
+		if err != nil {
+			log.Error().Err(err).Msg("Failed to parse pair log")
+			continue
+		}
+
+		msgCh <- msg
+	}
+}
+
+func (s *Source) Subscribe(ctx context.Context, msgCh chan<- proto.Message, errCh chan<- error) {
+	var wg sync.WaitGroup
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		s.subscribeFactory(ctx, msgCh, errCh)
+	}()
+
+	pairs := s.AllPairs(ctx)
+
+	for i := 0; i < len(pairs); i += int(s.subscriptionPageSize) {
+		j := i + int(s.subscriptionPageSize)
 		if j > len(pairs) {
 			j = len(pairs)
 		}
-		go s.subscribePairs(ctx, pairs[i:j], msgCh, errCh)
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			s.subscribePairs(ctx, pairs[i:j], msgCh, errCh)
+		}()
 	}
 
-	return msgCh, errCh
+	wg.Wait()
 }
 
 func (s *Source) subscribeFactory(ctx context.Context, msgCh chan<- proto.Message, errCh chan<- error) {
@@ -101,55 +216,52 @@ func (s *Source) subscribeFactory(ctx context.Context, msgCh chan<- proto.Messag
 		case event := <-ch:
 			log.Info().Str("number", event.Arg3.String()).Str("address", event.Pair.String()).Msg("New pair created")
 
-			t, err := s.client.BlockTime(ctx, event.Raw.BlockNumber)
+			go s.subscribePairs(ctx, []ethcommon.Address{event.Pair}, msgCh, errCh)
+
+			msg, err := s.parsePairCreatedEvent(ctx, event)
 			if err != nil {
-				log.Error().Err(err).Msg("Failed to get block time")
-			}
-
-			tokens, errs := s.GetTokens(ctx, event.Token0, event.Token1)
-			if errs[0] != nil {
-				log.Error().Err(errs[0]).Str("address", event.Token0.String()).Msg("Failed to get token0")
-				return
-			}
-			if errs[1] != nil {
-				log.Error().Err(errs[1]).Str("address", event.Token1.String()).Msg("Failed to get token1")
-				return
-			}
-
-			msg := &factory.PairCreated{
-				Ts:             &timestamppb.Timestamp{Seconds: int64(t)},
-				BlockNumber:    event.Raw.BlockNumber,
-				TxHash:         event.Raw.TxHash.Bytes(),
-				LogIndex:       uint64(event.Raw.Index),
-				Token0:         event.Token0.Bytes(),
-				Token1:         event.Token1.Bytes(),
-				Pair:           event.Pair.Bytes(),
-				Arg3:           event.Arg3.String(),
-				Token0Name:     tokens[0].Name,
-				Token0Symbol:   tokens[0].Symbol,
-				Token0Decimals: uint32(tokens[0].Decimals),
-				Token1Name:     tokens[1].Name,
-				Token1Symbol:   tokens[1].Symbol,
-				Token1Decimals: uint32(tokens[1].Decimals),
+				log.Error().Err(err).Msg("Failed to parse factory pair created event")
+				continue
 			}
 
 			msgCh <- msg
-
-			go s.subscribePairs(ctx, []ethcommon.Address{event.Pair}, msgCh, errCh)
-
-			go func() {
-				pair := &Pair{
-					Number:  event.Arg3.Int64(),
-					Address: event.Pair.String(),
-					Token0:  event.Token0.String(),
-					Token1:  event.Token1.String(),
-				}
-				if err := s.store.AddPair(ctx, pair); err != nil {
-					log.Error().Err(err).Int64("number", pair.Number).Str("address", pair.Address).Msg("Failed to add pair to store")
-				}
-			}()
 		}
 	}
+}
+
+func (s *Source) parsePairCreatedEvent(ctx context.Context, event *factory.FactoryPairCreated) (proto.Message, error) {
+	t, err := s.client.BlockTime(ctx, event.Raw.BlockNumber)
+	if err != nil {
+		log.Error().Err(err).Msg("Failed to get block time")
+		return nil, err
+	}
+
+	tokens, errs := s.GetTokens(ctx, event.Token0, event.Token1)
+	if errs[0] != nil {
+		log.Error().Err(errs[0]).Str("address", event.Token0.String()).Msg("Failed to get token0")
+		return nil, errs[0]
+	}
+	if errs[1] != nil {
+		log.Error().Err(errs[1]).Str("address", event.Token1.String()).Msg("Failed to get token1")
+		return nil, errs[1]
+	}
+
+	return &factory.PairCreated{
+		Ts:             &timestamppb.Timestamp{Seconds: int64(t)},
+		BlockNumber:    event.Raw.BlockNumber,
+		TxHash:         event.Raw.TxHash.Bytes(),
+		LogIndex:       uint64(event.Raw.Index),
+		Token0:         event.Token0.Bytes(),
+		Token1:         event.Token1.Bytes(),
+		Pair:           event.Pair.Bytes(),
+		Arg3:           event.Arg3.String(),
+		Token0Name:     tokens[0].Name,
+		Token0Symbol:   tokens[0].Symbol,
+		Token0Decimals: uint32(tokens[0].Decimals),
+		Token1Name:     tokens[1].Name,
+		Token1Symbol:   tokens[1].Symbol,
+		Token1Decimals: uint32(tokens[1].Decimals),
+	}, nil
 }
 
 func (s *Source) subscribePairs(ctx context.Context, pairs []ethcommon.Address, msgCh chan<- proto.Message, errCh chan<- error) {
@@ -160,22 +272,30 @@ func (s *Source) subscribePairs(ctx context.Context, pairs []ethcommon.Address, 
 		log.Fatal().Err(err).Msg("Failed to subscribe to pair contracts")
 	}
 
+	defer sub.Unsubscribe()
+
 	for {
 		select {
 		case err := <-sub.Err():
 			errCh <- err
 			return
 		case vLog := <-logCh:
-			s.processPairLog(ctx, vLog, msgCh)
+			msg, err := s.parsePairLog(ctx, vLog)
+			if err != nil {
+				log.Error().Err(err).Msg("Failed to parse pair log")
+				continue
+			}
+
+			msgCh <- msg
 		}
 	}
 }
 
-func (s *Source) processPairLog(ctx context.Context, vLog types.Log, msgCh chan<- proto.Message) {
+func (s *Source) parsePairLog(ctx context.Context, vLog types.Log) (proto.Message, error) {
 	t, err := s.client.BlockTime(ctx, vLog.BlockNumber)
 	if err != nil {
 		log.Error().Err(err).Msg("Failed to get block time")
-		return
+		return nil, err
 	}
 
 	ts := &timestamppb.Timestamp{Seconds: int64(t)}
@@ -183,7 +303,7 @@ func (s *Source) processPairLog(ctx context.Context, vLog types.Log, msgCh chan<
 	event, err := pair.UnpackLog(vLog)
 	if err != nil {
 		log.Error().Err(err).Msg("Failed to unpack pair log")
-		return
+		return nil, err
 	}
 
 	p, err := s.store.GetPair(ctx, vLog.Address.String())
@@ -195,7 +315,7 @@ func (s *Source) processPairLog(ctx context.Context, vLog types.Log, msgCh chan<
 		p, err = s.GetPair(ctx, vLog.Address)
 		if err != nil {
 			log.Error().Err(err).Str("address", vLog.Address.String()).Msg("Failed to get pair from RPC")
-			return
+			return nil, err
 		}
 	}
 
@@ -204,17 +324,17 @@ func (s *Source) processPairLog(ctx context.Context, vLog types.Log, msgCh chan<
 		tokens, errs := s.GetTokens(ctx, ethcommon.HexToAddress(p.Token0), ethcommon.HexToAddress(p.Token1))
 		if errs[0] != nil {
 			log.Error().Err(errs[0]).Str("address", p.Token0).Msg("Failed to get token0")
-			return
+			return nil, errs[0]
 		}
 		if errs[1] != nil {
 			log.Error().Err(errs[1]).Str("address", p.Token1).Msg("Failed to get token1")
-			return
+			return nil, errs[1]
 		}
 
 		amount0 := tokenAmount(event.Amount0, tokens[0].Decimals)
 		amount1 := tokenAmount(event.Amount1, tokens[1].Decimals)
 
-		msgCh <- &pair.Mint{
+		return &pair.Mint{
 			Ts:          ts,
 			BlockNumber: vLog.BlockNumber,
 			TxHash:      vLog.TxHash.Bytes(),
@@ -223,16 +343,16 @@ func (s *Source) processPairLog(ctx context.Context, vLog types.Log, msgCh chan<
 			Sender:      event.Sender.Bytes(),
 			Amount0:     floatString(amount0),
 			Amount1:     floatString(amount1),
-		}
+		}, nil
 	case pair.PairSwap:
 		tokens, errs := s.GetTokens(ctx, ethcommon.HexToAddress(p.Token0), ethcommon.HexToAddress(p.Token1))
 		if errs[0] != nil {
 			log.Error().Err(errs[0]).Str("address", p.Token0).Msg("Failed to get token0")
-			return
+			return nil, errs[0]
 		}
 		if errs[1] != nil {
 			log.Error().Err(errs[1]).Str("address", p.Token1).Msg("Failed to get token1")
-			return
+			return nil, errs[1]
 		}
 
 		amount0In := tokenAmount(event.Amount0In, tokens[0].Decimals)
@@ -240,7 +360,7 @@ func (s *Source) processPairLog(ctx context.Context, vLog types.Log, msgCh chan<
 		amount1In := tokenAmount(event.Amount1In, tokens[1].Decimals)
 		amount1Out := tokenAmount(event.Amount1Out, tokens[1].Decimals)
 
-		msgCh <- &pair.Swap{
+		return &pair.Swap{
 			Ts:          ts,
 			BlockNumber: vLog.BlockNumber,
 			TxHash:      vLog.TxHash.Bytes(),
@@ -252,22 +372,22 @@ func (s *Source) processPairLog(ctx context.Context, vLog types.Log, msgCh chan<
 			Amount1Out:  floatString(amount1Out),
 			Sender:      event.Sender.Bytes(),
 			To:          event.To.Bytes(),
-		}
+		}, nil
 	case pair.PairSync:
 		tokens, errs := s.GetTokens(ctx, ethcommon.HexToAddress(p.Token0), ethcommon.HexToAddress(p.Token1))
 		if errs[0] != nil {
 			log.Error().Err(errs[0]).Str("address", p.Token0).Msg("Failed to get token0")
-			return
+			return nil, errs[0]
 		}
 		if errs[1] != nil {
 			log.Error().Err(errs[1]).Str("address", p.Token1).Msg("Failed to get token1")
-			return
+			return nil, errs[1]
 		}
 
 		reserve0 := tokenAmount(event.Reserve0, tokens[0].Decimals)
 		reserve1 := tokenAmount(event.Reserve1, tokens[1].Decimals)
 
-		msgCh <- &pair.Sync{
+		return &pair.Sync{
 			Ts:          ts,
 			BlockNumber: vLog.BlockNumber,
 			TxHash:      vLog.TxHash.Bytes(),
@@ -275,12 +395,12 @@ func (s *Source) processPairLog(ctx context.Context, vLog types.Log, msgCh chan<
 			Pair:        vLog.Address.Bytes(),
 			Reserve0:    floatString(reserve0),
 			Reserve1:    floatString(reserve1),
-		}
+		}, nil
 	case pair.PairTransfer:
 		// Uniswapv2 LP token decimals is always 18
 		value := tokenAmount(event.Value, 18)
 
-		msgCh <- &pair.Transfer{
+		return &pair.Transfer{
 			Ts:          ts,
 			BlockNumber: vLog.BlockNumber,
 			TxHash:      vLog.TxHash.Bytes(),
@@ -289,12 +409,12 @@ func (s *Source) processPairLog(ctx context.Context, vLog types.Log, msgCh chan<
 			From:        event.From.Bytes(),
 			To:          event.To.Bytes(),
 			Value:       floatString(value),
-		}
+		}, nil
 	case pair.PairApproval:
 		// Uniswapv2 LP token decimals is always 18
 		value := tokenAmount(event.Value, 18)
 
-		msgCh <- &pair.Approval{
+		return &pair.Approval{
 			Ts:          ts,
 			BlockNumber: vLog.BlockNumber,
 			TxHash:      vLog.TxHash.Bytes(),
@@ -303,22 +423,22 @@ func (s *Source) processPairLog(ctx context.Context, vLog types.Log, msgCh chan<
 			Owner:       event.Owner.Bytes(),
 			Spender:     event.Spender.Bytes(),
 			Value:       floatString(value),
-		}
+		}, nil
 	case pair.PairBurn:
 		tokens, errs := s.GetTokens(ctx, ethcommon.HexToAddress(p.Token0), ethcommon.HexToAddress(p.Token1))
 		if errs[0] != nil {
 			log.Error().Err(errs[0]).Str("address", p.Token0).Msg("Failed to get token0")
-			return
+			return nil, errs[0]
 		}
 		if errs[1] != nil {
 			log.Error().Err(errs[1]).Str("address", p.Token1).Msg("Failed to get token1")
-			return
+			return nil, errs[1]
 		}
 
 		amount0 := tokenAmount(event.Amount0, tokens[0].Decimals)
 		amount1 := tokenAmount(event.Amount1, tokens[1].Decimals)
 
-		msgCh <- &pair.Burn{
+		return &pair.Burn{
 			Ts:          ts,
 			BlockNumber: vLog.BlockNumber,
 			TxHash:      vLog.TxHash.Bytes(),
@@ -328,9 +448,9 @@ func (s *Source) processPairLog(ctx context.Context, vLog types.Log, msgCh chan<
 			Amount0:     floatString(amount0),
 			Amount1:     floatString(amount1),
 			To:          event.To.Bytes(),
-		}
+		}, nil
 	default:
-		log.Error().Str("event", reflect.TypeOf(event).String()).Msg("Unhandled event")
+		return nil, fmt.Errorf("unhandled event: %s", reflect.TypeOf(event))
 	}
 }
 
@@ -523,8 +643,8 @@ func (s *Source) GetPairs(ctx context.Context, from int64, to int64) (<-chan *Pa
 		defer close(pairCh)
 		defer close(errCh)
 
-		for i := from; i <= to; i += concurrenyLimit {
-			j := i + concurrenyLimit - 1
+		for i := from; i <= to; i += s.concurrecyLimit {
+			j := i + s.concurrecyLimit - 1
 			if j > to {
 				j = to
 			}
