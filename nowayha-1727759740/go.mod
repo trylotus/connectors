@@ -1,4 +1,4 @@
-module github.com/trylotus/connectors/{{.ConnectorName}}
+module github.com/trylotus/connectors/nowayha-1727759740
 
 go 1.23.0
 
