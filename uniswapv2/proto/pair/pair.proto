@@ -201,3 +201,261 @@ message Transfer {
   bytes to = 7 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}];
   string value = 8 [(lotus.numeric) = {}];
 }
+
+message Price1min {
+  option (lotus.view) = {
+    topic: "lotus.uniswapv2.0_0_0.pair_Sync"
+    materialized: true
+    realtime: true
+    refresh_interval: '1 min'
+    options: ["timescaledb.continuous"]
+    group_by: [
+      "t",
+      "pair"
+    ]
+  };
+
+  option (lotus.composite).index = {
+    fields: [
+      "pair",
+      "t"
+    ]
+  };
+
+  google.protobuf.Timestamp t = 1 [(lotus.projection) = "time_bucket('1 min', ts)"];
+  bytes pair = 2 [
+    (lotus.projection) = "pair",
+    (lotus.bytes) = {format: FORMAT_TYPE_HEX}
+  ];
+  string open_price = 3 [
+    (lotus.projection) = "first(reserve1 / reserve0, ts)",
+    (lotus.numeric) = {}
+  ];
+  string max_price = 4 [
+    (lotus.projection) = "max(reserve1 / reserve0)",
+    (lotus.numeric) = {}
+  ];
+  string min_price = 5 [
+    (lotus.projection) = "min(reserve1 / reserve0)",
+    (lotus.numeric) = {}
+  ];
+  string close_price = 6 [
+    (lotus.projection) = "last(reserve1 / reserve0, ts)",
+    (lotus.numeric) = {}
+  ];
+}
+
+message Price10min {
+  option (lotus.view) = {
+    topic: "lotus.uniswapv2.0_0_0.pair_Sync"
+    materialized: true
+    realtime: true
+    refresh_interval: '10 min'
+    options: ["timescaledb.continuous"]
+    group_by: [
+      "t",
+      "pair"
+    ]
+  };
+
+  option (lotus.composite).index = {
+    fields: [
+      "pair",
+      "t"
+    ]
+  };
+
+  google.protobuf.Timestamp t = 1 [(lotus.projection) = "time_bucket('10 min', ts)"];
+  bytes pair = 2 [
+    (lotus.projection) = "pair",
+    (lotus.bytes) = {format: FORMAT_TYPE_HEX}
+  ];
+  string open_price = 3 [
+    (lotus.projection) = "first(reserve1 / reserve0, ts)",
+    (lotus.numeric) = {}
+  ];
+  string max_price = 4 [
+    (lotus.projection) = "max(reserve1 / reserve0)",
+    (lotus.numeric) = {}
+  ];
+  string min_price = 5 [
+    (lotus.projection) = "min(reserve1 / reserve0)",
+    (lotus.numeric) = {}
+  ];
+  string close_price = 6 [
+    (lotus.projection) = "last(reserve1 / reserve0, ts)",
+    (lotus.numeric) = {}
+  ];
+}
+
+message Price1h {
+  option (lotus.view) = {
+    topic: "lotus.uniswapv2.0_0_0.pair_Sync"
+    materialized: true
+    realtime: true
+    refresh_interval: '10 min'
+    options: ["timescaledb.continuous"]
+    group_by: [
+      "t",
+      "pair"
+    ]
+  };
+
+  option (lotus.composite).index = {
+    fields: [
+      "pair",
+      "t"
+    ]
+  };
+
+  google.protobuf.Timestamp t = 1 [(lotus.projection) = "time_bucket('1 hour', ts)"];
+  bytes pair = 2 [
+    (lotus.projection) = "pair",
+    (lotus.bytes) = {format: FORMAT_TYPE_HEX}
+  ];
+  string open_price = 3 [
+    (lotus.projection) = "first(reserve1 / reserve0, ts)",
+    (lotus.numeric) = {}
+  ];
+  string max_price = 4 [
+    (lotus.projection) = "max(reserve1 / reserve0)",
+    (lotus.numeric) = {}
+  ];
+  string min_price = 5 [
+    (lotus.projection) = "min(reserve1 / reserve0)",
+    (lotus.numeric) = {}
+  ];
+  string close_price = 6 [
+    (lotus.projection) = "last(reserve1 / reserve0, ts)",
+    (lotus.numeric) = {}
+  ];
+}
+
+message Price1d {
+  option (lotus.view) = {
+    topic: "lotus.uniswapv2.0_0_0.pair_Sync"
+    materialized: true
+    realtime: true
+    refresh_interval: '1 hour'
+    options: ["timescaledb.continuous"]
+    group_by: [
+      "t",
+      "pair"
+    ]
+  };
+
+  option (lotus.composite).index = {
+    fields: [
+      "pair",
+      "t"
+    ]
+  };
+
+  google.protobuf.Timestamp t = 1 [(lotus.projection) = "time_bucket('1 day', ts)"];
+  bytes pair = 2 [
+    (lotus.projection) = "pair",
+    (lotus.bytes) = {format: FORMAT_TYPE_HEX}
+  ];
+  string open_price = 3 [
+    (lotus.projection) = "first(reserve1 / reserve0, ts)",
+    (lotus.numeric) = {}
+  ];
+  string max_price = 4 [
+    (lotus.projection) = "max(reserve1 / reserve0)",
+    (lotus.numeric) = {}
+  ];
+  string min_price = 5 [
+    (lotus.projection) = "min(reserve1 / reserve0)",
+    (lotus.numeric) = {}
+  ];
+  string close_price = 6 [
+    (lotus.projection) = "last(reserve1 / reserve0, ts)",
+    (lotus.numeric) = {}
+  ];
+}
+
+message Price1mon {
+  option (lotus.view) = {
+    topic: "lotus.uniswapv2.0_0_0.pair_Sync"
+    materialized: true
+    realtime: true
+    refresh_interval: '1 hour'
+    options: ["timescaledb.continuous"]
+    group_by: [
+      "t",
+      "pair"
+    ]
+  };
+
+  option (lotus.composite).index = {
+    fields: [
+      "pair",
+      "t"
+    ]
+  };
+
+  google.protobuf.Timestamp t = 1 [(lotus.projection) = "time_bucket('1 month', ts)"];
+  bytes pair = 2 [
+    (lotus.projection) = "pair",
+    (lotus.bytes) = {format: FORMAT_TYPE_HEX}
+  ];
+  string open_price = 3 [
+    (lotus.projection) = "first(reserve1 / reserve0, ts)",
+    (lotus.numeric) = {}
+  ];
+  string max_price = 4 [
+    (lotus.projection) = "max(reserve1 / reserve0)",
+    (lotus.numeric) = {}
+  ];
+  string min_price = 5 [
+    (lotus.projection) = "min(reserve1 / reserve0)",
+    (lotus.numeric) = {}
+  ];
+  string close_price = 6 [
+    (lotus.projection) = "last(reserve1 / reserve0, ts)",
+    (lotus.numeric) = {}
+  ];
+}
+
+message Price1y {
+  option (lotus.view) = {
+    topic: "lotus.uniswapv2.0_0_0.pair_Sync"
+    materialized: true
+    realtime: true
+    refresh_interval: '1 hour'
+    options: ["timescaledb.continuous"]
+    group_by: [
+      "t",
+      "pair"
+    ]
+  };
+
+  option (lotus.composite).index = {
+    fields: [
+      "pair",
+      "t"
+    ]
+  };
+
+  google.protobuf.Timestamp t = 1 [(lotus.projection) = "time_bucket('1 year', ts)"];
+  bytes pair = 2 [
+    (lotus.projection) = "pair",
+    (lotus.bytes) = {format: FORMAT_TYPE_HEX}
+  ];
+  string open_price = 3 [
+    (lotus.projection) = "first(reserve1 / reserve0, ts)",
+    (lotus.numeric) = {}
+  ];
+  string max_price = 4 [
+    (lotus.projection) = "max(reserve1 / reserve0)",
+    (lotus.numeric) = {}
+  ];
+  string min_price = 5 [
+    (lotus.projection) = "min(reserve1 / reserve0)",
+    (lotus.numeric) = {}
+  ];
+  string close_price = 6 [
+    (lotus.projection) = "last(reserve1 / reserve0, ts)",
+    (lotus.numeric) = {}
+  ];
+}

@@ -10,4 +10,4 @@ breaking:
   use:
     - FILE
 deps:
-  - buf.build/lotus/lotus-proto:v1.0.0
+  - buf.build/lotus/lotus-proto:v1.1.0
