@@ -1,0 +1,7 @@
+version: '3'
+services:
+  connector:
+    build: .
+    container_name: nowayha-1727759740-connector
+    image: lotus/nowayha-1727759740-connector
+    restart: always
