@@ -2,5 +2,5 @@
 version: v2
 deps:
   - name: buf.build/lotus/lotus-proto
-    commit: cf70680cb05048beac84b2b8d6bfab8a
-    digest: b5:b98b8c307bd8637e8b0271dadc68a2e4942f37f6fe5b7a51f8a3dc4a136a63f4689603752ef746fa0e090ac914ee404023e5010700294e7dde7b218c1938ee90
+    commit: 19f6433c7f24415da6aa6311dace8702
+    digest: b5:e57bce1b4cc10f1ba084eed4589c42e729290740c806f58f8bd06389501eee613081d0733aeef1cb12698fb9f898a2fe4ef38b62e10354afafc5b9ef974fcb1a

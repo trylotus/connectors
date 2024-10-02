@@ -213,6 +213,7 @@ message Price1min {
       "t",
       "pair"
     ]
+    where: "reserve0 > 0"
   };
 
   option (lotus.composite).index = {
@@ -256,6 +257,7 @@ message Price10min {
       "t",
       "pair"
     ]
+    where: "reserve0 > 0"
   };
 
   option (lotus.composite).index = {
@@ -299,6 +301,7 @@ message Price1h {
       "t",
       "pair"
     ]
+    where: "reserve0 > 0"
   };
 
   option (lotus.composite).index = {
@@ -342,6 +345,7 @@ message Price1d {
       "t",
       "pair"
     ]
+    where: "reserve0 > 0"
   };
 
   option (lotus.composite).index = {
@@ -385,6 +389,7 @@ message Price1mon {
       "t",
       "pair"
     ]
+    where: "reserve0 > 0"
   };
 
   option (lotus.composite).index = {
@@ -428,6 +433,7 @@ message Price1y {
       "t",
       "pair"
     ]
+    where: "reserve0 > 0"
   };
 
   option (lotus.composite).index = {
