@@ -244,6 +244,10 @@ message Price1min {
     (lotus.projection) = "last(reserve1 / reserve0, ts)",
     (lotus.numeric) = {}
   ];
+  string avg_price = 7 [
+    (lotus.projection) = "avg(reserve1 / reserve0)",
+    (lotus.numeric) = {}
+  ];
 }
 
 message Price10min {
@@ -286,6 +290,10 @@ message Price10min {
   ];
   string close_price = 6 [
     (lotus.projection) = "last(reserve1 / reserve0, ts)",
+    (lotus.numeric) = {}
+  ];
+  string avg_price = 7 [
+    (lotus.projection) = "avg(reserve1 / reserve0)",
     (lotus.numeric) = {}
   ];
 }
@@ -332,6 +340,10 @@ message Price1h {
     (lotus.projection) = "last(reserve1 / reserve0, ts)",
     (lotus.numeric) = {}
   ];
+  string avg_price = 7 [
+    (lotus.projection) = "avg(reserve1 / reserve0)",
+    (lotus.numeric) = {}
+  ];
 }
 
 message Price1d {
@@ -374,6 +386,10 @@ message Price1d {
   ];
   string close_price = 6 [
     (lotus.projection) = "last(reserve1 / reserve0, ts)",
+    (lotus.numeric) = {}
+  ];
+  string avg_price = 7 [
+    (lotus.projection) = "avg(reserve1 / reserve0)",
     (lotus.numeric) = {}
   ];
 }
@@ -420,6 +436,10 @@ message Price1mon {
     (lotus.projection) = "last(reserve1 / reserve0, ts)",
     (lotus.numeric) = {}
   ];
+  string avg_price = 7 [
+    (lotus.projection) = "avg(reserve1 / reserve0)",
+    (lotus.numeric) = {}
+  ];
 }
 
 message Price1y {
@@ -462,6 +482,10 @@ message Price1y {
   ];
   string close_price = 6 [
     (lotus.projection) = "last(reserve1 / reserve0, ts)",
+    (lotus.numeric) = {}
+  ];
+  string avg_price = 7 [
+    (lotus.projection) = "avg(reserve1 / reserve0)",
     (lotus.numeric) = {}
   ];
 }
