@@ -12,13 +12,15 @@ import (
 	"github.com/trylotus/go-connector/log"
 	"github.com/trylotus/go-connector/source/evm"
 
-    {{range $idx, $contractData := .ContractList }}
-	"github.com/trylotus/connectors/{{$.ConnectorName}}/contracts/{{$contractData.ContractName}}"{{end}}
+    
+	"github.com/trylotus/connectors/uniswapv3-1728028255/contracts/uniswap_v3_factory"
+	"github.com/trylotus/connectors/uniswapv3-1728028255/contracts/uniswap_v3_pool"
 )
 
 var ContractList = []evm.SmartContract{
-    {{range $idx, $contractData := .ContractList }}
-        {{$contractData.ContractName}}.NewContract("{{$contractData.ContractAddress}}"),{{end}}
+    
+        uniswap_v3_factory.NewContract("0x1F98431c8aD98523631AE4a59f267346ea31F984"),
+        uniswap_v3_pool.NewContract("0x40222C2aedEAccf919963a13d63EA9Aa04689EEa"),
 }
 
 func main() {
@@ -53,8 +55,9 @@ func main() {
 	c := connector.NewConnector(source, connector.WithDefaultOptions())
 
 	go c.RegisterDescriptor(ctx,
-        {{range $idx, $contractData := .ContractList }}
-            {{$contractData.ContractName}}.File_{{$contractData.ContractName}}_contract_proto,{{end}}
+        
+            uniswap_v3_factory.File_uniswap_v3_factory_contract_proto,
+            uniswap_v3_pool.File_uniswap_v3_pool_contract_proto,
 	)
 
 	if subscribe {
