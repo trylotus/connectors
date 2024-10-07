@@ -54,7 +54,7 @@ func main() {
 		log.Fatal().Err(err).Str("source", dataSource).Msg("Failed to create store")
 	}
 
-	source := uniswapv2.NewSource(client, store, FactoryContractAddr)
+	source := uniswapv2.NewSource(client, store, FactoryContractAddr, uniswapv2.WithDefaultOptions())
 
 	c := connector.NewConnector(source, connector.WithDefaultOptions())
 
