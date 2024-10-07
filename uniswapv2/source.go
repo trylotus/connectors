@@ -118,6 +118,7 @@ func (s *Source) queryFactory(ctx context.Context, fromBlock int64, toBlock int6
 	}
 
 	retryCtx := common.ContextWithConditionalRetry(ctx, evm.IsRetryableError)
+	retryCtx = common.ContextWithFuncName(retryCtx, "FilterLogs")
 
 	logs, err := common.RetryT(retryCtx, func() ([]types.Log, error) {
 		return s.client.FilterLogs(ctx, filter)
@@ -157,6 +158,7 @@ func (s *Source) queryPairs(ctx context.Context, fromBlock int64, toBlock int64,
 	}
 
 	retryCtx := common.ContextWithConditionalRetry(ctx, evm.IsRetryableError)
+	retryCtx = common.ContextWithFuncName(retryCtx, "FilterLogs")
 
 	logs, err := common.RetryT(retryCtx, func() ([]types.Log, error) {
 		return s.client.FilterLogs(ctx, filter)
