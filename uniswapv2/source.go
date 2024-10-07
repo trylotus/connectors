@@ -34,7 +34,7 @@ type Source struct {
 	client *evm.Client
 	store  *Store
 
-	concurrecyLimit      int64 // Limit mumber of pairs can be loaded concurrently
+	concurrecyLimit      int64 // Limit mumber of queries can be run concurrently
 	blockRangeLimit      int64 // Limit number of blocks per query
 	queryPageSize        int64 // Limit number of pairs per query
 	subscriptionPageSize int64 // Limit number of pairs per subscription
@@ -87,7 +87,10 @@ func (s *Source) Query(ctx context.Context, fromBlock int64, toBlock int64, msgC
 
 	pairs := s.AllPairs(ctx)
 
-	for chunkHead := fromBlock; chunkHead <= toBlock; chunkHead += s.queryPageSize {
+	sem := make(chan struct{}, s.concurrecyLimit)
+
+	for block := fromBlock; block <= toBlock; block += s.queryPageSize {
+		chunkHead := block
 		chunkTail := chunkHead + s.queryPageSize - 1
 		if chunkTail > toBlock {
 			chunkTail = toBlock
@@ -95,15 +98,36 @@ func (s *Source) Query(ctx context.Context, fromBlock int64, toBlock int64, msgC
 
 		log.Info().Int64("from", chunkHead).Int64("to", chunkTail).Msg("Query")
 
-		s.queryFactory(ctx, chunkHead, chunkTail, msgCh, errCh)
+		var wg sync.WaitGroup
+
+		sem <- struct{}{}
+		wg.Add(1)
+
+		go func() {
+			defer wg.Done()
+			defer func() { <-sem }()
+
+			s.queryFactory(ctx, chunkHead, chunkTail, msgCh, errCh)
+		}()
 
 		for i := 0; i < len(pairs); i += int(s.queryPageSize) {
 			j := i + int(s.queryPageSize)
 			if j > len(pairs) {
 				j = len(pairs)
 			}
-			s.queryPairs(ctx, chunkHead, chunkTail, pairs[i:j], msgCh, errCh)
+
+			sem <- struct{}{}
+			wg.Add(1)
+
+			go func(pairs []ethcommon.Address) {
+				defer wg.Done()
+				defer func() { <-sem }()
+
+				s.queryPairs(ctx, chunkHead, chunkTail, pairs, msgCh, errCh)
+			}(pairs[i:j])
 		}
+
+		wg.Wait()
 	}
 }
 
