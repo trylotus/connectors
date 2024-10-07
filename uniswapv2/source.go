@@ -89,9 +89,8 @@ func (s *Source) Query(ctx context.Context, fromBlock int64, toBlock int64, msgC
 
 	sem := make(chan struct{}, s.concurrecyLimit)
 
-	for block := fromBlock; block <= toBlock; block += s.queryPageSize {
-		chunkHead := block
-		chunkTail := chunkHead + s.queryPageSize - 1
+	for chunkHead := fromBlock; chunkHead <= toBlock; chunkHead += s.blockRangeLimit {
+		chunkTail := chunkHead + s.blockRangeLimit - 1
 		if chunkTail > toBlock {
 			chunkTail = toBlock
 		}
@@ -103,12 +102,12 @@ func (s *Source) Query(ctx context.Context, fromBlock int64, toBlock int64, msgC
 		sem <- struct{}{}
 		wg.Add(1)
 
-		go func() {
+		go func(from int64, to int64) {
 			defer wg.Done()
 			defer func() { <-sem }()
 
-			s.queryFactory(ctx, chunkHead, chunkTail, msgCh, errCh)
-		}()
+			s.queryFactory(ctx, from, to, msgCh, errCh)
+		}(chunkHead, chunkTail)
 
 		for i := 0; i < len(pairs); i += int(s.queryPageSize) {
 			j := i + int(s.queryPageSize)
@@ -119,12 +118,12 @@ func (s *Source) Query(ctx context.Context, fromBlock int64, toBlock int64, msgC
 			sem <- struct{}{}
 			wg.Add(1)
 
-			go func(pairs []ethcommon.Address) {
+			go func(from int64, to int64, pairs []ethcommon.Address) {
 				defer wg.Done()
 				defer func() { <-sem }()
 
-				s.queryPairs(ctx, chunkHead, chunkTail, pairs, msgCh, errCh)
-			}(pairs[i:j])
+				s.queryPairs(ctx, from, to, pairs, msgCh, errCh)
+			}(chunkHead, chunkTail, pairs[i:j])
 		}
 
 		wg.Wait()
