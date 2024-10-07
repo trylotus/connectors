@@ -323,6 +323,8 @@ github.com/tklauser/numcpus v0.6.1 h1:ng9scYS7az0Bk4OZLvrNXNSAO2Pxr1XXRAPyjhIx+F
 github.com/tklauser/numcpus v0.6.1/go.mod h1:1XfjsgE2zo8GVw7POkMbHENHzVg3GzmoZ9fESEdAacY=
 github.com/trylotus/go-connector v1.2.0 h1:GioUTialpuo9ojRBJ+xSxeGmW8jaUGpjlQ9nusMpjMI=
 github.com/trylotus/go-connector v1.2.0/go.mod h1:ds0jMJcKgRk4ZvNktA6uHy36RNYagwaJHGCRra5RgX8=
+github.com/trylotus/go-connector v1.2.1-0.20241007131810-f9c235585321 h1:S6h9CJKvTO17spYMu/v5iz1/WyP1zg+0ZBglXhjkazo=
+github.com/trylotus/go-connector v1.2.1-0.20241007131810-f9c235585321/go.mod h1:ds0jMJcKgRk4ZvNktA6uHy36RNYagwaJHGCRra5RgX8=
 github.com/trylotus/go-connector/source/evm v1.2.0 h1:Q2TsJGgp7nMN924pys2klxiufSd0+QHEfwKkcCTbmgE=
 github.com/trylotus/go-connector/source/evm v1.2.0/go.mod h1:aKw5lXPVvpx5Vobp1+LE8eyDblSSgAis7Q373dErG7o=
 github.com/trylotus/go-lotus-proto v1.0.0 h1:SBDpW6y/urM8Lm/0vxQ7VY4jPotkWdapaD40Q1agahc=

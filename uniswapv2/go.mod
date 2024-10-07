@@ -10,7 +10,7 @@ require (
 	github.com/lib/pq v1.10.9
 	github.com/rs/zerolog v1.33.0
 	github.com/spf13/pflag v1.0.5
-	github.com/trylotus/go-connector v1.2.0
+	github.com/trylotus/go-connector v1.2.1-0.20241007131810-f9c235585321
 	github.com/trylotus/go-connector/source/evm v1.2.0
 	github.com/trylotus/go-lotus-proto v1.0.0
 	google.golang.org/protobuf v1.34.2
