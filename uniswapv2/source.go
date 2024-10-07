@@ -111,7 +111,10 @@ func (s *Source) queryFactory(ctx context.Context, fromBlock int64, toBlock int6
 	filter := ethereum.FilterQuery{
 		Addresses: []ethcommon.Address{s.factoryContractAddr},
 		FromBlock: big.NewInt(fromBlock),
-		ToBlock:   big.NewInt(toBlock),
+	}
+
+	if toBlock > 0 {
+		filter.ToBlock = big.NewInt(toBlock)
 	}
 
 	retryCtx := common.ContextWithConditionalRetry(ctx, evm.IsRetryableError)
@@ -143,10 +146,14 @@ func (s *Source) queryFactory(ctx context.Context, fromBlock int64, toBlock int6
 }
 
 func (s *Source) queryPairs(ctx context.Context, fromBlock int64, toBlock int64, pairs []ethcommon.Address, msgCh chan<- proto.Message, errCh chan<- error) {
+
 	filter := ethereum.FilterQuery{
 		Addresses: pairs,
 		FromBlock: big.NewInt(fromBlock),
-		ToBlock:   big.NewInt(toBlock),
+	}
+
+	if toBlock > 0 {
+		filter.ToBlock = big.NewInt(toBlock)
 	}
 
 	retryCtx := common.ContextWithConditionalRetry(ctx, evm.IsRetryableError)
@@ -215,6 +222,9 @@ func (s *Source) subscribeFactory(ctx context.Context, msgCh chan<- proto.Messag
 			return
 		case event := <-ch:
 			log.Info().Str("number", event.Arg3.String()).Str("address", event.Pair.String()).Msg("New pair created")
+
+			// Prevent gaps
+			go s.queryPairs(ctx, int64(event.Raw.BlockNumber), 0, []ethcommon.Address{event.Pair}, msgCh, errCh)
 
 			go s.subscribePairs(ctx, []ethcommon.Address{event.Pair}, msgCh, errCh)
 
