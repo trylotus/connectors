@@ -1,1 +1,1 @@
-DROP TABLE pairs;
+DROP TABLE v2_pairs;

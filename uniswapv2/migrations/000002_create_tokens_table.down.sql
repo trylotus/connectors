@@ -1,1 +1,1 @@
-DROP TABLE tokens;
+DROP TABLE erc20_tokens;

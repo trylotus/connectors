@@ -65,7 +65,7 @@ func (s *Store) AllPairs(ctx context.Context) (<-chan *Pair, <-chan error) {
 		defer close(pairCh)
 		defer close(errCh)
 
-		rows, err := s.db.QueryxContext(ctx, "SELECT * FROM pairs ORDER BY number")
+		rows, err := s.db.QueryxContext(ctx, "SELECT * FROM v2_pairs ORDER BY number")
 		if err != nil {
 			errCh <- err
 			return
@@ -95,7 +95,7 @@ func (s *Store) AddPair(ctx context.Context, pair *Pair) error {
 	s.pairCache.Add(pair.Address, pair)
 	s.pairCache.Add(pair.Number, pair)
 
-	_, err := s.db.NamedExecContext(ctx, "INSERT INTO pairs (number, address, token0, token1) VALUES (:number, :address, :token0, :token1) ON CONFLICT DO NOTHING", pair)
+	_, err := s.db.NamedExecContext(ctx, "INSERT INTO v2_pairs (number, address, token0, token1) VALUES (:number, :address, :token0, :token1) ON CONFLICT DO NOTHING", pair)
 
 	return err
 }
@@ -106,7 +106,7 @@ func (s *Store) GetPair(ctx context.Context, address string) (*Pair, error) {
 	}
 
 	var pair Pair
-	err := s.db.GetContext(ctx, &pair, "SELECT * FROM pairs WHERE address = $1", address)
+	err := s.db.GetContext(ctx, &pair, "SELECT * FROM v2_pairs WHERE address = $1", address)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, nil
@@ -126,7 +126,7 @@ func (s *Store) GetPairByNumber(ctx context.Context, number int64) (*Pair, error
 	}
 
 	var pair Pair
-	err := s.db.GetContext(ctx, &pair, "SELECT * FROM pairs WHERE number = $1", number)
+	err := s.db.GetContext(ctx, &pair, "SELECT * FROM v2_pairs WHERE number = $1", number)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, nil
@@ -143,7 +143,7 @@ func (s *Store) GetPairByNumber(ctx context.Context, number int64) (*Pair, error
 func (s *Store) AddToken(ctx context.Context, token *Token) error {
 	s.tokenCache.Add(token.Address, token)
 
-	_, err := s.db.NamedExecContext(ctx, "INSERT INTO tokens (address, name, symbol, decimals) VALUES (:address, :name, :symbol, :decimals) ON CONFLICT DO NOTHING", token)
+	_, err := s.db.NamedExecContext(ctx, "INSERT INTO erc20_tokens (address, name, symbol, decimals) VALUES (:address, :name, :symbol, :decimals) ON CONFLICT DO NOTHING", token)
 
 	return err
 }
@@ -154,7 +154,7 @@ func (s *Store) GetToken(ctx context.Context, address string) (*Token, error) {
 	}
 
 	var token Token
-	err := s.db.GetContext(ctx, &token, "SELECT * FROM tokens WHERE address = $1", address)
+	err := s.db.GetContext(ctx, &token, "SELECT * FROM erc20_tokens WHERE address = $1", address)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, nil
