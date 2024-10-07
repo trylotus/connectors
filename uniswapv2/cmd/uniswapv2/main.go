@@ -7,13 +7,13 @@ import (
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 	"github.com/spf13/pflag"
+	"github.com/trylotus/connectors/uniswapv2"
+	"github.com/trylotus/connectors/uniswapv2/factory"
+	"github.com/trylotus/connectors/uniswapv2/pair"
 	"github.com/trylotus/go-connector"
 	"github.com/trylotus/go-connector/common"
 	"github.com/trylotus/go-connector/log"
 	"github.com/trylotus/go-connector/source/evm"
-	"github.com/trylotus/uniswapv2"
-	"github.com/trylotus/uniswapv2/factory"
-	"github.com/trylotus/uniswapv2/pair"
 )
 
 const FactoryContractAddr = "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f"

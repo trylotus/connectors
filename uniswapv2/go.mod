@@ -1,4 +1,4 @@
-module github.com/trylotus/uniswapv2
+module github.com/trylotus/connectors/uniswapv2
 
 go 1.23.0
 
