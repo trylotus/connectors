@@ -6,7 +6,7 @@ import (
 
 	"github.com/joho/godotenv"
 	"github.com/spf13/pflag"
-	"github.com/trylotus/connectors/cyber/xo"
+	"github.com/trylotus/connectors/xo/xo"
 	"github.com/trylotus/go-connector"
 	"github.com/trylotus/go-connector/common"
 	"github.com/trylotus/go-connector/log"

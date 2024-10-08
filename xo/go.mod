@@ -1,4 +1,4 @@
-module github.com/trylotus/connectors/cyber
+module github.com/trylotus/connectors/xo
 
 go 1.23.0
 
@@ -7,8 +7,8 @@ require (
 	github.com/joho/godotenv v1.5.1
 	github.com/rs/zerolog v1.33.0
 	github.com/spf13/pflag v1.0.5
-	github.com/trylotus/go-connector v1.1.1
-	github.com/trylotus/go-connector/source/evm v1.1.2
+	github.com/trylotus/go-connector v1.2.1-0.20241008073304-3ac25c4d2e30
+	github.com/trylotus/go-connector/source/evm v1.2.1-0.20241008073304-3ac25c4d2e30
 	github.com/trylotus/go-lotus-proto v1.0.0
 	google.golang.org/protobuf v1.34.2
 )
@@ -71,3 +71,7 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	rsc.io/tmplfunc v0.0.3 // indirect
 )
+
+replace github.com/trylotus/go-connector => ../../go-connector
+
+replace github.com/trylotus/go-connector/source/evm => ../../go-connector/source/evm

@@ -5,7 +5,7 @@ package xo;
 import "google/protobuf/timestamp.proto";
 import "lotus/lotus.proto";
 
-option go_package = "github.com/trylotus/connectors/xo";
+option go_package = "github.com/trylotus/connectors/xo/xo";
 
 message PaidDM {
   option (lotus.composite).index = {
