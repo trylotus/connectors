@@ -38,3 +38,13 @@ func Test1(t *testing.T) {
 	}
 	t.Log(decimals)
 }
+
+func Test2(t *testing.T) {
+	defer t.Log(3)
+
+	for i := 0; i < 5; i++ {
+		defer t.Log(1)
+	}
+
+	t.Log(2)
+}

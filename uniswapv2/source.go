@@ -7,6 +7,7 @@ import (
 	"reflect"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -141,10 +142,12 @@ func (s *Source) queryFactory(ctx context.Context, fromBlock int64, toBlock int6
 	}
 
 	retryCtx := common.ContextWithConditionalRetry(ctx, evm.IsRetryableError)
-	retryCtx = common.ContextWithFuncName(retryCtx, "FilterLogs")
+	retryCtx = common.ContextWithFuncName(retryCtx, "QueryFactory")
 
 	logs, err := common.RetryT(retryCtx, func() ([]types.Log, error) {
-		return s.client.FilterLogs(ctx, filter)
+		subCtx, cancel := context.WithTimeout(ctx, 3*time.Minute)
+		defer cancel()
+		return s.client.FilterLogs(subCtx, filter)
 	})
 
 	if err != nil {
@@ -159,7 +162,10 @@ func (s *Source) queryFactory(ctx context.Context, fromBlock int64, toBlock int6
 			continue
 		}
 
-		msg, err := s.parsePairCreatedEvent(ctx, event)
+		subCtx, cancel := context.WithTimeout(ctx, 1*time.Minute)
+		defer cancel()
+
+		msg, err := s.parsePairCreatedEvent(subCtx, event)
 		if err != nil {
 			log.Error().Err(err).Msg("Failed to parse factory pair created event")
 			continue
@@ -181,10 +187,12 @@ func (s *Source) queryPairs(ctx context.Context, fromBlock int64, toBlock int64,
 	}
 
 	retryCtx := common.ContextWithConditionalRetry(ctx, evm.IsRetryableError)
-	retryCtx = common.ContextWithFuncName(retryCtx, "FilterLogs")
+	retryCtx = common.ContextWithFuncName(retryCtx, "QueryPairs")
 
 	logs, err := common.RetryT(retryCtx, func() ([]types.Log, error) {
-		return s.client.FilterLogs(ctx, filter)
+		subCtx, cancel := context.WithTimeout(ctx, 3*time.Minute)
+		defer cancel()
+		return s.client.FilterLogs(subCtx, filter)
 	})
 
 	if err != nil {
@@ -193,7 +201,10 @@ func (s *Source) queryPairs(ctx context.Context, fromBlock int64, toBlock int64,
 	}
 
 	for _, vLog := range logs {
-		msg, err := s.parsePairLog(ctx, vLog)
+		subCtx, cancel := context.WithTimeout(ctx, 1*time.Minute)
+		defer cancel()
+
+		msg, err := s.parsePairLog(subCtx, vLog)
 		if err != nil {
 			log.Error().Err(err).Msg("Failed to parse pair log")
 			continue
@@ -266,7 +277,10 @@ func (s *Source) subscribeFactory(ctx context.Context, msgCh chan<- proto.Messag
 
 			go s.subscribePairs(ctx, []ethcommon.Address{event.Pair}, msgCh, errCh)
 
-			msg, err := s.parsePairCreatedEvent(ctx, event)
+			subCtx, cancel := context.WithTimeout(ctx, 1*time.Minute)
+			defer cancel()
+
+			msg, err := s.parsePairCreatedEvent(subCtx, event)
 			if err != nil {
 				log.Error().Err(err).Msg("Failed to parse factory pair created event")
 				continue
@@ -340,7 +354,10 @@ func (s *Source) subscribePairs(ctx context.Context, pairs []ethcommon.Address, 
 			errCh <- err
 			return
 		case vLog := <-logCh:
-			msg, err := s.parsePairLog(ctx, vLog)
+			subCtx, cancel := context.WithTimeout(ctx, 1*time.Minute)
+			defer cancel()
+
+			msg, err := s.parsePairLog(subCtx, vLog)
 			if err != nil {
 				log.Error().Err(err).Msg("Failed to parse pair log")
 				continue
@@ -557,7 +574,9 @@ func (s *Source) GetToken(ctx context.Context, address ethcommon.Address) (*Toke
 	retryCtx = common.ContextWithFuncName(retryCtx, "GetToken")
 
 	token, err = common.RetryT(retryCtx, func() (*Token, error) {
-		return s.getToken(ctx, address)
+		subCtx, cancel := context.WithTimeout(ctx, 10*time.Second)
+		defer cancel()
+		return s.getToken(subCtx, address)
 	})
 	if err != nil {
 		return nil, err
@@ -626,7 +645,9 @@ func (s *Source) GetPair(ctx context.Context, address ethcommon.Address) (*Pair,
 	retryCtx = common.ContextWithFuncName(retryCtx, "GetPair")
 
 	return common.RetryT(retryCtx, func() (*Pair, error) {
-		return s.getPair(ctx, address)
+		subCtx, cancel := context.WithTimeout(ctx, 10*time.Second)
+		defer cancel()
+		return s.getPair(subCtx, address)
 	})
 }
 
@@ -672,7 +693,14 @@ func (s *Source) getPair(ctx context.Context, address ethcommon.Address) (*Pair,
 }
 
 func (s *Source) GetPairByNumber(ctx context.Context, number *big.Int) (*Pair, error) {
-	address, err := s.factoryContract.AllPairs(&bind.CallOpts{Context: ctx}, number)
+	retryCtx := common.ContextWithConditionalRetry(ctx, evm.IsRetryableError)
+	retryCtx = common.ContextWithFuncName(retryCtx, "GetPairByNumber")
+
+	address, err := common.RetryT(retryCtx, func() (ethcommon.Address, error) {
+		subCtx, cancel := context.WithTimeout(ctx, 10*time.Second)
+		defer cancel()
+		return s.factoryContract.AllPairs(&bind.CallOpts{Context: subCtx}, number)
+	})
 	if err != nil {
 		return nil, err
 	}
