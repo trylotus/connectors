@@ -259,18 +259,16 @@ func (s *Source) subscribeFactory(ctx context.Context, msgCh chan<- proto.Messag
 		case event := <-ch:
 			log.Info().Str("number", event.Arg3.String()).Str("address", event.Pair.String()).Msg("New pair created")
 
-			go func() {
-				pair := &Pair{
-					Number:  event.Arg3.Int64(),
-					Address: event.Raw.Address.String(),
-					Token0:  event.Token0.String(),
-					Token1:  event.Token1.String(),
-				}
-				if err := s.store.AddPair(ctx, pair); err != nil {
-					log.Error().Err(err).Int64("number", pair.Number).Str("address", pair.Address).Msg("Failed to add pair to store")
+			pair := &Pair{
+				Number:  event.Arg3.Int64(),
+				Address: event.Raw.Address.String(),
+				Token0:  event.Token0.String(),
+				Token1:  event.Token1.String(),
+			}
+			if err := s.store.AddPair(ctx, pair); err != nil {
+				log.Error().Err(err).Int64("number", pair.Number).Str("address", pair.Address).Msg("Failed to add pair to store")
 
-				}
-			}()
+			}
 
 			// Prevent gaps
 			go s.queryPairs(ctx, int64(event.Raw.BlockNumber), 0, []ethcommon.Address{event.Pair}, msgCh, errCh)
@@ -582,11 +580,9 @@ func (s *Source) GetToken(ctx context.Context, address ethcommon.Address) (*Toke
 		return nil, err
 	}
 
-	go func() {
-		if err := s.store.AddToken(ctx, token); err != nil {
-			log.Error().Err(err).Str("address", token.Address).Msg("Failed to add token to store")
-		}
-	}()
+	if err := s.store.AddToken(ctx, token); err != nil {
+		log.Error().Err(err).Str("address", token.Address).Msg("Failed to add token to store")
+	}
 
 	return token, nil
 }
