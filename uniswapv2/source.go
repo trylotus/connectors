@@ -248,6 +248,19 @@ func (s *Source) subscribeFactory(ctx context.Context, msgCh chan<- proto.Messag
 		case event := <-ch:
 			log.Info().Str("number", event.Arg3.String()).Str("address", event.Pair.String()).Msg("New pair created")
 
+			go func() {
+				pair := &Pair{
+					Number:  event.Arg3.Int64(),
+					Address: event.Raw.Address.String(),
+					Token0:  event.Token0.String(),
+					Token1:  event.Token1.String(),
+				}
+				if err := s.store.AddPair(ctx, pair); err != nil {
+					log.Error().Err(err).Int64("number", pair.Number).Str("address", pair.Address).Msg("Failed to add pair to store")
+
+				}
+			}()
+
 			// Prevent gaps
 			go s.queryPairs(ctx, int64(event.Raw.BlockNumber), 0, []ethcommon.Address{event.Pair}, msgCh, errCh)
 
@@ -528,6 +541,26 @@ func (s *Source) GetToken(ctx context.Context, address ethcommon.Address) (*Toke
 		return token, nil
 	}
 
+	retryCtx := common.ContextWithConditionalRetry(ctx, evm.IsRetryableError)
+	retryCtx = common.ContextWithFuncName(retryCtx, "GetToken")
+
+	token, err = common.RetryT(retryCtx, func() (*Token, error) {
+		return s.getToken(ctx, address)
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	go func() {
+		if err := s.store.AddToken(ctx, token); err != nil {
+			log.Error().Err(err).Str("address", token.Address).Msg("Failed to add token to store")
+		}
+	}()
+
+	return token, nil
+}
+
+func (s *Source) getToken(ctx context.Context, address ethcommon.Address) (*Token, error) {
 	tokenContract, err := erc20.NewErc20(address, s.client)
 	if err != nil {
 		return nil, err
@@ -559,32 +592,33 @@ func (s *Source) GetToken(ctx context.Context, address ethcommon.Address) (*Toke
 	wg.Wait()
 
 	if err1 != nil {
-		return nil, err1
+		log.Error().Err(err).Str("address", address.String()).Msg("Failed to get token name")
 	}
 	if err2 != nil {
-		return nil, err2
+		log.Error().Err(err).Str("address", address.String()).Msg("Failed to get token symbol")
 	}
 	if err3 != nil {
 		return nil, err3
 	}
 
-	token = &Token{
+	return &Token{
 		Address:  address.String(),
 		Name:     name,
 		Symbol:   symbol,
 		Decimals: decimals,
-	}
-
-	go func() {
-		if err := s.store.AddToken(ctx, token); err != nil {
-			log.Error().Err(err).Str("address", token.Address).Msg("Failed to add token to store")
-		}
-	}()
-
-	return token, nil
+	}, nil
 }
 
 func (s *Source) GetPair(ctx context.Context, address ethcommon.Address) (*Pair, error) {
+	retryCtx := common.ContextWithConditionalRetry(ctx, evm.IsRetryableError)
+	retryCtx = common.ContextWithFuncName(retryCtx, "GetPair")
+
+	return common.RetryT(retryCtx, func() (*Pair, error) {
+		return s.getPair(ctx, address)
+	})
+}
+
+func (s *Source) getPair(ctx context.Context, address ethcommon.Address) (*Pair, error) {
 	pairContract, err := pair.NewPair(address, s.client)
 	if err != nil {
 		return nil, err
@@ -641,62 +675,37 @@ func (s *Source) GetPairByNumber(ctx context.Context, number *big.Int) (*Pair, e
 	return pair, nil
 }
 
-func (s *Source) GetPairsSync(ctx context.Context, from int64, to int64) ([]*Pair, error) {
-	pairCount := to - from + 1
-	pairs := make([]*Pair, pairCount)
-	errs := make([]error, pairCount)
-
-	var wg sync.WaitGroup
-
-	for i := int64(0); i < pairCount; i++ {
-		wg.Add(1)
-		go func(i int64) {
-			defer wg.Done()
-
-			pair, err := s.GetPairByNumber(ctx, big.NewInt(from+i))
-			pairs[i] = pair
-			errs[i] = err
-		}(i)
-	}
-
-	wg.Wait()
-
-	for _, err := range errs {
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	return pairs, nil
-}
-
-func (s *Source) GetPairs(ctx context.Context, from int64, to int64) (<-chan *Pair, <-chan error) {
+func (s *Source) GetPairs(ctx context.Context, from int64, to int64) <-chan *Pair {
 	pairCh := make(chan *Pair, 100)
-	errCh := make(chan error, 1)
 
 	go func() {
 		defer close(pairCh)
-		defer close(errCh)
 
-		for i := from; i <= to; i += s.concurrecyLimit {
-			j := i + s.concurrecyLimit - 1
-			if j > to {
-				j = to
-			}
+		var wg sync.WaitGroup
 
-			pairs, err := s.GetPairsSync(ctx, i, j)
-			if err != nil {
-				errCh <- err
-				return
-			}
+		sem := make(chan struct{}, s.concurrecyLimit)
 
-			for _, pair := range pairs {
+		for i := from; i <= to; i++ {
+			sem <- struct{}{}
+			wg.Add(1)
+
+			go func(number int64) {
+				defer wg.Done()
+				defer func() { <-sem }()
+
+				pair, err := s.GetPairByNumber(ctx, big.NewInt(number))
+				if err != nil {
+					log.Fatal().Err(err).Int64("number", number).Msg("Failed to load pair from RPC")
+				}
+
 				pairCh <- pair
-			}
+			}(i)
 		}
+
+		wg.Wait()
 	}()
 
-	return pairCh, errCh
+	return pairCh
 }
 
 func (s *Source) loadAllPairs(ctx context.Context) {
@@ -743,7 +752,7 @@ func (s *Source) loadPairsFromStore(ctx context.Context) {
 func (s *Source) loadPairsFromRPC(ctx context.Context, from int64, to int64) {
 	log.Info().Int64("from", from).Int64("to", to).Msg("Loading pairs from RPC")
 
-	pairCh, errCh := s.GetPairs(ctx, from, to)
+	pairCh := s.GetPairs(ctx, from, to)
 
 	for pair := range pairCh {
 		s.pairs = append(s.pairs, ethcommon.HexToAddress(pair.Address))
@@ -753,10 +762,6 @@ func (s *Source) loadPairsFromRPC(ctx context.Context, from int64, to int64) {
 		}
 
 		log.Debug().Int64("number", pair.Number).Str("address", pair.Address).Msg("Loaded pair from RPC")
-	}
-
-	for err := range errCh {
-		log.Fatal().Err(err).Int64("from", from).Int64("to", to).Msg("Failed to load pair from RPC")
 	}
 
 	log.Info().Int64("from", from).Int64("to", to).Msg("Successfully loaded pairs from RPC")

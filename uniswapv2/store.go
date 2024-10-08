@@ -79,7 +79,6 @@ func (s *Store) AllPairs(ctx context.Context) (<-chan *Pair, <-chan error) {
 				return
 			}
 			s.pairCache.Add(pair.Address, &pair)
-			s.pairCache.Add(pair.Number, &pair)
 			pairCh <- &pair
 		}
 
@@ -93,7 +92,6 @@ func (s *Store) AllPairs(ctx context.Context) (<-chan *Pair, <-chan error) {
 
 func (s *Store) AddPair(ctx context.Context, pair *Pair) error {
 	s.pairCache.Add(pair.Address, pair)
-	s.pairCache.Add(pair.Number, pair)
 
 	_, err := s.db.NamedExecContext(ctx, "INSERT INTO v2_pairs (number, address, token0, token1) VALUES (:number, :address, :token0, :token1) ON CONFLICT DO NOTHING", pair)
 
@@ -115,27 +113,6 @@ func (s *Store) GetPair(ctx context.Context, address string) (*Pair, error) {
 	}
 
 	s.pairCache.Add(pair.Address, &pair)
-	s.pairCache.Add(pair.Number, &pair)
-
-	return &pair, nil
-}
-
-func (s *Store) GetPairByNumber(ctx context.Context, number int64) (*Pair, error) {
-	if pair, ok := s.pairCache.Get(number); ok {
-		return pair.(*Pair), nil
-	}
-
-	var pair Pair
-	err := s.db.GetContext(ctx, &pair, "SELECT * FROM v2_pairs WHERE number = $1", number)
-	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return nil, nil
-		}
-		return nil, err
-	}
-
-	s.pairCache.Add(pair.Address, &pair)
-	s.pairCache.Add(pair.Number, &pair)
 
 	return &pair, nil
 }
