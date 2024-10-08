@@ -604,10 +604,10 @@ func (s *Source) getToken(ctx context.Context, address ethcommon.Address) (*Toke
 	wg.Wait()
 
 	if err1 != nil {
-		log.Error().Err(err).Str("address", address.String()).Msg("Failed to get token name")
+		log.Error().Err(err1).Str("address", address.String()).Msg("Failed to get token name")
 	}
 	if err2 != nil {
-		log.Error().Err(err).Str("address", address.String()).Msg("Failed to get token symbol")
+		log.Error().Err(err2).Str("address", address.String()).Msg("Failed to get token symbol")
 	}
 	if err3 != nil {
 		return nil, err3
