@@ -287,29 +287,41 @@ func (s *Source) parsePairCreatedEvent(ctx context.Context, event *factory.Facto
 	tokens, errs := s.GetTokens(ctx, event.Token0, event.Token1)
 	if errs[0] != nil {
 		log.Error().Err(errs[0]).Str("address", event.Token0.String()).Msg("Failed to get token0")
-		return nil, errs[0]
+		if errs[0].Error() != "no contract code at given address" {
+			return nil, errs[0]
+		}
 	}
 	if errs[1] != nil {
 		log.Error().Err(errs[1]).Str("address", event.Token1.String()).Msg("Failed to get token1")
-		return nil, errs[1]
+		if errs[1].Error() != "no contract code at given address" {
+			return nil, errs[1]
+		}
 	}
 
-	return &factory.PairCreated{
-		Ts:             &timestamppb.Timestamp{Seconds: int64(t)},
-		BlockNumber:    event.Raw.BlockNumber,
-		TxHash:         event.Raw.TxHash.Bytes(),
-		LogIndex:       uint64(event.Raw.Index),
-		Token0:         event.Token0.Bytes(),
-		Token1:         event.Token1.Bytes(),
-		Pair:           event.Pair.Bytes(),
-		Arg3:           event.Arg3.String(),
-		Token0Name:     tokens[0].Name,
-		Token0Symbol:   tokens[0].Symbol,
-		Token0Decimals: uint32(tokens[0].Decimals),
-		Token1Name:     tokens[1].Name,
-		Token1Symbol:   tokens[1].Symbol,
-		Token1Decimals: uint32(tokens[1].Decimals),
-	}, nil
+	msg := &factory.PairCreated{
+		Ts:          &timestamppb.Timestamp{Seconds: int64(t)},
+		BlockNumber: event.Raw.BlockNumber,
+		TxHash:      event.Raw.TxHash.Bytes(),
+		LogIndex:    uint64(event.Raw.Index),
+		Token0:      event.Token0.Bytes(),
+		Token1:      event.Token1.Bytes(),
+		Pair:        event.Pair.Bytes(),
+		Arg3:        event.Arg3.String(),
+	}
+
+	if tokens[0] != nil {
+		msg.Token0Name = tokens[0].Name
+		msg.Token0Symbol = tokens[0].Symbol
+		msg.Token0Decimals = uint32(tokens[0].Decimals)
+	}
+
+	if tokens[1] != nil {
+		msg.Token1Name = tokens[1].Name
+		msg.Token1Symbol = tokens[1].Symbol
+		msg.Token1Decimals = uint32(tokens[1].Decimals)
+	}
+
+	return msg, nil
 }
 
 func (s *Source) subscribePairs(ctx context.Context, pairs []ethcommon.Address, msgCh chan<- proto.Message, errCh chan<- error) {
