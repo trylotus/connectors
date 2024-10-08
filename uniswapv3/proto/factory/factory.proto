@@ -1,0 +1,99 @@
+syntax = "proto3";
+
+package factory;
+
+import "google/protobuf/timestamp.proto";
+import "lotus/lotus.proto";
+
+option go_package = "github.com/trylotus/connectors/uniswapv3/factory";
+
+message FeeAmountEnabled {
+  option (lotus.composite).index = {
+    unique: true
+    fields: [
+      "ts",
+      "tx_hash",
+      "log_index"
+    ]
+  };
+  option (lotus.composite).index = {
+    fields: [
+      "tx_hash",
+      "log_index"
+    ]
+  };
+
+  google.protobuf.Timestamp ts = 1;
+  uint64 block_number = 2 [(lotus.index) = {}];
+  bytes tx_hash = 3 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}];
+  uint64 log_index = 4;
+  uint32 fee = 5; // uint24
+  int32 tick_spacing = 6; // int24
+}
+
+message OwnerChanged {
+  option (lotus.composite).index = {
+    unique: true
+    fields: [
+      "ts",
+      "tx_hash",
+      "log_index"
+    ]
+  };
+  option (lotus.composite).index = {
+    fields: [
+      "tx_hash",
+      "log_index"
+    ]
+  };
+
+  google.protobuf.Timestamp ts = 1;
+  uint64 block_number = 2 [(lotus.index) = {}];
+  bytes tx_hash = 3 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}];
+  uint64 log_index = 4;
+  bytes old_owner = 5 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
+  bytes new_owner = 6 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
+}
+
+message PoolCreated {
+  option (lotus.composite).index = {
+    unique: true
+    fields: [
+      "ts",
+      "tx_hash",
+      "log_index"
+    ]
+  };
+  option (lotus.composite).index = {
+    fields: [
+      "tx_hash",
+      "log_index"
+    ]
+  };
+  option (lotus.composite).index = {
+    fields: [
+      "token0",
+      "token1",
+      "fee"
+    ]
+  };
+
+  google.protobuf.Timestamp ts = 1;
+  uint64 block_number = 2 [(lotus.index) = {}];
+  bytes tx_hash = 3 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}];
+  uint64 log_index = 4;
+  bytes token0 = 5 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
+  bytes token1 = 6 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
+  uint32 fee = 7; // uint24
+  int32 tick_spacing = 8; // int24
+  bytes pool = 9 [
+    (lotus.bytes) = {format: FORMAT_TYPE_HEX},
+    (lotus.index) = {}
+  ]; // Address
+  string token0_name = 10;
+  string token0_symbol = 11;
+  uint32 token0_decimals = 12;
+  string token1_name = 13;
+  string token1_symbol = 14;
+  uint32 token1_decimals = 15;
+}

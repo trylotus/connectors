@@ -1,0 +1,313 @@
+syntax = "proto3";
+
+package pool;
+
+import "google/protobuf/timestamp.proto";
+import "lotus/lotus.proto";
+
+option go_package = "github.com/trylotus/connectors/uniswapv3/pool";
+
+message Burn {
+  option (lotus.composite).index = {
+    unique: true
+    fields: [
+      "ts",
+      "tx_hash",
+      "log_index"
+    ]
+  };
+  option (lotus.composite).index = {
+    fields: [
+      "tx_hash",
+      "log_index"
+    ]
+  };
+  option (lotus.composite).index = {
+    fields: [
+      "pool",
+      "ts"
+    ]
+  };
+
+  google.protobuf.Timestamp ts = 1;
+  uint64 block_number = 2 [(lotus.index) = {}];
+  bytes tx_hash = 3 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}];
+  uint64 log_index = 4;
+  bytes pool = 5 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
+  bytes owner = 6 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
+  int32 tick_lower = 7; // int24
+  int32 tick_upper = 8; // int24
+  string amount = 9 [(lotus.numeric) = {precision: 39}]; // uint128
+  string amount0 = 10 [(lotus.numeric) = {precision: 78}]; // uint256
+  string amount1 = 11 [(lotus.numeric) = {precision: 78}]; // uint256
+}
+
+message Collect {
+  option (lotus.composite).index = {
+    unique: true
+    fields: [
+      "ts",
+      "tx_hash",
+      "log_index"
+    ]
+  };
+  option (lotus.composite).index = {
+    fields: [
+      "tx_hash",
+      "log_index"
+    ]
+  };
+  option (lotus.composite).index = {
+    fields: [
+      "pool",
+      "ts"
+    ]
+  };
+
+  google.protobuf.Timestamp ts = 1;
+  uint64 block_number = 2 [(lotus.index) = {}];
+  bytes tx_hash = 3 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}];
+  uint64 log_index = 4;
+  bytes pool = 5 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
+  bytes owner = 6 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
+  bytes recipient = 7 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
+  int32 tick_lower = 8; // int24
+  int32 tick_upper = 9; // int24
+  string amount0 = 10 [(lotus.numeric) = {precision: 39}]; // uint128
+  string amount1 = 11 [(lotus.numeric) = {precision: 39}]; // uint128
+}
+
+message CollectProtocol {
+  option (lotus.composite).index = {
+    unique: true
+    fields: [
+      "ts",
+      "tx_hash",
+      "log_index"
+    ]
+  };
+  option (lotus.composite).index = {
+    fields: [
+      "tx_hash",
+      "log_index"
+    ]
+  };
+  option (lotus.composite).index = {
+    fields: [
+      "pool",
+      "ts"
+    ]
+  };
+
+  google.protobuf.Timestamp ts = 1;
+  uint64 block_number = 2 [(lotus.index) = {}];
+  bytes tx_hash = 3 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}];
+  uint64 log_index = 4;
+  bytes pool = 5 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
+  bytes sender = 6 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
+  bytes recipient = 7 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
+  string amount0 = 8 [(lotus.numeric) = {precision: 39}]; // uint128
+  string amount1 = 9 [(lotus.numeric) = {precision: 39}]; // uint128
+}
+
+message Flash {
+  option (lotus.composite).index = {
+    unique: true
+    fields: [
+      "ts",
+      "tx_hash",
+      "log_index"
+    ]
+  };
+  option (lotus.composite).index = {
+    fields: [
+      "tx_hash",
+      "log_index"
+    ]
+  };
+  option (lotus.composite).index = {
+    fields: [
+      "pool",
+      "ts"
+    ]
+  };
+
+  google.protobuf.Timestamp ts = 1;
+  uint64 block_number = 2 [(lotus.index) = {}];
+  bytes tx_hash = 3 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}];
+  uint64 log_index = 4;
+  bytes pool = 5 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
+  bytes sender = 6 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
+  bytes recipient = 7 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
+  string amount0 = 8 [(lotus.numeric) = {precision: 78}]; // uint256
+  string amount1 = 9 [(lotus.numeric) = {precision: 78}]; // uint256
+  string paid0 = 10 [(lotus.numeric) = {precision: 78}]; // uint256
+  string paid1 = 11 [(lotus.numeric) = {precision: 78}]; // uint256
+}
+
+message IncreaseObservationCardinalityNext {
+  option (lotus.composite).index = {
+    unique: true
+    fields: [
+      "ts",
+      "tx_hash",
+      "log_index"
+    ]
+  };
+  option (lotus.composite).index = {
+    fields: [
+      "tx_hash",
+      "log_index"
+    ]
+  };
+  option (lotus.composite).index = {
+    fields: [
+      "pool",
+      "ts"
+    ]
+  };
+
+  google.protobuf.Timestamp ts = 1;
+  uint64 block_number = 2 [(lotus.index) = {}];
+  bytes tx_hash = 3 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}];
+  uint64 log_index = 4;
+  bytes pool = 5 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
+  uint32 observation_cardinality_next_old = 6; // uint16
+  uint32 observation_cardinality_next_new = 7; // uint16
+}
+
+message Initialize {
+  option (lotus.composite).index = {
+    unique: true
+    fields: [
+      "ts",
+      "tx_hash",
+      "log_index"
+    ]
+  };
+  option (lotus.composite).index = {
+    fields: [
+      "tx_hash",
+      "log_index"
+    ]
+  };
+  option (lotus.composite).index = {
+    fields: [
+      "pool",
+      "ts"
+    ]
+  };
+
+  google.protobuf.Timestamp ts = 1;
+  uint64 block_number = 2 [(lotus.index) = {}];
+  bytes tx_hash = 3 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}];
+  uint64 log_index = 4;
+  bytes pool = 5 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
+  string sqrt_price_x96 = 6 [(lotus.numeric) = {precision: 49}]; // uint160
+  int32 tick = 7; // int24
+}
+
+message Mint {
+  option (lotus.composite).index = {
+    unique: true
+    fields: [
+      "ts",
+      "tx_hash",
+      "log_index"
+    ]
+  };
+  option (lotus.composite).index = {
+    fields: [
+      "tx_hash",
+      "log_index"
+    ]
+  };
+  option (lotus.composite).index = {
+    fields: [
+      "pool",
+      "ts"
+    ]
+  };
+
+  google.protobuf.Timestamp ts = 1;
+  uint64 block_number = 2 [(lotus.index) = {}];
+  bytes tx_hash = 3 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}];
+  uint64 log_index = 4;
+  bytes pool = 5 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
+  bytes sender = 6 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
+  bytes owner = 7 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
+  int32 tick_lower = 8; // int24
+  int32 tick_upper = 9; // int24
+  string amount = 10 [(lotus.numeric) = {precision: 39}]; // uint128
+  string amount0 = 11 [(lotus.numeric) = {precision: 78}]; // uint256
+  string amount1 = 12 [(lotus.numeric) = {precision: 78}]; // uint256
+}
+
+message SetFeeProtocol {
+  option (lotus.composite).index = {
+    unique: true
+    fields: [
+      "ts",
+      "tx_hash",
+      "log_index"
+    ]
+  };
+  option (lotus.composite).index = {
+    fields: [
+      "tx_hash",
+      "log_index"
+    ]
+  };
+  option (lotus.composite).index = {
+    fields: [
+      "pool",
+      "ts"
+    ]
+  };
+
+  google.protobuf.Timestamp ts = 1;
+  uint64 block_number = 2 [(lotus.index) = {}];
+  bytes tx_hash = 3 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}];
+  uint64 log_index = 4;
+  bytes pool = 5 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
+  uint32 fee_protocol0_old = 6; // uint8
+  uint32 fee_protocol1_old = 7; // uint8
+  uint32 fee_protocol0_new = 8; // uint8
+  uint32 fee_protocol1_new = 9; // uint8
+}
+
+message Swap {
+  option (lotus.composite).index = {
+    unique: true
+    fields: [
+      "ts",
+      "tx_hash",
+      "log_index"
+    ]
+  };
+  option (lotus.composite).index = {
+    fields: [
+      "tx_hash",
+      "log_index"
+    ]
+  };
+  option (lotus.composite).index = {
+    fields: [
+      "pool",
+      "ts"
+    ]
+  };
+
+  google.protobuf.Timestamp ts = 1;
+  uint64 block_number = 2 [(lotus.index) = {}];
+  bytes tx_hash = 3 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}];
+  uint64 log_index = 4;
+  bytes pool = 5 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
+  bytes sender = 6 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
+  bytes recipient = 7 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
+  string amount0 = 8 [(lotus.numeric) = {precision: 78}]; // int256
+  string amount1 = 9 [(lotus.numeric) = {precision: 78}]; // int256
+  string sqrt_price_x96 = 10 [(lotus.numeric) = {precision: 49}]; // uint160
+  string liquidity = 11 [(lotus.numeric) = {precision: 39}]; // uint128
+  int32 tick = 12; // int24
+}
