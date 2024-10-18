@@ -10,6 +10,8 @@ import (
 	"github.com/trylotus/go-connector"
 	"github.com/trylotus/go-connector/common"
 	"github.com/trylotus/go-connector/log"
+	"github.com/trylotus/go-connector/manager"
+	"github.com/trylotus/go-connector/registry"
 	"github.com/trylotus/go-connector/source/evm"
 )
 
@@ -19,14 +21,12 @@ func main() {
 	_ = godotenv.Load()
 
 	var (
-		subscribe     bool
-		subscribeFrom int64
-		backfill      common.List
+		backfill  int64
+		subscribe bool
 	)
 
-	pflag.VarP(&backfill, "backfill", "b", "comma separated list of block numbers to backfill (optional)")
+	pflag.Int64VarP(&backfill, "backfill", "b", 0, "block number to backfill to")
 	pflag.BoolVarP(&subscribe, "subscribe", "s", true, "whether to subscribe to new blockchain events")
-	pflag.Int64VarP(&subscribeFrom, "subscribe-from", "f", 0, "block number to subscribe from (default latest block)")
 
 	pflag.Parse()
 
@@ -46,17 +46,20 @@ func main() {
 		log.Fatal().Err(err).Str("url", rpcUrl).Msg("Failed to connect to RPC")
 	}
 
-	source := evm.NewSource(client, contracts)
-
-	c := connector.NewConnector(source, connector.WithDefaultOptions())
+	c := connector.NewConnector(
+		evm.NewSource(client, contracts),
+		manager.NewManager(os.Getenv("MANAGER_URL")),
+		registry.NewRegistry(os.Getenv("REGISTRY_URL")),
+		connector.WithDefaultOptions(),
+	)
 
 	go c.RegisterDescriptor(ctx, xo.File_xo_xo_proto)
 
 	if subscribe {
-		c.Subscribe(ctx, subscribeFrom)
+		c.Subscribe(ctx)
 	}
 
-	if !backfill.IsEmpty() {
+	if backfill > 0 {
 		c.Backfill(ctx, backfill)
 	}
 
