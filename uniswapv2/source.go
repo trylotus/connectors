@@ -25,8 +25,7 @@ import (
 )
 
 const (
-	defaultConcurrenyLimit      = 5
-	defaultBlockRangeLimit      = 2048
+	defaultConcurreny           = 10
 	defaultQueryPageSize        = 2048
 	defaultSubscriptionPageSize = 100000
 )
@@ -35,8 +34,7 @@ type Source struct {
 	client *evm.Client
 	store  *Store
 
-	concurrecyLimit      int64 // Limit mumber of queries can be run concurrently
-	blockRangeLimit      int64 // Limit number of blocks per query
+	concurrecy           int64 // Limit mumber of queries can be run concurrently
 	queryPageSize        int64 // Limit number of pairs per query
 	subscriptionPageSize int64 // Limit number of pairs per subscription
 
@@ -59,8 +57,7 @@ func NewSource(client *evm.Client, store *Store, factoryContractAddr string, opt
 		store:                store,
 		factoryContract:      factoryContract,
 		factoryContractAddr:  ethcommon.HexToAddress(factoryContractAddr),
-		concurrecyLimit:      defaultConcurrenyLimit,
-		blockRangeLimit:      defaultBlockRangeLimit,
+		concurrecy:           defaultConcurreny,
 		queryPageSize:        defaultQueryPageSize,
 		subscriptionPageSize: defaultSubscriptionPageSize,
 	}
@@ -81,57 +78,36 @@ func (s *Source) BlockNumber(ctx context.Context) (int64, error) {
 	return int64(n), nil
 }
 
-func (s *Source) Query(ctx context.Context, fromBlock int64, toBlock int64, msgCh chan<- proto.Message, errCh chan<- error) {
-	if fromBlock > toBlock {
-		fromBlock, toBlock = toBlock, fromBlock
+func (s *Source) Query(ctx context.Context, fromBlock int64, toBlock int64) ([]proto.Message, error) {
+	var results []proto.Message
+
+	msgs, err := s.queryFactory(ctx, fromBlock, toBlock)
+	if err != nil {
+		return nil, err
 	}
+
+	results = append(results, msgs...)
 
 	pairs := s.AllPairs(ctx)
 
-	sem := make(chan struct{}, s.concurrecyLimit)
-
-	for chunkHead := fromBlock; chunkHead <= toBlock; chunkHead += s.blockRangeLimit {
-		chunkTail := chunkHead + s.blockRangeLimit - 1
-		if chunkTail > toBlock {
-			chunkTail = toBlock
+	for i := 0; i < len(pairs); i += int(s.queryPageSize) {
+		j := i + int(s.queryPageSize)
+		if j > len(pairs) {
+			j = len(pairs)
 		}
 
-		log.Info().Int64("from", chunkHead).Int64("to", chunkTail).Msg("Query")
-
-		var wg sync.WaitGroup
-
-		sem <- struct{}{}
-		wg.Add(1)
-
-		go func(from int64, to int64) {
-			defer wg.Done()
-			defer func() { <-sem }()
-
-			s.queryFactory(ctx, from, to, msgCh, errCh)
-		}(chunkHead, chunkTail)
-
-		for i := 0; i < len(pairs); i += int(s.queryPageSize) {
-			j := i + int(s.queryPageSize)
-			if j > len(pairs) {
-				j = len(pairs)
-			}
-
-			sem <- struct{}{}
-			wg.Add(1)
-
-			go func(from int64, to int64, pairs []ethcommon.Address) {
-				defer wg.Done()
-				defer func() { <-sem }()
-
-				s.queryPairs(ctx, from, to, pairs, msgCh, errCh)
-			}(chunkHead, chunkTail, pairs[i:j])
+		msgs, err := s.queryPairs(ctx, fromBlock, toBlock, pairs[i:j])
+		if err != nil {
+			return nil, err
 		}
 
-		wg.Wait()
+		results = append(results, msgs...)
 	}
+
+	return results, nil
 }
 
-func (s *Source) queryFactory(ctx context.Context, fromBlock int64, toBlock int64, msgCh chan<- proto.Message, errCh chan<- error) {
+func (s *Source) queryFactory(ctx context.Context, fromBlock int64, toBlock int64) ([]proto.Message, error) {
 	filter := ethereum.FilterQuery{
 		Addresses: []ethcommon.Address{s.factoryContractAddr},
 		FromBlock: big.NewInt(fromBlock),
@@ -141,19 +117,12 @@ func (s *Source) queryFactory(ctx context.Context, fromBlock int64, toBlock int6
 		filter.ToBlock = big.NewInt(toBlock)
 	}
 
-	retryCtx := common.ContextWithConditionalRetry(ctx, evm.IsRetryableError)
-	retryCtx = common.ContextWithFuncName(retryCtx, "QueryFactory")
-
-	logs, err := common.RetryT(retryCtx, func() ([]types.Log, error) {
-		subCtx, cancel := context.WithTimeout(ctx, 3*time.Minute)
-		defer cancel()
-		return s.client.FilterLogs(subCtx, filter)
-	})
-
+	logs, err := s.client.FilterLogs(ctx, filter)
 	if err != nil {
-		errCh <- err
-		return
+		return nil, err
 	}
+
+	msgs := make([]proto.Message, 0, len(logs))
 
 	for _, vLog := range logs {
 		event, err := s.factoryContract.ParsePairCreated(vLog)
@@ -162,7 +131,7 @@ func (s *Source) queryFactory(ctx context.Context, fromBlock int64, toBlock int6
 			continue
 		}
 
-		subCtx, cancel := context.WithTimeout(ctx, 1*time.Minute)
+		subCtx, cancel := context.WithTimeout(ctx, 3*time.Minute)
 		defer cancel()
 
 		msg, err := s.parsePairCreatedEvent(subCtx, event)
@@ -171,11 +140,13 @@ func (s *Source) queryFactory(ctx context.Context, fromBlock int64, toBlock int6
 			continue
 		}
 
-		msgCh <- msg
+		msgs = append(msgs, msg)
 	}
+
+	return msgs, nil
 }
 
-func (s *Source) queryPairs(ctx context.Context, fromBlock int64, toBlock int64, pairs []ethcommon.Address, msgCh chan<- proto.Message, errCh chan<- error) {
+func (s *Source) queryPairs(ctx context.Context, fromBlock int64, toBlock int64, pairs []ethcommon.Address) ([]proto.Message, error) {
 
 	filter := ethereum.FilterQuery{
 		Addresses: pairs,
@@ -186,22 +157,15 @@ func (s *Source) queryPairs(ctx context.Context, fromBlock int64, toBlock int64,
 		filter.ToBlock = big.NewInt(toBlock)
 	}
 
-	retryCtx := common.ContextWithConditionalRetry(ctx, evm.IsRetryableError)
-	retryCtx = common.ContextWithFuncName(retryCtx, "QueryPairs")
-
-	logs, err := common.RetryT(retryCtx, func() ([]types.Log, error) {
-		subCtx, cancel := context.WithTimeout(ctx, 3*time.Minute)
-		defer cancel()
-		return s.client.FilterLogs(subCtx, filter)
-	})
-
+	logs, err := s.client.FilterLogs(ctx, filter)
 	if err != nil {
-		errCh <- err
-		return
+		return nil, err
 	}
 
+	msgs := make([]proto.Message, 0, len(logs))
+
 	for _, vLog := range logs {
-		subCtx, cancel := context.WithTimeout(ctx, 1*time.Minute)
+		subCtx, cancel := context.WithTimeout(ctx, 3*time.Minute)
 		defer cancel()
 
 		msg, err := s.parsePairLog(subCtx, vLog)
@@ -210,8 +174,10 @@ func (s *Source) queryPairs(ctx context.Context, fromBlock int64, toBlock int64,
 			continue
 		}
 
-		msgCh <- msg
+		msgs = append(msgs, msg)
 	}
+
+	return msgs, nil
 }
 
 func (s *Source) Subscribe(ctx context.Context, msgCh chan<- proto.Message, errCh chan<- error) {
@@ -271,11 +237,21 @@ func (s *Source) subscribeFactory(ctx context.Context, msgCh chan<- proto.Messag
 			}
 
 			// Prevent gaps
-			go s.queryPairs(ctx, int64(event.Raw.BlockNumber), 0, []ethcommon.Address{event.Pair}, msgCh, errCh)
+			go func() {
+				msgs, err := s.queryPairs(ctx, int64(event.Raw.BlockNumber), 0, []ethcommon.Address{event.Pair})
+				if err != nil {
+					errCh <- err
+					return
+				}
+
+				for _, msg := range msgs {
+					msgCh <- msg
+				}
+			}()
 
 			go s.subscribePairs(ctx, []ethcommon.Address{event.Pair}, msgCh, errCh)
 
-			subCtx, cancel := context.WithTimeout(ctx, 1*time.Minute)
+			subCtx, cancel := context.WithTimeout(ctx, 3*time.Minute)
 			defer cancel()
 
 			msg, err := s.parsePairCreatedEvent(subCtx, event)
@@ -352,7 +328,7 @@ func (s *Source) subscribePairs(ctx context.Context, pairs []ethcommon.Address, 
 			errCh <- err
 			return
 		case vLog := <-logCh:
-			subCtx, cancel := context.WithTimeout(ctx, 1*time.Minute)
+			subCtx, cancel := context.WithTimeout(ctx, 3*time.Minute)
 			defer cancel()
 
 			msg, err := s.parsePairLog(subCtx, vLog)
@@ -719,7 +695,7 @@ func (s *Source) GetPairs(ctx context.Context, from int64, to int64) <-chan *Pai
 
 		var wg sync.WaitGroup
 
-		sem := make(chan struct{}, s.concurrecyLimit)
+		sem := make(chan struct{}, s.concurrecy)
 
 		for i := from; i <= to; i++ {
 			sem <- struct{}{}
