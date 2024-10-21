@@ -125,29 +125,30 @@ func (s *Source) queryFactory(ctx context.Context, fromBlock int64, toBlock int6
 	msgs := make([]proto.Message, 0, len(logs))
 
 	for _, vLog := range logs {
-		event, err := s.factoryContract.ParsePairCreated(vLog)
-		if err != nil {
-			log.Error().Err(err).Msg("Failed to parse factory log")
-			continue
+		select {
+		case <-ctx.Done():
+			return nil, ctx.Err()
+		default:
+			event, err := s.factoryContract.ParsePairCreated(vLog)
+			if err != nil {
+				log.Error().Err(err).Msg("Invalid factory log")
+				continue
+			}
+
+			msg, err := s.ParsePairCreatedEvent(ctx, event)
+			if err != nil {
+				log.Error().Err(err).Msg("Invalid PairCreated event")
+				continue
+			}
+
+			msgs = append(msgs, msg)
 		}
-
-		subCtx, cancel := context.WithTimeout(ctx, 3*time.Minute)
-		defer cancel()
-
-		msg, err := s.parsePairCreatedEvent(subCtx, event)
-		if err != nil {
-			log.Error().Err(err).Msg("Failed to parse factory pair created event")
-			continue
-		}
-
-		msgs = append(msgs, msg)
 	}
 
 	return msgs, nil
 }
 
 func (s *Source) queryPairs(ctx context.Context, fromBlock int64, toBlock int64, pairs []ethcommon.Address) ([]proto.Message, error) {
-
 	filter := ethereum.FilterQuery{
 		Addresses: pairs,
 		FromBlock: big.NewInt(fromBlock),
@@ -165,16 +166,18 @@ func (s *Source) queryPairs(ctx context.Context, fromBlock int64, toBlock int64,
 	msgs := make([]proto.Message, 0, len(logs))
 
 	for _, vLog := range logs {
-		subCtx, cancel := context.WithTimeout(ctx, 3*time.Minute)
-		defer cancel()
+		select {
+		case <-ctx.Done():
+			return nil, ctx.Err()
+		default:
+			msg, err := s.ParsePairLog(ctx, vLog)
+			if err != nil {
+				log.Error().Err(err).Msg("Invalid pair log")
+				continue
+			}
 
-		msg, err := s.parsePairLog(subCtx, vLog)
-		if err != nil {
-			log.Error().Err(err).Msg("Failed to parse pair log")
-			continue
+			msgs = append(msgs, msg)
 		}
-
-		msgs = append(msgs, msg)
 	}
 
 	return msgs, nil
@@ -233,7 +236,6 @@ func (s *Source) subscribeFactory(ctx context.Context, msgCh chan<- proto.Messag
 			}
 			if err := s.store.AddPair(ctx, pair); err != nil {
 				log.Error().Err(err).Int64("number", pair.Number).Str("address", pair.Address).Msg("Failed to add pair to store")
-
 			}
 
 			// Prevent gaps
@@ -251,12 +253,9 @@ func (s *Source) subscribeFactory(ctx context.Context, msgCh chan<- proto.Messag
 
 			go s.subscribePairs(ctx, []ethcommon.Address{event.Pair}, msgCh, errCh)
 
-			subCtx, cancel := context.WithTimeout(ctx, 3*time.Minute)
-			defer cancel()
-
-			msg, err := s.parsePairCreatedEvent(subCtx, event)
+			msg, err := s.ParsePairCreatedEvent(ctx, event)
 			if err != nil {
-				log.Error().Err(err).Msg("Failed to parse factory pair created event")
+				log.Error().Err(err).Msg("Invalid PairCreated event")
 				continue
 			}
 
@@ -265,24 +264,34 @@ func (s *Source) subscribeFactory(ctx context.Context, msgCh chan<- proto.Messag
 	}
 }
 
+func (s *Source) ParsePairCreatedEvent(ctx context.Context, event *factory.FactoryPairCreated) (proto.Message, error) {
+	retryCtx := common.ContextWithFuncName(ctx, "ParsePairCreatedEvent")
+	retryCtx = common.ContextWithOptionalRetry(retryCtx)
+
+	return common.RetryT(retryCtx, func() (proto.Message, error) {
+		subCtx, cancel := context.WithTimeout(ctx, 1*time.Minute)
+		defer cancel()
+		return s.parsePairCreatedEvent(subCtx, event)
+	})
+}
+
 func (s *Source) parsePairCreatedEvent(ctx context.Context, event *factory.FactoryPairCreated) (proto.Message, error) {
 	t, err := s.client.BlockTime(ctx, event.Raw.BlockNumber)
 	if err != nil {
-		log.Error().Err(err).Msg("Failed to get block time")
-		return nil, err
+		return nil, fmt.Errorf("error retrieving timestamp: %w", err)
 	}
 
-	tokens, errs := s.GetTokens(ctx, event.Token0, event.Token1)
-	if errs[0] != nil {
-		log.Error().Err(errs[0]).Str("address", event.Token0.String()).Msg("Failed to get token0")
-		if errs[0].Error() != "no contract code at given address" {
-			return nil, errs[0]
+	token0, err := s.GetToken(ctx, event.Token0)
+	if err != nil {
+		if err.Error() != "no contract code at given address" {
+			return nil, fmt.Errorf("error getting token %s from RPC: %w", event.Token0, err)
 		}
 	}
-	if errs[1] != nil {
-		log.Error().Err(errs[1]).Str("address", event.Token1.String()).Msg("Failed to get token1")
-		if errs[1].Error() != "no contract code at given address" {
-			return nil, errs[1]
+
+	token1, err := s.GetToken(ctx, event.Token1)
+	if err != nil {
+		if err.Error() != "no contract code at given address" {
+			return nil, fmt.Errorf("error getting token %s from RPC: %w", event.Token1, err)
 		}
 	}
 
@@ -297,16 +306,16 @@ func (s *Source) parsePairCreatedEvent(ctx context.Context, event *factory.Facto
 		Arg3:        event.Arg3.String(),
 	}
 
-	if tokens[0] != nil {
-		msg.Token0Name = tokens[0].Name
-		msg.Token0Symbol = tokens[0].Symbol
-		msg.Token0Decimals = uint32(tokens[0].Decimals)
+	if token0 != nil {
+		msg.Token0Name = token0.Name
+		msg.Token0Symbol = token0.Symbol
+		msg.Token0Decimals = uint32(token0.Decimals)
 	}
 
-	if tokens[1] != nil {
-		msg.Token1Name = tokens[1].Name
-		msg.Token1Symbol = tokens[1].Symbol
-		msg.Token1Decimals = uint32(tokens[1].Decimals)
+	if token1 != nil {
+		msg.Token1Name = token1.Name
+		msg.Token1Symbol = token1.Symbol
+		msg.Token1Decimals = uint32(token1.Decimals)
 	}
 
 	return msg, nil
@@ -328,12 +337,9 @@ func (s *Source) subscribePairs(ctx context.Context, pairs []ethcommon.Address, 
 			errCh <- err
 			return
 		case vLog := <-logCh:
-			subCtx, cancel := context.WithTimeout(ctx, 3*time.Minute)
-			defer cancel()
-
-			msg, err := s.parsePairLog(subCtx, vLog)
+			msg, err := s.ParsePairLog(ctx, vLog)
 			if err != nil {
-				log.Error().Err(err).Msg("Failed to parse pair log")
+				log.Error().Err(err).Msg("Invalid pair log")
 				continue
 			}
 
@@ -342,48 +348,56 @@ func (s *Source) subscribePairs(ctx context.Context, pairs []ethcommon.Address, 
 	}
 }
 
+func (s *Source) ParsePairLog(ctx context.Context, vLog types.Log) (proto.Message, error) {
+	retryCtx := common.ContextWithFuncName(ctx, "ParsePairLog")
+	retryCtx = common.ContextWithOptionalRetry(retryCtx)
+
+	return common.RetryT(retryCtx, func() (proto.Message, error) {
+		subCtx, cancel := context.WithTimeout(ctx, 1*time.Minute)
+		defer cancel()
+		return s.parsePairLog(subCtx, vLog)
+	})
+}
+
 func (s *Source) parsePairLog(ctx context.Context, vLog types.Log) (proto.Message, error) {
 	t, err := s.client.BlockTime(ctx, vLog.BlockNumber)
 	if err != nil {
-		log.Error().Err(err).Msg("Failed to get block time")
-		return nil, err
+		return nil, fmt.Errorf("error retrieving timestamp: %w", err)
 	}
 
 	ts := &timestamppb.Timestamp{Seconds: int64(t)}
 
 	event, err := pair.UnpackLog(vLog)
 	if err != nil {
-		log.Error().Err(err).Msg("Failed to unpack pair log")
-		return nil, err
+		return nil, fmt.Errorf("error unpacking pair log: %w", err)
 	}
 
 	p, err := s.store.GetPair(ctx, vLog.Address.String())
 	if err != nil {
-		log.Error().Err(err).Str("address", vLog.Address.String()).Msg("Failed to get pair from store")
+		log.Warn().Err(err).Str("address", vLog.Address.String()).Msg("Failed to get pair from store")
 	}
 
 	if p == nil {
 		p, err = s.GetPair(ctx, vLog.Address)
 		if err != nil {
-			log.Error().Err(err).Str("address", vLog.Address.String()).Msg("Failed to get pair from RPC")
-			return nil, err
+			return nil, fmt.Errorf("error getting pair %s from RPC: %w", vLog.Address, err)
 		}
 	}
 
 	switch event := event.(type) {
 	case pair.PairMint:
-		tokens, errs := s.GetTokens(ctx, ethcommon.HexToAddress(p.Token0), ethcommon.HexToAddress(p.Token1))
-		if errs[0] != nil {
-			log.Error().Err(errs[0]).Str("address", p.Token0).Msg("Failed to get token0")
-			return nil, errs[0]
-		}
-		if errs[1] != nil {
-			log.Error().Err(errs[1]).Str("address", p.Token1).Msg("Failed to get token1")
-			return nil, errs[1]
+		token0, err := s.GetToken(ctx, ethcommon.HexToAddress(p.Token0))
+		if err != nil {
+			return nil, err
 		}
 
-		amount0 := tokenAmount(event.Amount0, tokens[0].Decimals)
-		amount1 := tokenAmount(event.Amount1, tokens[1].Decimals)
+		token1, err := s.GetToken(ctx, ethcommon.HexToAddress(p.Token0))
+		if err != nil {
+			return nil, err
+		}
+
+		amount0 := tokenAmount(event.Amount0, token0.Decimals)
+		amount1 := tokenAmount(event.Amount1, token1.Decimals)
 
 		return &pair.Mint{
 			Ts:          ts,
@@ -396,20 +410,20 @@ func (s *Source) parsePairLog(ctx context.Context, vLog types.Log) (proto.Messag
 			Amount1:     floatString(amount1),
 		}, nil
 	case pair.PairSwap:
-		tokens, errs := s.GetTokens(ctx, ethcommon.HexToAddress(p.Token0), ethcommon.HexToAddress(p.Token1))
-		if errs[0] != nil {
-			log.Error().Err(errs[0]).Str("address", p.Token0).Msg("Failed to get token0")
-			return nil, errs[0]
-		}
-		if errs[1] != nil {
-			log.Error().Err(errs[1]).Str("address", p.Token1).Msg("Failed to get token1")
-			return nil, errs[1]
+		token0, err := s.GetToken(ctx, ethcommon.HexToAddress(p.Token0))
+		if err != nil {
+			return nil, err
 		}
 
-		amount0In := tokenAmount(event.Amount0In, tokens[0].Decimals)
-		amount0Out := tokenAmount(event.Amount0Out, tokens[0].Decimals)
-		amount1In := tokenAmount(event.Amount1In, tokens[1].Decimals)
-		amount1Out := tokenAmount(event.Amount1Out, tokens[1].Decimals)
+		token1, err := s.GetToken(ctx, ethcommon.HexToAddress(p.Token0))
+		if err != nil {
+			return nil, err
+		}
+
+		amount0In := tokenAmount(event.Amount0In, token0.Decimals)
+		amount0Out := tokenAmount(event.Amount0Out, token0.Decimals)
+		amount1In := tokenAmount(event.Amount1In, token1.Decimals)
+		amount1Out := tokenAmount(event.Amount1Out, token1.Decimals)
 
 		return &pair.Swap{
 			Ts:          ts,
@@ -425,18 +439,18 @@ func (s *Source) parsePairLog(ctx context.Context, vLog types.Log) (proto.Messag
 			To:          event.To.Bytes(),
 		}, nil
 	case pair.PairSync:
-		tokens, errs := s.GetTokens(ctx, ethcommon.HexToAddress(p.Token0), ethcommon.HexToAddress(p.Token1))
-		if errs[0] != nil {
-			log.Error().Err(errs[0]).Str("address", p.Token0).Msg("Failed to get token0")
-			return nil, errs[0]
-		}
-		if errs[1] != nil {
-			log.Error().Err(errs[1]).Str("address", p.Token1).Msg("Failed to get token1")
-			return nil, errs[1]
+		token0, err := s.GetToken(ctx, ethcommon.HexToAddress(p.Token0))
+		if err != nil {
+			return nil, err
 		}
 
-		reserve0 := tokenAmount(event.Reserve0, tokens[0].Decimals)
-		reserve1 := tokenAmount(event.Reserve1, tokens[1].Decimals)
+		token1, err := s.GetToken(ctx, ethcommon.HexToAddress(p.Token0))
+		if err != nil {
+			return nil, err
+		}
+
+		reserve0 := tokenAmount(event.Reserve0, token0.Decimals)
+		reserve1 := tokenAmount(event.Reserve1, token1.Decimals)
 
 		return &pair.Sync{
 			Ts:          ts,
@@ -476,18 +490,18 @@ func (s *Source) parsePairLog(ctx context.Context, vLog types.Log) (proto.Messag
 			Value:       floatString(value),
 		}, nil
 	case pair.PairBurn:
-		tokens, errs := s.GetTokens(ctx, ethcommon.HexToAddress(p.Token0), ethcommon.HexToAddress(p.Token1))
-		if errs[0] != nil {
-			log.Error().Err(errs[0]).Str("address", p.Token0).Msg("Failed to get token0")
-			return nil, errs[0]
-		}
-		if errs[1] != nil {
-			log.Error().Err(errs[1]).Str("address", p.Token1).Msg("Failed to get token1")
-			return nil, errs[1]
+		token0, err := s.GetToken(ctx, ethcommon.HexToAddress(p.Token0))
+		if err != nil {
+			return nil, err
 		}
 
-		amount0 := tokenAmount(event.Amount0, tokens[0].Decimals)
-		amount1 := tokenAmount(event.Amount1, tokens[1].Decimals)
+		token1, err := s.GetToken(ctx, ethcommon.HexToAddress(p.Token0))
+		if err != nil {
+			return nil, err
+		}
+
+		amount0 := tokenAmount(event.Amount0, token0.Decimals)
+		amount1 := tokenAmount(event.Amount1, token1.Decimals)
 
 		return &pair.Burn{
 			Ts:          ts,
@@ -511,28 +525,6 @@ func (s *Source) AllPairs(ctx context.Context) []ethcommon.Address {
 	})
 
 	return s.pairs
-}
-
-func (s *Source) GetTokens(ctx context.Context, addresses ...ethcommon.Address) ([]*Token, []error) {
-	tokens := make([]*Token, len(addresses))
-	errs := make([]error, len(addresses))
-
-	var wg sync.WaitGroup
-
-	wg.Add(len(addresses))
-
-	for i := range addresses {
-		address := addresses[i]
-
-		go func(i int) {
-			defer wg.Done()
-			tokens[i], errs[i] = s.GetToken(ctx, address)
-		}(i)
-	}
-
-	wg.Wait()
-
-	return tokens, errs
 }
 
 func (s *Source) GetToken(ctx context.Context, address ethcommon.Address) (*Token, error) {
@@ -569,39 +561,19 @@ func (s *Source) getToken(ctx context.Context, address ethcommon.Address) (*Toke
 		return nil, err
 	}
 
-	var (
-		name             string
-		symbol           string
-		decimals         uint8
-		err1, err2, err3 error
-		wg               sync.WaitGroup
-	)
-
-	wg.Add(3)
-
-	go func() {
-		defer wg.Done()
-		name, err1 = tokenContract.Name(&bind.CallOpts{Context: ctx})
-	}()
-	go func() {
-		defer wg.Done()
-		symbol, err2 = tokenContract.Symbol(&bind.CallOpts{Context: ctx})
-	}()
-	go func() {
-		defer wg.Done()
-		decimals, err3 = tokenContract.Decimals(&bind.CallOpts{Context: ctx})
-	}()
-
-	wg.Wait()
-
-	if err1 != nil {
-		log.Error().Err(err1).Str("address", address.String()).Msg("Failed to get token name")
+	name, err := tokenContract.Name(&bind.CallOpts{Context: ctx})
+	if err != nil {
+		log.Error().Err(err).Str("address", address.String()).Msg("Failed to get token name")
 	}
-	if err2 != nil {
-		log.Error().Err(err2).Str("address", address.String()).Msg("Failed to get token symbol")
+
+	symbol, err := tokenContract.Symbol(&bind.CallOpts{Context: ctx})
+	if err != nil {
+		log.Error().Err(err).Str("address", address.String()).Msg("Failed to get token symbol")
 	}
-	if err3 != nil {
-		return nil, err3
+
+	decimals, err := tokenContract.Decimals(&bind.CallOpts{Context: ctx})
+	if err != nil {
+		return nil, err
 	}
 
 	return &Token{
@@ -629,30 +601,14 @@ func (s *Source) getPair(ctx context.Context, address ethcommon.Address) (*Pair,
 		return nil, err
 	}
 
-	var (
-		token0, token1 ethcommon.Address
-		err1, err2     error
-		wg             sync.WaitGroup
-	)
-
-	wg.Add(2)
-
-	go func() {
-		defer wg.Done()
-		token0, err1 = pairContract.Token0(&bind.CallOpts{Context: ctx})
-	}()
-	go func() {
-		defer wg.Done()
-		token1, err2 = pairContract.Token1(&bind.CallOpts{Context: ctx})
-	}()
-
-	wg.Wait()
-
-	if err1 != nil {
-		return nil, err1
+	token0, err := pairContract.Token0(&bind.CallOpts{Context: ctx})
+	if err != nil {
+		return nil, err
 	}
-	if err2 != nil {
-		return nil, err2
+
+	token1, err := pairContract.Token1(&bind.CallOpts{Context: ctx})
+	if err != nil {
+		return nil, err
 	}
 
 	p := &Pair{
