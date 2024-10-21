@@ -117,7 +117,7 @@ func (s *Source) queryFactory(ctx context.Context, fromBlock int64, toBlock int6
 		filter.ToBlock = big.NewInt(toBlock)
 	}
 
-	logs, err := s.client.FilterLogs(ctx, filter)
+	logs, err := s.FilterLogs(ctx, filter)
 	if err != nil {
 		return nil, err
 	}
@@ -158,7 +158,7 @@ func (s *Source) queryPairs(ctx context.Context, fromBlock int64, toBlock int64,
 		filter.ToBlock = big.NewInt(toBlock)
 	}
 
-	logs, err := s.client.FilterLogs(ctx, filter)
+	logs, err := s.FilterLogs(ctx, filter)
 	if err != nil {
 		return nil, err
 	}
@@ -240,7 +240,10 @@ func (s *Source) subscribeFactory(ctx context.Context, msgCh chan<- proto.Messag
 
 			// Prevent gaps
 			go func() {
-				msgs, err := s.queryPairs(ctx, int64(event.Raw.BlockNumber), 0, []ethcommon.Address{event.Pair})
+				subCtx, cancel := context.WithTimeout(ctx, 3*time.Minute)
+				defer cancel()
+
+				msgs, err := s.queryPairs(subCtx, int64(event.Raw.BlockNumber), 0, []ethcommon.Address{event.Pair})
 				if err != nil {
 					errCh <- err
 					return
@@ -517,6 +520,17 @@ func (s *Source) parsePairLog(ctx context.Context, vLog types.Log) (proto.Messag
 	default:
 		return nil, fmt.Errorf("unhandled event: %s", reflect.TypeOf(event))
 	}
+}
+
+func (s *Source) FilterLogs(ctx context.Context, q ethereum.FilterQuery) ([]types.Log, error) {
+	retryCtx := common.ContextWithFuncName(ctx, "FilterLogs")
+	retryCtx = common.ContextWithOptionalRetry(retryCtx)
+
+	return common.RetryT(retryCtx, func() ([]types.Log, error) {
+		subCtx, cancel := context.WithTimeout(ctx, 3*time.Minute)
+		defer cancel()
+		return s.client.FilterLogs(subCtx, q)
+	})
 }
 
 func (s *Source) AllPairs(ctx context.Context) []ethcommon.Address {
