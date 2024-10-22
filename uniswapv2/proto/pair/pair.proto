@@ -202,18 +202,17 @@ message Transfer {
   string value = 8 [(lotus.numeric) = {}];
 }
 
-message Price1min {
+message Trade1min {
   option (lotus.view) = {
-    topic: "lotus.uniswapv2.0_0_0.pair_Sync"
+    topic: "lotus.uniswapv2.0_0_0.pair_Swap"
     materialized: true
-    realtime: true
     refresh_interval: '1 min'
     options: ["timescaledb.continuous"]
     group_by: [
       "t",
       "pair"
     ]
-    where: "reserve0 > 0"
+    where: "(amount0_in + amount0_out) > 0"
   };
 
   option (lotus.composite).index = {
@@ -229,39 +228,51 @@ message Price1min {
     (lotus.bytes) = {format: FORMAT_TYPE_HEX}
   ];
   string open_price = 3 [
-    (lotus.projection) = "first(reserve1 / reserve0, ts)",
+    (lotus.projection) = "first((amount1_in + amount1_out) / (amount0_in + amount0_out), ts)",
     (lotus.numeric) = {}
   ];
-  string max_price = 4 [
-    (lotus.projection) = "max(reserve1 / reserve0)",
+  string high_price = 4 [
+    (lotus.projection) = "max((amount1_in + amount1_out) / (amount0_in + amount0_out))",
     (lotus.numeric) = {}
   ];
-  string min_price = 5 [
-    (lotus.projection) = "min(reserve1 / reserve0)",
+  string low_price = 5 [
+    (lotus.projection) = "min((amount1_in + amount1_out) / (amount0_in + amount0_out))",
     (lotus.numeric) = {}
   ];
   string close_price = 6 [
-    (lotus.projection) = "last(reserve1 / reserve0, ts)",
+    (lotus.projection) = "last((amount1_in + amount1_out) / (amount0_in + amount0_out), ts)",
     (lotus.numeric) = {}
   ];
-  string avg_price = 7 [
-    (lotus.projection) = "avg(reserve1 / reserve0)",
+  int64 tx_count = 7 [(lotus.projection) = "count(*)"];
+  string volume0_buy = 8 [
+    (lotus.projection) = "sum(amount0_in)",
+    (lotus.numeric) = {}
+  ];
+  string volume0_sell = 9 [
+    (lotus.projection) = "sum(amount0_out)",
+    (lotus.numeric) = {}
+  ];
+  string volume1_buy = 10 [
+    (lotus.projection) = "sum(amount1_in)",
+    (lotus.numeric) = {}
+  ];
+  string volume1_sell = 11 [
+    (lotus.projection) = "sum(amount1_out)",
     (lotus.numeric) = {}
   ];
 }
 
-message Price10min {
+message Trade10min {
   option (lotus.view) = {
-    topic: "lotus.uniswapv2.0_0_0.pair_Sync"
+    topic: "lotus.uniswapv2.0_0_0.pair_Swap"
     materialized: true
-    realtime: true
     refresh_interval: '10 min'
     options: ["timescaledb.continuous"]
     group_by: [
       "t",
       "pair"
     ]
-    where: "reserve0 > 0"
+    where: "(amount0_in + amount0_out) > 0"
   };
 
   option (lotus.composite).index = {
@@ -277,39 +288,51 @@ message Price10min {
     (lotus.bytes) = {format: FORMAT_TYPE_HEX}
   ];
   string open_price = 3 [
-    (lotus.projection) = "first(reserve1 / reserve0, ts)",
+    (lotus.projection) = "first((amount1_in + amount1_out) / (amount0_in + amount0_out), ts)",
     (lotus.numeric) = {}
   ];
-  string max_price = 4 [
-    (lotus.projection) = "max(reserve1 / reserve0)",
+  string high_price = 4 [
+    (lotus.projection) = "max((amount1_in + amount1_out) / (amount0_in + amount0_out))",
     (lotus.numeric) = {}
   ];
-  string min_price = 5 [
-    (lotus.projection) = "min(reserve1 / reserve0)",
+  string low_price = 5 [
+    (lotus.projection) = "min((amount1_in + amount1_out) / (amount0_in + amount0_out))",
     (lotus.numeric) = {}
   ];
   string close_price = 6 [
-    (lotus.projection) = "last(reserve1 / reserve0, ts)",
+    (lotus.projection) = "last((amount1_in + amount1_out) / (amount0_in + amount0_out), ts)",
     (lotus.numeric) = {}
   ];
-  string avg_price = 7 [
-    (lotus.projection) = "avg(reserve1 / reserve0)",
+  int64 tx_count = 7 [(lotus.projection) = "count(*)"];
+  string volume0_buy = 8 [
+    (lotus.projection) = "sum(amount0_in)",
+    (lotus.numeric) = {}
+  ];
+  string volume0_sell = 9 [
+    (lotus.projection) = "sum(amount0_out)",
+    (lotus.numeric) = {}
+  ];
+  string volume1_buy = 10 [
+    (lotus.projection) = "sum(amount1_in)",
+    (lotus.numeric) = {}
+  ];
+  string volume1_sell = 11 [
+    (lotus.projection) = "sum(amount1_out)",
     (lotus.numeric) = {}
   ];
 }
 
-message Price1h {
+message Trade1h {
   option (lotus.view) = {
-    topic: "lotus.uniswapv2.0_0_0.pair_Sync"
+    topic: "lotus.uniswapv2.0_0_0.pair_Swap"
     materialized: true
-    realtime: true
     refresh_interval: '10 min'
     options: ["timescaledb.continuous"]
     group_by: [
       "t",
       "pair"
     ]
-    where: "reserve0 > 0"
+    where: "(amount0_in + amount0_out) > 0"
   };
 
   option (lotus.composite).index = {
@@ -325,39 +348,51 @@ message Price1h {
     (lotus.bytes) = {format: FORMAT_TYPE_HEX}
   ];
   string open_price = 3 [
-    (lotus.projection) = "first(reserve1 / reserve0, ts)",
+    (lotus.projection) = "first((amount1_in + amount1_out) / (amount0_in + amount0_out), ts)",
     (lotus.numeric) = {}
   ];
-  string max_price = 4 [
-    (lotus.projection) = "max(reserve1 / reserve0)",
+  string high_price = 4 [
+    (lotus.projection) = "max((amount1_in + amount1_out) / (amount0_in + amount0_out))",
     (lotus.numeric) = {}
   ];
-  string min_price = 5 [
-    (lotus.projection) = "min(reserve1 / reserve0)",
+  string low_price = 5 [
+    (lotus.projection) = "min((amount1_in + amount1_out) / (amount0_in + amount0_out))",
     (lotus.numeric) = {}
   ];
   string close_price = 6 [
-    (lotus.projection) = "last(reserve1 / reserve0, ts)",
+    (lotus.projection) = "last((amount1_in + amount1_out) / (amount0_in + amount0_out), ts)",
     (lotus.numeric) = {}
   ];
-  string avg_price = 7 [
-    (lotus.projection) = "avg(reserve1 / reserve0)",
+  int64 tx_count = 7 [(lotus.projection) = "count(*)"];
+  string volume0_buy = 8 [
+    (lotus.projection) = "sum(amount0_in)",
+    (lotus.numeric) = {}
+  ];
+  string volume0_sell = 9 [
+    (lotus.projection) = "sum(amount0_out)",
+    (lotus.numeric) = {}
+  ];
+  string volume1_buy = 10 [
+    (lotus.projection) = "sum(amount1_in)",
+    (lotus.numeric) = {}
+  ];
+  string volume1_sell = 11 [
+    (lotus.projection) = "sum(amount1_out)",
     (lotus.numeric) = {}
   ];
 }
 
-message Price1d {
+message Trade1d {
   option (lotus.view) = {
-    topic: "lotus.uniswapv2.0_0_0.pair_Sync"
+    topic: "lotus.uniswapv2.0_0_0.pair_Swap"
     materialized: true
-    realtime: true
     refresh_interval: '1 hour'
     options: ["timescaledb.continuous"]
     group_by: [
       "t",
       "pair"
     ]
-    where: "reserve0 > 0"
+    where: "(amount0_in + amount0_out) > 0"
   };
 
   option (lotus.composite).index = {
@@ -373,39 +408,51 @@ message Price1d {
     (lotus.bytes) = {format: FORMAT_TYPE_HEX}
   ];
   string open_price = 3 [
-    (lotus.projection) = "first(reserve1 / reserve0, ts)",
+    (lotus.projection) = "first((amount1_in + amount1_out) / (amount0_in + amount0_out), ts)",
     (lotus.numeric) = {}
   ];
-  string max_price = 4 [
-    (lotus.projection) = "max(reserve1 / reserve0)",
+  string high_price = 4 [
+    (lotus.projection) = "max((amount1_in + amount1_out) / (amount0_in + amount0_out))",
     (lotus.numeric) = {}
   ];
-  string min_price = 5 [
-    (lotus.projection) = "min(reserve1 / reserve0)",
+  string low_price = 5 [
+    (lotus.projection) = "min((amount1_in + amount1_out) / (amount0_in + amount0_out))",
     (lotus.numeric) = {}
   ];
   string close_price = 6 [
-    (lotus.projection) = "last(reserve1 / reserve0, ts)",
+    (lotus.projection) = "last((amount1_in + amount1_out) / (amount0_in + amount0_out), ts)",
     (lotus.numeric) = {}
   ];
-  string avg_price = 7 [
-    (lotus.projection) = "avg(reserve1 / reserve0)",
+  int64 tx_count = 7 [(lotus.projection) = "count(*)"];
+  string volume0_buy = 8 [
+    (lotus.projection) = "sum(amount0_in)",
+    (lotus.numeric) = {}
+  ];
+  string volume0_sell = 9 [
+    (lotus.projection) = "sum(amount0_out)",
+    (lotus.numeric) = {}
+  ];
+  string volume1_buy = 10 [
+    (lotus.projection) = "sum(amount1_in)",
+    (lotus.numeric) = {}
+  ];
+  string volume1_sell = 11 [
+    (lotus.projection) = "sum(amount1_out)",
     (lotus.numeric) = {}
   ];
 }
 
-message Price1mon {
+message Trade1mon {
   option (lotus.view) = {
-    topic: "lotus.uniswapv2.0_0_0.pair_Sync"
+    topic: "lotus.uniswapv2.0_0_0.pair_Swap"
     materialized: true
-    realtime: true
     refresh_interval: '1 hour'
     options: ["timescaledb.continuous"]
     group_by: [
       "t",
       "pair"
     ]
-    where: "reserve0 > 0"
+    where: "(amount0_in + amount0_out) > 0"
   };
 
   option (lotus.composite).index = {
@@ -421,39 +468,51 @@ message Price1mon {
     (lotus.bytes) = {format: FORMAT_TYPE_HEX}
   ];
   string open_price = 3 [
-    (lotus.projection) = "first(reserve1 / reserve0, ts)",
+    (lotus.projection) = "first((amount1_in + amount1_out) / (amount0_in + amount0_out), ts)",
     (lotus.numeric) = {}
   ];
-  string max_price = 4 [
-    (lotus.projection) = "max(reserve1 / reserve0)",
+  string high_price = 4 [
+    (lotus.projection) = "max((amount1_in + amount1_out) / (amount0_in + amount0_out))",
     (lotus.numeric) = {}
   ];
-  string min_price = 5 [
-    (lotus.projection) = "min(reserve1 / reserve0)",
+  string low_price = 5 [
+    (lotus.projection) = "min((amount1_in + amount1_out) / (amount0_in + amount0_out))",
     (lotus.numeric) = {}
   ];
   string close_price = 6 [
-    (lotus.projection) = "last(reserve1 / reserve0, ts)",
+    (lotus.projection) = "last((amount1_in + amount1_out) / (amount0_in + amount0_out), ts)",
     (lotus.numeric) = {}
   ];
-  string avg_price = 7 [
-    (lotus.projection) = "avg(reserve1 / reserve0)",
+  int64 tx_count = 7 [(lotus.projection) = "count(*)"];
+  string volume0_buy = 8 [
+    (lotus.projection) = "sum(amount0_in)",
+    (lotus.numeric) = {}
+  ];
+  string volume0_sell = 9 [
+    (lotus.projection) = "sum(amount0_out)",
+    (lotus.numeric) = {}
+  ];
+  string volume1_buy = 10 [
+    (lotus.projection) = "sum(amount1_in)",
+    (lotus.numeric) = {}
+  ];
+  string volume1_sell = 11 [
+    (lotus.projection) = "sum(amount1_out)",
     (lotus.numeric) = {}
   ];
 }
 
-message Price1y {
+message Trade1y {
   option (lotus.view) = {
-    topic: "lotus.uniswapv2.0_0_0.pair_Sync"
+    topic: "lotus.uniswapv2.0_0_0.pair_Swap"
     materialized: true
-    realtime: true
     refresh_interval: '1 hour'
     options: ["timescaledb.continuous"]
     group_by: [
       "t",
       "pair"
     ]
-    where: "reserve0 > 0"
+    where: "(amount0_in + amount0_out) > 0"
   };
 
   option (lotus.composite).index = {
@@ -469,23 +528,36 @@ message Price1y {
     (lotus.bytes) = {format: FORMAT_TYPE_HEX}
   ];
   string open_price = 3 [
-    (lotus.projection) = "first(reserve1 / reserve0, ts)",
+    (lotus.projection) = "first((amount1_in + amount1_out) / (amount0_in + amount0_out), ts)",
     (lotus.numeric) = {}
   ];
-  string max_price = 4 [
-    (lotus.projection) = "max(reserve1 / reserve0)",
+  string high_price = 4 [
+    (lotus.projection) = "max((amount1_in + amount1_out) / (amount0_in + amount0_out))",
     (lotus.numeric) = {}
   ];
-  string min_price = 5 [
-    (lotus.projection) = "min(reserve1 / reserve0)",
+  string low_price = 5 [
+    (lotus.projection) = "min((amount1_in + amount1_out) / (amount0_in + amount0_out))",
     (lotus.numeric) = {}
   ];
   string close_price = 6 [
-    (lotus.projection) = "last(reserve1 / reserve0, ts)",
+    (lotus.projection) = "last((amount1_in + amount1_out) / (amount0_in + amount0_out), ts)",
     (lotus.numeric) = {}
   ];
-  string avg_price = 7 [
-    (lotus.projection) = "avg(reserve1 / reserve0)",
+  int64 tx_count = 7 [(lotus.projection) = "count(*)"];
+  string volume0_buy = 8 [
+    (lotus.projection) = "sum(amount0_in)",
+    (lotus.numeric) = {}
+  ];
+  string volume0_sell = 9 [
+    (lotus.projection) = "sum(amount0_out)",
+    (lotus.numeric) = {}
+  ];
+  string volume1_buy = 10 [
+    (lotus.projection) = "sum(amount1_in)",
+    (lotus.numeric) = {}
+  ];
+  string volume1_sell = 11 [
+    (lotus.projection) = "sum(amount1_out)",
     (lotus.numeric) = {}
   ];
 }
