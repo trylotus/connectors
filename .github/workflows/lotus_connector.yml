@@ -94,7 +94,7 @@ jobs:
   #       docker run ${{ steps.build-tester.outputs.imageid }}
 
   build:
-    if: ${{ github.event_name != 'pull_request' && needs.setup.outputs.dirs != '[]' }} # this only runs for main and staging
+    if: ${{ needs.setup.outputs.dirs != '[]' }} # this only runs for main and staging
     name: Publish Docker image
     needs: [ setup ]
     runs-on: ubuntu-latest
