@@ -279,7 +279,7 @@ func (s *Source) ParsePairCreatedEvent(ctx context.Context, event *factory.Facto
 }
 
 func (s *Source) parsePairCreatedEvent(ctx context.Context, event *factory.FactoryPairCreated) (proto.Message, error) {
-	t, err := s.client.BlockTime(ctx, event.Raw.BlockNumber)
+	t, err := s.BlockTime(ctx, event.Raw.BlockNumber)
 	if err != nil {
 		return nil, fmt.Errorf("error retrieving timestamp: %w", err)
 	}
@@ -363,7 +363,7 @@ func (s *Source) ParsePairLog(ctx context.Context, vLog types.Log) (proto.Messag
 }
 
 func (s *Source) parsePairLog(ctx context.Context, vLog types.Log) (proto.Message, error) {
-	t, err := s.client.BlockTime(ctx, vLog.BlockNumber)
+	t, err := s.BlockTime(ctx, vLog.BlockNumber)
 	if err != nil {
 		return nil, fmt.Errorf("error retrieving timestamp: %w", err)
 	}
@@ -522,6 +522,17 @@ func (s *Source) parsePairLog(ctx context.Context, vLog types.Log) (proto.Messag
 	}
 }
 
+func (s *Source) BlockTime(ctx context.Context, blockNumber uint64) (uint64, error) {
+	retryCtx := common.ContextWithFuncName(ctx, "BlockTime")
+	retryCtx = common.ContextWithOptionalRetry(retryCtx)
+
+	return common.RetryT(retryCtx, func() (uint64, error) {
+		subCtx, cancel := context.WithTimeout(ctx, 10*time.Second)
+		defer cancel()
+		return s.client.BlockTime(subCtx, blockNumber)
+	})
+}
+
 func (s *Source) FilterLogs(ctx context.Context, q ethereum.FilterQuery) ([]types.Log, error) {
 	retryCtx := common.ContextWithFuncName(ctx, "FilterLogs")
 	retryCtx = common.ContextWithOptionalRetry(retryCtx)
@@ -575,6 +586,11 @@ func (s *Source) getToken(ctx context.Context, address ethcommon.Address) (*Toke
 		return nil, err
 	}
 
+	decimals, err := tokenContract.Decimals(&bind.CallOpts{Context: ctx})
+	if err != nil {
+		return nil, err
+	}
+
 	name, err := tokenContract.Name(&bind.CallOpts{Context: ctx})
 	if err != nil {
 		log.Error().Err(err).Str("address", address.String()).Msg("Failed to get token name")
@@ -583,11 +599,6 @@ func (s *Source) getToken(ctx context.Context, address ethcommon.Address) (*Toke
 	symbol, err := tokenContract.Symbol(&bind.CallOpts{Context: ctx})
 	if err != nil {
 		log.Error().Err(err).Str("address", address.String()).Msg("Failed to get token symbol")
-	}
-
-	decimals, err := tokenContract.Decimals(&bind.CallOpts{Context: ctx})
-	if err != nil {
-		return nil, err
 	}
 
 	return &Token{
