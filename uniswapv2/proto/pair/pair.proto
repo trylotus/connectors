@@ -245,19 +245,19 @@ message Trade1min {
   ];
   int64 tx_count = 7 [(lotus.projection) = "count(*)"];
   string volume0_buy = 8 [
-    (lotus.projection) = "sum(amount0_in)",
-    (lotus.numeric) = {}
-  ];
-  string volume0_sell = 9 [
     (lotus.projection) = "sum(amount0_out)",
     (lotus.numeric) = {}
   ];
+  string volume0_sell = 9 [
+    (lotus.projection) = "sum(amount0_in)",
+    (lotus.numeric) = {}
+  ];
   string volume1_buy = 10 [
-    (lotus.projection) = "sum(amount1_in)",
+    (lotus.projection) = "sum(amount1_out)",
     (lotus.numeric) = {}
   ];
   string volume1_sell = 11 [
-    (lotus.projection) = "sum(amount1_out)",
+    (lotus.projection) = "sum(amount1_in)",
     (lotus.numeric) = {}
   ];
 }
@@ -305,19 +305,19 @@ message Trade10min {
   ];
   int64 tx_count = 7 [(lotus.projection) = "count(*)"];
   string volume0_buy = 8 [
-    (lotus.projection) = "sum(amount0_in)",
-    (lotus.numeric) = {}
-  ];
-  string volume0_sell = 9 [
     (lotus.projection) = "sum(amount0_out)",
     (lotus.numeric) = {}
   ];
+  string volume0_sell = 9 [
+    (lotus.projection) = "sum(amount0_in)",
+    (lotus.numeric) = {}
+  ];
   string volume1_buy = 10 [
-    (lotus.projection) = "sum(amount1_in)",
+    (lotus.projection) = "sum(amount1_out)",
     (lotus.numeric) = {}
   ];
   string volume1_sell = 11 [
-    (lotus.projection) = "sum(amount1_out)",
+    (lotus.projection) = "sum(amount1_in)",
     (lotus.numeric) = {}
   ];
 }
@@ -365,19 +365,19 @@ message Trade1h {
   ];
   int64 tx_count = 7 [(lotus.projection) = "count(*)"];
   string volume0_buy = 8 [
-    (lotus.projection) = "sum(amount0_in)",
-    (lotus.numeric) = {}
-  ];
-  string volume0_sell = 9 [
     (lotus.projection) = "sum(amount0_out)",
     (lotus.numeric) = {}
   ];
+  string volume0_sell = 9 [
+    (lotus.projection) = "sum(amount0_in)",
+    (lotus.numeric) = {}
+  ];
   string volume1_buy = 10 [
-    (lotus.projection) = "sum(amount1_in)",
+    (lotus.projection) = "sum(amount1_out)",
     (lotus.numeric) = {}
   ];
   string volume1_sell = 11 [
-    (lotus.projection) = "sum(amount1_out)",
+    (lotus.projection) = "sum(amount1_in)",
     (lotus.numeric) = {}
   ];
 }
@@ -425,19 +425,19 @@ message Trade1d {
   ];
   int64 tx_count = 7 [(lotus.projection) = "count(*)"];
   string volume0_buy = 8 [
-    (lotus.projection) = "sum(amount0_in)",
-    (lotus.numeric) = {}
-  ];
-  string volume0_sell = 9 [
     (lotus.projection) = "sum(amount0_out)",
     (lotus.numeric) = {}
   ];
+  string volume0_sell = 9 [
+    (lotus.projection) = "sum(amount0_in)",
+    (lotus.numeric) = {}
+  ];
   string volume1_buy = 10 [
-    (lotus.projection) = "sum(amount1_in)",
+    (lotus.projection) = "sum(amount1_out)",
     (lotus.numeric) = {}
   ];
   string volume1_sell = 11 [
-    (lotus.projection) = "sum(amount1_out)",
+    (lotus.projection) = "sum(amount1_in)",
     (lotus.numeric) = {}
   ];
 }
@@ -485,19 +485,19 @@ message Trade1mon {
   ];
   int64 tx_count = 7 [(lotus.projection) = "count(*)"];
   string volume0_buy = 8 [
-    (lotus.projection) = "sum(amount0_in)",
-    (lotus.numeric) = {}
-  ];
-  string volume0_sell = 9 [
     (lotus.projection) = "sum(amount0_out)",
     (lotus.numeric) = {}
   ];
+  string volume0_sell = 9 [
+    (lotus.projection) = "sum(amount0_in)",
+    (lotus.numeric) = {}
+  ];
   string volume1_buy = 10 [
-    (lotus.projection) = "sum(amount1_in)",
+    (lotus.projection) = "sum(amount1_out)",
     (lotus.numeric) = {}
   ];
   string volume1_sell = 11 [
-    (lotus.projection) = "sum(amount1_out)",
+    (lotus.projection) = "sum(amount1_in)",
     (lotus.numeric) = {}
   ];
 }
@@ -545,19 +545,19 @@ message Trade1y {
   ];
   int64 tx_count = 7 [(lotus.projection) = "count(*)"];
   string volume0_buy = 8 [
-    (lotus.projection) = "sum(amount0_in)",
-    (lotus.numeric) = {}
-  ];
-  string volume0_sell = 9 [
     (lotus.projection) = "sum(amount0_out)",
     (lotus.numeric) = {}
   ];
+  string volume0_sell = 9 [
+    (lotus.projection) = "sum(amount0_in)",
+    (lotus.numeric) = {}
+  ];
   string volume1_buy = 10 [
-    (lotus.projection) = "sum(amount1_in)",
+    (lotus.projection) = "sum(amount1_out)",
     (lotus.numeric) = {}
   ];
   string volume1_sell = 11 [
-    (lotus.projection) = "sum(amount1_out)",
+    (lotus.projection) = "sum(amount1_in)",
     (lotus.numeric) = {}
   ];
 }
