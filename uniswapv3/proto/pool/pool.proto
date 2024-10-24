@@ -311,3 +311,363 @@ message Swap {
   string liquidity = 11 [(lotus.numeric) = {precision: 39}]; // uint128
   int32 tick = 12; // int24
 }
+
+message Trade1min {
+  option (lotus.view) = {
+    topic: "lotus.uniswapv3.0_0_0.pool_Swap"
+    materialized: true
+    refresh_interval: '1 min'
+    options: ["timescaledb.continuous"]
+    group_by: [
+      "t",
+      "pool"
+    ]
+    where: "amount0 > 0"
+  };
+
+  option (lotus.composite).index = {
+    fields: [
+      "pool",
+      "t"
+    ]
+  };
+
+  google.protobuf.Timestamp t = 1 [(lotus.projection) = "time_bucket('1 min', ts)"];
+  bytes pool = 2 [
+    (lotus.projection) = "pool",
+    (lotus.bytes) = {format: FORMAT_TYPE_HEX}
+  ];
+  string open_price = 3 [
+    (lotus.projection) = "first(abs(amount1) / abs(amount0), ts)",
+    (lotus.numeric) = {}
+  ];
+  string high_price = 4 [
+    (lotus.projection) = "max(abs(amount1) / abs(amount0))",
+    (lotus.numeric) = {}
+  ];
+  string low_price = 5 [
+    (lotus.projection) = "min(abs(amount1) / abs(amount0))",
+    (lotus.numeric) = {}
+  ];
+  string close_price = 6 [
+    (lotus.projection) = "last(abs(amount1) / abs(amount0), ts)",
+    (lotus.numeric) = {}
+  ];
+  int64 tx_count = 7 [(lotus.projection) = "count(*)"];
+  string volume0_buy = 8 [
+    (lotus.projection) = "sum(case when amount0 < 0 then -amount0 else 0 end)",
+    (lotus.numeric) = {}
+  ];
+  string volume0_sell = 9 [
+    (lotus.projection) = "sum(case when amount0 > 0 then amount0 else 0 end)",
+    (lotus.numeric) = {}
+  ];
+  string volume1_buy = 10 [
+    (lotus.projection) = "sum(case when amount1 < 0 then -amount1 else 0 end)",
+    (lotus.numeric) = {}
+  ];
+  string volume1_sell = 11 [
+    (lotus.projection) = "sum(case when amount1 > 0 then amount1 else 0 end)",
+    (lotus.numeric) = {}
+  ];
+}
+
+message Trade10min {
+  option (lotus.view) = {
+    topic: "lotus.uniswapv3.0_0_0.pool_Swap"
+    materialized: true
+    refresh_interval: '10 min'
+    options: ["timescaledb.continuous"]
+    group_by: [
+      "t",
+      "pool"
+    ]
+    where: "amount0 > 0"
+  };
+
+  option (lotus.composite).index = {
+    fields: [
+      "pool",
+      "t"
+    ]
+  };
+
+  google.protobuf.Timestamp t = 1 [(lotus.projection) = "time_bucket('10 min', ts)"];
+  bytes pool = 2 [
+    (lotus.projection) = "pool",
+    (lotus.bytes) = {format: FORMAT_TYPE_HEX}
+  ];
+  string open_price = 3 [
+    (lotus.projection) = "first(abs(amount1) / abs(amount0), ts)",
+    (lotus.numeric) = {}
+  ];
+  string high_price = 4 [
+    (lotus.projection) = "max(abs(amount1) / abs(amount0))",
+    (lotus.numeric) = {}
+  ];
+  string low_price = 5 [
+    (lotus.projection) = "min(abs(amount1) / abs(amount0))",
+    (lotus.numeric) = {}
+  ];
+  string close_price = 6 [
+    (lotus.projection) = "last(abs(amount1) / abs(amount0), ts)",
+    (lotus.numeric) = {}
+  ];
+  int64 tx_count = 7 [(lotus.projection) = "count(*)"];
+  string volume0_buy = 8 [
+    (lotus.projection) = "sum(case when amount0 < 0 then -amount0 else 0 end)",
+    (lotus.numeric) = {}
+  ];
+  string volume0_sell = 9 [
+    (lotus.projection) = "sum(case when amount0 > 0 then amount0 else 0 end)",
+    (lotus.numeric) = {}
+  ];
+  string volume1_buy = 10 [
+    (lotus.projection) = "sum(case when amount1 < 0 then -amount1 else 0 end)",
+    (lotus.numeric) = {}
+  ];
+  string volume1_sell = 11 [
+    (lotus.projection) = "sum(case when amount1 > 0 then amount1 else 0 end)",
+    (lotus.numeric) = {}
+  ];
+}
+
+message Trade1h {
+  option (lotus.view) = {
+    topic: "lotus.uniswapv3.0_0_0.pool_Swap"
+    materialized: true
+    refresh_interval: '10 min'
+    options: ["timescaledb.continuous"]
+    group_by: [
+      "t",
+      "pool"
+    ]
+    where: "amount0 > 0"
+  };
+
+  option (lotus.composite).index = {
+    fields: [
+      "pool",
+      "t"
+    ]
+  };
+
+  google.protobuf.Timestamp t = 1 [(lotus.projection) = "time_bucket('10 hour', ts)"];
+  bytes pool = 2 [
+    (lotus.projection) = "pool",
+    (lotus.bytes) = {format: FORMAT_TYPE_HEX}
+  ];
+  string open_price = 3 [
+    (lotus.projection) = "first(abs(amount1) / abs(amount0), ts)",
+    (lotus.numeric) = {}
+  ];
+  string high_price = 4 [
+    (lotus.projection) = "max(abs(amount1) / abs(amount0))",
+    (lotus.numeric) = {}
+  ];
+  string low_price = 5 [
+    (lotus.projection) = "min(abs(amount1) / abs(amount0))",
+    (lotus.numeric) = {}
+  ];
+  string close_price = 6 [
+    (lotus.projection) = "last(abs(amount1) / abs(amount0), ts)",
+    (lotus.numeric) = {}
+  ];
+  int64 tx_count = 7 [(lotus.projection) = "count(*)"];
+  string volume0_buy = 8 [
+    (lotus.projection) = "sum(case when amount0 < 0 then -amount0 else 0 end)",
+    (lotus.numeric) = {}
+  ];
+  string volume0_sell = 9 [
+    (lotus.projection) = "sum(case when amount0 > 0 then amount0 else 0 end)",
+    (lotus.numeric) = {}
+  ];
+  string volume1_buy = 10 [
+    (lotus.projection) = "sum(case when amount1 < 0 then -amount1 else 0 end)",
+    (lotus.numeric) = {}
+  ];
+  string volume1_sell = 11 [
+    (lotus.projection) = "sum(case when amount1 > 0 then amount1 else 0 end)",
+    (lotus.numeric) = {}
+  ];
+}
+
+message Trade1d {
+  option (lotus.view) = {
+    topic: "lotus.uniswapv3.0_0_0.pool_Swap"
+    materialized: true
+    refresh_interval: '1 hour'
+    options: ["timescaledb.continuous"]
+    group_by: [
+      "t",
+      "pool"
+    ]
+    where: "amount0 > 0"
+  };
+
+  option (lotus.composite).index = {
+    fields: [
+      "pool",
+      "t"
+    ]
+  };
+
+  google.protobuf.Timestamp t = 1 [(lotus.projection) = "time_bucket('1 day', ts)"];
+  bytes pool = 2 [
+    (lotus.projection) = "pool",
+    (lotus.bytes) = {format: FORMAT_TYPE_HEX}
+  ];
+  string open_price = 3 [
+    (lotus.projection) = "first(abs(amount1) / abs(amount0), ts)",
+    (lotus.numeric) = {}
+  ];
+  string high_price = 4 [
+    (lotus.projection) = "max(abs(amount1) / abs(amount0))",
+    (lotus.numeric) = {}
+  ];
+  string low_price = 5 [
+    (lotus.projection) = "min(abs(amount1) / abs(amount0))",
+    (lotus.numeric) = {}
+  ];
+  string close_price = 6 [
+    (lotus.projection) = "last(abs(amount1) / abs(amount0), ts)",
+    (lotus.numeric) = {}
+  ];
+  int64 tx_count = 7 [(lotus.projection) = "count(*)"];
+  string volume0_buy = 8 [
+    (lotus.projection) = "sum(case when amount0 < 0 then -amount0 else 0 end)",
+    (lotus.numeric) = {}
+  ];
+  string volume0_sell = 9 [
+    (lotus.projection) = "sum(case when amount0 > 0 then amount0 else 0 end)",
+    (lotus.numeric) = {}
+  ];
+  string volume1_buy = 10 [
+    (lotus.projection) = "sum(case when amount1 < 0 then -amount1 else 0 end)",
+    (lotus.numeric) = {}
+  ];
+  string volume1_sell = 11 [
+    (lotus.projection) = "sum(case when amount1 > 0 then amount1 else 0 end)",
+    (lotus.numeric) = {}
+  ];
+}
+
+message Trade1mon {
+  option (lotus.view) = {
+    topic: "lotus.uniswapv3.0_0_0.pool_Swap"
+    materialized: true
+    refresh_interval: '1 hour'
+    options: ["timescaledb.continuous"]
+    group_by: [
+      "t",
+      "pool"
+    ]
+    where: "amount0 > 0"
+  };
+
+  option (lotus.composite).index = {
+    fields: [
+      "pool",
+      "t"
+    ]
+  };
+
+  google.protobuf.Timestamp t = 1 [(lotus.projection) = "time_bucket('1 month', ts)"];
+  bytes pool = 2 [
+    (lotus.projection) = "pool",
+    (lotus.bytes) = {format: FORMAT_TYPE_HEX}
+  ];
+  string open_price = 3 [
+    (lotus.projection) = "first(abs(amount1) / abs(amount0), ts)",
+    (lotus.numeric) = {}
+  ];
+  string high_price = 4 [
+    (lotus.projection) = "max(abs(amount1) / abs(amount0))",
+    (lotus.numeric) = {}
+  ];
+  string low_price = 5 [
+    (lotus.projection) = "min(abs(amount1) / abs(amount0))",
+    (lotus.numeric) = {}
+  ];
+  string close_price = 6 [
+    (lotus.projection) = "last(abs(amount1) / abs(amount0), ts)",
+    (lotus.numeric) = {}
+  ];
+  int64 tx_count = 7 [(lotus.projection) = "count(*)"];
+  string volume0_buy = 8 [
+    (lotus.projection) = "sum(case when amount0 < 0 then -amount0 else 0 end)",
+    (lotus.numeric) = {}
+  ];
+  string volume0_sell = 9 [
+    (lotus.projection) = "sum(case when amount0 > 0 then amount0 else 0 end)",
+    (lotus.numeric) = {}
+  ];
+  string volume1_buy = 10 [
+    (lotus.projection) = "sum(case when amount1 < 0 then -amount1 else 0 end)",
+    (lotus.numeric) = {}
+  ];
+  string volume1_sell = 11 [
+    (lotus.projection) = "sum(case when amount1 > 0 then amount1 else 0 end)",
+    (lotus.numeric) = {}
+  ];
+}
+
+message Trade1y {
+  option (lotus.view) = {
+    topic: "lotus.uniswapv3.0_0_0.pool_Swap"
+    materialized: true
+    refresh_interval: '1 hour'
+    options: ["timescaledb.continuous"]
+    group_by: [
+      "t",
+      "pool"
+    ]
+    where: "amount0 > 0"
+  };
+
+  option (lotus.composite).index = {
+    fields: [
+      "pool",
+      "t"
+    ]
+  };
+
+  google.protobuf.Timestamp t = 1 [(lotus.projection) = "time_bucket('1 year', ts)"];
+  bytes pool = 2 [
+    (lotus.projection) = "pool",
+    (lotus.bytes) = {format: FORMAT_TYPE_HEX}
+  ];
+  string open_price = 3 [
+    (lotus.projection) = "first(abs(amount1) / abs(amount0), ts)",
+    (lotus.numeric) = {}
+  ];
+  string high_price = 4 [
+    (lotus.projection) = "max(abs(amount1) / abs(amount0))",
+    (lotus.numeric) = {}
+  ];
+  string low_price = 5 [
+    (lotus.projection) = "min(abs(amount1) / abs(amount0))",
+    (lotus.numeric) = {}
+  ];
+  string close_price = 6 [
+    (lotus.projection) = "last(abs(amount1) / abs(amount0), ts)",
+    (lotus.numeric) = {}
+  ];
+  int64 tx_count = 7 [(lotus.projection) = "count(*)"];
+  string volume0_buy = 8 [
+    (lotus.projection) = "sum(case when amount0 < 0 then -amount0 else 0 end)",
+    (lotus.numeric) = {}
+  ];
+  string volume0_sell = 9 [
+    (lotus.projection) = "sum(case when amount0 > 0 then amount0 else 0 end)",
+    (lotus.numeric) = {}
+  ];
+  string volume1_buy = 10 [
+    (lotus.projection) = "sum(case when amount1 < 0 then -amount1 else 0 end)",
+    (lotus.numeric) = {}
+  ];
+  string volume1_sell = 11 [
+    (lotus.projection) = "sum(case when amount1 > 0 then amount1 else 0 end)",
+    (lotus.numeric) = {}
+  ];
+}
