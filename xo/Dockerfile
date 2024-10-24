@@ -10,6 +10,7 @@ RUN git config --global --add url."git@github.com:".insteadOf "https://github.co
 
 WORKDIR /src
 
+
 COPY go.mod .
 COPY go.sum .
 
