@@ -130,7 +130,7 @@ func (s *Source) queryFactory(ctx context.Context, fromBlock int64, toBlock int6
 		default:
 			msg, err := s.ParseFactoryLog(ctx, vLog, false, nil, nil)
 			if err != nil {
-				log.Error().Err(err).Msg("Invalid factory log")
+				log.Error().Err(err).Str("tx", vLog.TxHash.String()).Uint("index", vLog.Index).Msg("Invalid factory log")
 				continue
 			}
 
@@ -165,7 +165,7 @@ func (s *Source) queryPools(ctx context.Context, fromBlock int64, toBlock int64,
 		default:
 			msg, err := s.ParsePoolLog(ctx, vLog)
 			if err != nil {
-				log.Error().Err(err).Msg("Invalid pool log")
+				log.Error().Err(err).Str("tx", vLog.TxHash.String()).Uint("index", vLog.Index).Msg("Invalid pool log")
 				continue
 			}
 
@@ -220,7 +220,7 @@ func (s *Source) subscribeFactory(ctx context.Context, msgCh chan<- proto.Messag
 		case vLog := <-logCh:
 			msg, err := s.ParseFactoryLog(ctx, vLog, true, msgCh, errCh)
 			if err != nil {
-				log.Error().Err(err).Msg("Invalid factory log")
+				log.Error().Err(err).Str("tx", vLog.TxHash.String()).Uint("index", vLog.Index).Msg("Invalid factory log")
 				continue
 			}
 
@@ -247,7 +247,7 @@ func (s *Source) subscribePools(ctx context.Context, pools []ethcommon.Address, 
 		case vLog := <-logCh:
 			msg, err := s.ParsePoolLog(ctx, vLog)
 			if err != nil {
-				log.Error().Err(err).Msg("Invalid pool log")
+				log.Error().Err(err).Str("tx", vLog.TxHash.String()).Uint("index", vLog.Index).Msg("Invalid pool log")
 				continue
 			}
 
