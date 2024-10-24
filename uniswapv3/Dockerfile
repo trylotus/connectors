@@ -25,7 +25,7 @@ ENV CGO_ENABLED=1
 ENV GOFLAGS="-tags=musl"
 
 RUN go mod tidy
-RUN go build -o bin cmd/connector/main.go
+RUN go build -o bin cmd/uniswapv3/main.go
 
 FROM --platform=linux/amd64 alpine:3.20
 
@@ -37,9 +37,9 @@ ENV LOG_LEVEL=debug
 ENV LOG_FORMAT=console
 ENV KAFKA_BROKERS=localhost:9092
 ENV REGISTRY_URL=http://localhost:8081
-ENV RPC_URL=wss://cyber-ws.alt.technology
 
 COPY manifest.yaml .
 COPY --from=builder /src/bin .
+
 
 ENTRYPOINT [ "./bin" ]
