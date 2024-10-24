@@ -35,7 +35,6 @@ type Source struct {
 	client *evm.Client
 	store  *Store
 
-	concurrecy           int64 // Limit mumber of queries can be run concurrently
 	queryPageSize        int64 // Limit number of pools per query
 	subscriptionPageSize int64 // Limit number of pools per subscription
 
@@ -58,7 +57,6 @@ func NewSource(client *evm.Client, store *Store, factoryContractAddr string, opt
 		store:                store,
 		factoryContract:      factoryContract,
 		factoryContractAddr:  ethcommon.HexToAddress(factoryContractAddr),
-		concurrecy:           defaultConcurreny,
 		queryPageSize:        defaultQueryPageSize,
 		subscriptionPageSize: defaultSubscriptionPageSize,
 	}

@@ -10,22 +10,12 @@ type Option func(*Source)
 func WithDefaultOptions() Option {
 	return func(c *Source) {
 		opts := []Option{
-			WithConcurrency(common.EnvInt64("CONCURRENCY", defaultConcurreny)),
 			WithQueryPageSize(common.EnvInt64("QUERY_PAGE_SIZE", defaultQueryPageSize)),
 			WithSubscriptionPageSize(common.EnvInt64("SUB_PAGE_SIZE", defaultSubscriptionPageSize)),
 		}
 		for _, opt := range opts {
 			opt(c)
 		}
-	}
-}
-
-func WithConcurrency(concurrency int64) Option {
-	if concurrency <= 0 {
-		log.Fatal().Msg("concurrency must be positive")
-	}
-	return func(s *Source) {
-		s.concurrecy = concurrency
 	}
 }
 
