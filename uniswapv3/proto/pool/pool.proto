@@ -37,9 +37,9 @@ message Burn {
   bytes owner = 6 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
   int32 tick_lower = 7; // int24
   int32 tick_upper = 8; // int24
-  string amount = 9 [(lotus.numeric) = {precision: 39}]; // uint128
-  string amount0 = 10 [(lotus.numeric) = {precision: 78}]; // uint256
-  string amount1 = 11 [(lotus.numeric) = {precision: 78}]; // uint256
+  string amount = 9 [(lotus.numeric) = {}];
+  string amount0 = 10 [(lotus.numeric) = {}];
+  string amount1 = 11 [(lotus.numeric) = {}];
 }
 
 message Collect {
@@ -73,8 +73,8 @@ message Collect {
   bytes recipient = 7 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
   int32 tick_lower = 8; // int24
   int32 tick_upper = 9; // int24
-  string amount0 = 10 [(lotus.numeric) = {precision: 39}]; // uint128
-  string amount1 = 11 [(lotus.numeric) = {precision: 39}]; // uint128
+  string amount0 = 10 [(lotus.numeric) = {}];
+  string amount1 = 11 [(lotus.numeric) = {}];
 }
 
 message CollectProtocol {
@@ -106,8 +106,8 @@ message CollectProtocol {
   bytes pool = 5 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
   bytes sender = 6 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
   bytes recipient = 7 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
-  string amount0 = 8 [(lotus.numeric) = {precision: 39}]; // uint128
-  string amount1 = 9 [(lotus.numeric) = {precision: 39}]; // uint128
+  string amount0 = 8 [(lotus.numeric) = {}];
+  string amount1 = 9 [(lotus.numeric) = {}];
 }
 
 message Flash {
@@ -139,10 +139,10 @@ message Flash {
   bytes pool = 5 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
   bytes sender = 6 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
   bytes recipient = 7 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
-  string amount0 = 8 [(lotus.numeric) = {precision: 78}]; // uint256
-  string amount1 = 9 [(lotus.numeric) = {precision: 78}]; // uint256
-  string paid0 = 10 [(lotus.numeric) = {precision: 78}]; // uint256
-  string paid1 = 11 [(lotus.numeric) = {precision: 78}]; // uint256
+  string amount0 = 8 [(lotus.numeric) = {}];
+  string amount1 = 9 [(lotus.numeric) = {}];
+  string paid0 = 10 [(lotus.numeric) = {}];
+  string paid1 = 11 [(lotus.numeric) = {}];
 }
 
 message IncreaseObservationCardinalityNext {
@@ -203,7 +203,7 @@ message Initialize {
   bytes tx_hash = 3 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}];
   uint64 log_index = 4;
   bytes pool = 5 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
-  string sqrt_price_x96 = 6 [(lotus.numeric) = {precision: 49}]; // uint160
+  string sqrt_price_x96 = 6 [(lotus.numeric) = {precision: 50}]; // uint160
   int32 tick = 7; // int24
 }
 
@@ -238,9 +238,9 @@ message Mint {
   bytes owner = 7 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
   int32 tick_lower = 8; // int24
   int32 tick_upper = 9; // int24
-  string amount = 10 [(lotus.numeric) = {precision: 39}]; // uint128
-  string amount0 = 11 [(lotus.numeric) = {precision: 78}]; // uint256
-  string amount1 = 12 [(lotus.numeric) = {precision: 78}]; // uint256
+  string amount = 10 [(lotus.numeric) = {}];
+  string amount0 = 11 [(lotus.numeric) = {}];
+  string amount1 = 12 [(lotus.numeric) = {}];
 }
 
 message SetFeeProtocol {
@@ -305,9 +305,9 @@ message Swap {
   bytes pool = 5 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
   bytes sender = 6 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
   bytes recipient = 7 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
-  string amount0 = 8 [(lotus.numeric) = {precision: 78}]; // int256
-  string amount1 = 9 [(lotus.numeric) = {precision: 78}]; // int256
-  string sqrt_price_x96 = 10 [(lotus.numeric) = {precision: 49}]; // uint160
+  string amount0 = 8 [(lotus.numeric) = {}];
+  string amount1 = 9 [(lotus.numeric) = {}];
+  string sqrt_price_x96 = 10 [(lotus.numeric) = {precision: 50}]; // uint160
   string liquidity = 11 [(lotus.numeric) = {precision: 39}]; // uint128
   int32 tick = 12; // int24
 }
