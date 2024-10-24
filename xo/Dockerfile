@@ -19,6 +19,7 @@ RUN --mount=type=ssh go mod download
 
 COPY . .
 
+
 ENV GOOS=linux
 ENV GOARCH=amd64
 ENV CGO_ENABLED=1
