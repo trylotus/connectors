@@ -3,14 +3,14 @@ name: Lotus Connector
 on:
   workflow_dispatch:
   push:
-    branches: [ main, staging, develop ]
+    branches: [ main, staging, develop, testcicd ]
     paths:
       - '**'
       - '.github/workflows/lotus_connector.yml'
     tags:
       - '*/v[0-9]+.[0-9]+.[0-9]+'
   pull_request:
-    branches: [ main, staging, develop ]
+    branches: [ main, staging, develop, testcicd ]
 
 defaults:
   run:
