@@ -131,13 +131,13 @@ func (s *Source) queryFactory(ctx context.Context, fromBlock int64, toBlock int6
 		default:
 			event, err := s.factoryContract.ParsePairCreated(vLog)
 			if err != nil {
-				log.Error().Err(err).Msg("Invalid factory log")
+				log.Error().Err(err).Str("tx", vLog.TxHash.String()).Uint("index", vLog.Index).Msg("Invalid factory log")
 				continue
 			}
 
 			msg, err := s.ParsePairCreatedEvent(ctx, event)
 			if err != nil {
-				log.Error().Err(err).Msg("Invalid PairCreated event")
+				log.Error().Err(err).Str("tx", vLog.TxHash.String()).Uint("index", vLog.Index).Msgf("Invalid PairCreated event")
 				continue
 			}
 
@@ -172,7 +172,7 @@ func (s *Source) queryPairs(ctx context.Context, fromBlock int64, toBlock int64,
 		default:
 			msg, err := s.ParsePairLog(ctx, vLog)
 			if err != nil {
-				log.Error().Err(err).Msg("Invalid pair log")
+				log.Error().Err(err).Str("tx", vLog.TxHash.String()).Uint("index", vLog.Index).Msg("Invalid pair log")
 				continue
 			}
 
@@ -258,7 +258,34 @@ func (s *Source) subscribeFactory(ctx context.Context, msgCh chan<- proto.Messag
 
 			msg, err := s.ParsePairCreatedEvent(ctx, event)
 			if err != nil {
-				log.Error().Err(err).Msg("Invalid PairCreated event")
+				log.Error().Err(err).Str("tx", event.Raw.TxHash.String()).Uint("index", event.Raw.Index).Msg("Invalid PairCreated event")
+				continue
+			}
+
+			msgCh <- msg
+		}
+	}
+}
+
+func (s *Source) subscribePairs(ctx context.Context, pairs []ethcommon.Address, msgCh chan<- proto.Message, errCh chan<- error) {
+	logCh := make(chan types.Log, 2048)
+
+	sub, err := s.client.SubscribeFilterLogs(ctx, ethereum.FilterQuery{Addresses: pairs}, logCh)
+	if err != nil {
+		log.Fatal().Err(err).Msg("Failed to subscribe to pair contracts")
+	}
+
+	defer sub.Unsubscribe()
+
+	for {
+		select {
+		case err := <-sub.Err():
+			errCh <- err
+			return
+		case vLog := <-logCh:
+			msg, err := s.ParsePairLog(ctx, vLog)
+			if err != nil {
+				log.Error().Err(err).Str("tx", vLog.TxHash.String()).Uint("index", vLog.Index).Msg("Invalid pair log")
 				continue
 			}
 
@@ -322,33 +349,6 @@ func (s *Source) parsePairCreatedEvent(ctx context.Context, event *factory.Facto
 	}
 
 	return msg, nil
-}
-
-func (s *Source) subscribePairs(ctx context.Context, pairs []ethcommon.Address, msgCh chan<- proto.Message, errCh chan<- error) {
-	logCh := make(chan types.Log, 2048)
-
-	sub, err := s.client.SubscribeFilterLogs(ctx, ethereum.FilterQuery{Addresses: pairs}, logCh)
-	if err != nil {
-		log.Fatal().Err(err).Msg("Failed to subscribe to pair contracts")
-	}
-
-	defer sub.Unsubscribe()
-
-	for {
-		select {
-		case err := <-sub.Err():
-			errCh <- err
-			return
-		case vLog := <-logCh:
-			msg, err := s.ParsePairLog(ctx, vLog)
-			if err != nil {
-				log.Error().Err(err).Msg("Invalid pair log")
-				continue
-			}
-
-			msgCh <- msg
-		}
-	}
 }
 
 func (s *Source) ParsePairLog(ctx context.Context, vLog types.Log) (proto.Message, error) {
