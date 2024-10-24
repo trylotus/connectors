@@ -42,4 +42,5 @@ ENV RPC_URL=wss://cyber-ws.alt.technology
 COPY manifest.yaml .
 COPY --from=builder /src/bin .
 
+
 ENTRYPOINT [ "./bin" ]
