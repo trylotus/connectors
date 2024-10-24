@@ -42,4 +42,5 @@ COPY manifest.yaml .
 COPY --from=builder /src/bin .
 
 
+
 ENTRYPOINT [ "./bin" ]
