@@ -119,6 +119,10 @@ func (s *Source) queryFactory(ctx context.Context, fromBlock int64, toBlock int6
 		case <-ctx.Done():
 			return nil, ctx.Err()
 		default:
+			if vLog.Removed {
+				continue
+			}
+
 			event, err := s.factoryContract.ParsePairCreated(vLog)
 			if err != nil {
 				log.Error().Err(err).Str("tx", vLog.TxHash.String()).Uint("index", vLog.Index).Msg("Invalid factory log")
@@ -160,6 +164,10 @@ func (s *Source) queryPairs(ctx context.Context, fromBlock int64, toBlock int64,
 		case <-ctx.Done():
 			return nil, ctx.Err()
 		default:
+			if vLog.Removed {
+				continue
+			}
+
 			msg, err := s.ParsePairLog(ctx, vLog)
 			if err != nil {
 				log.Error().Err(err).Str("tx", vLog.TxHash.String()).Uint("index", vLog.Index).Msg("Invalid pair log")
@@ -214,6 +222,10 @@ func (s *Source) subscribeFactory(ctx context.Context, msgCh chan<- proto.Messag
 			errCh <- err
 			return
 		case event := <-ch:
+			if event.Raw.Removed {
+				continue
+			}
+
 			log.Info().Str("number", event.Arg3.String()).Str("address", event.Pair.String()).Msg("New pair created")
 
 			pair := &Pair{
@@ -271,6 +283,10 @@ func (s *Source) subscribePairs(ctx context.Context, pairs []ethcommon.Address, 
 			errCh <- err
 			return
 		case vLog := <-logCh:
+			if vLog.Removed {
+				continue
+			}
+
 			msg, err := s.ParsePairLog(ctx, vLog)
 			if err != nil {
 				log.Error().Err(err).Str("tx", vLog.TxHash.String()).Uint("index", vLog.Index).Msg("Invalid pair log")
@@ -694,6 +710,10 @@ func (s *Source) loadPairsFromRPC(ctx context.Context, from uint64, to uint64) {
 	for it.Next() {
 		if err := it.Error(); err != nil {
 			log.Fatal().Err(err).Uint64("from", from).Uint64("to", to).Msg("Failed to load pairs from RPC")
+		}
+
+		if it.Event.Raw.Removed {
+			continue
 		}
 
 		s.pairAddrs = append(s.pairAddrs, it.Event.Pair)
