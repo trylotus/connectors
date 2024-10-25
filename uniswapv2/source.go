@@ -41,6 +41,9 @@ type Source struct {
 	pairAddrs   []ethcommon.Address
 
 	factoryContract *factory.Factory
+
+	pairCacheLock  *common.LockSet[ethcommon.Address]
+	tokenCacheLock *common.LockSet[ethcommon.Address]
 }
 
 var _ connector.Source = (*Source)(nil)
@@ -52,6 +55,8 @@ func NewSource(client *evm.Client, store *Store, factoryContractAddr string, opt
 		factoryAddr:          ethcommon.HexToAddress(factoryContractAddr),
 		queryPageSize:        defaultQueryPageSize,
 		subscriptionPageSize: defaultSubscriptionPageSize,
+		pairCacheLock:        common.NewLockSet[ethcommon.Address](),
+		tokenCacheLock:       common.NewLockSet[ethcommon.Address](),
 	}
 
 	for _, opt := range opts {
@@ -71,14 +76,10 @@ func (s *Source) BlockNumber(ctx context.Context) (int64, error) {
 }
 
 func (s *Source) Query(ctx context.Context, fromBlock int64, toBlock int64) ([]proto.Message, error) {
-	var results []proto.Message
-
-	msgs, err := s.queryFactory(ctx, fromBlock, toBlock)
+	msgs, err := s.queryFactory(ctx, fromBlock, toBlock, nil)
 	if err != nil {
 		return nil, err
 	}
-
-	results = append(results, msgs...)
 
 	for i := 0; i < len(s.pairAddrs); i += int(s.queryPageSize) {
 		j := i + int(s.queryPageSize)
@@ -86,18 +87,17 @@ func (s *Source) Query(ctx context.Context, fromBlock int64, toBlock int64) ([]p
 			j = len(s.pairAddrs)
 		}
 
-		msgs, err := s.queryPairs(ctx, fromBlock, toBlock, s.pairAddrs[i:j])
+		msgs, err = s.queryPairs(ctx, fromBlock, toBlock, s.pairAddrs[i:j], msgs)
 		if err != nil {
 			return nil, err
 		}
 
-		results = append(results, msgs...)
 	}
 
-	return results, nil
+	return msgs, nil
 }
 
-func (s *Source) queryFactory(ctx context.Context, fromBlock int64, toBlock int64) ([]proto.Message, error) {
+func (s *Source) queryFactory(ctx context.Context, fromBlock int64, toBlock int64, results []proto.Message) ([]proto.Message, error) {
 	filter := ethereum.FilterQuery{
 		Addresses: []ethcommon.Address{s.factoryAddr},
 		FromBlock: big.NewInt(fromBlock),
@@ -111,8 +111,6 @@ func (s *Source) queryFactory(ctx context.Context, fromBlock int64, toBlock int6
 	if err != nil {
 		return nil, err
 	}
-
-	msgs := make([]proto.Message, 0, len(logs))
 
 	for _, vLog := range logs {
 		select {
@@ -135,14 +133,14 @@ func (s *Source) queryFactory(ctx context.Context, fromBlock int64, toBlock int6
 				continue
 			}
 
-			msgs = append(msgs, msg)
+			results = append(results, msg)
 		}
 	}
 
-	return msgs, nil
+	return results, nil
 }
 
-func (s *Source) queryPairs(ctx context.Context, fromBlock int64, toBlock int64, pairs []ethcommon.Address) ([]proto.Message, error) {
+func (s *Source) queryPairs(ctx context.Context, fromBlock int64, toBlock int64, pairs []ethcommon.Address, results []proto.Message) ([]proto.Message, error) {
 	filter := ethereum.FilterQuery{
 		Addresses: pairs,
 		FromBlock: big.NewInt(fromBlock),
@@ -156,8 +154,6 @@ func (s *Source) queryPairs(ctx context.Context, fromBlock int64, toBlock int64,
 	if err != nil {
 		return nil, err
 	}
-
-	msgs := make([]proto.Message, 0, len(logs))
 
 	for _, vLog := range logs {
 		select {
@@ -174,11 +170,11 @@ func (s *Source) queryPairs(ctx context.Context, fromBlock int64, toBlock int64,
 				continue
 			}
 
-			msgs = append(msgs, msg)
+			results = append(results, msg)
 		}
 	}
 
-	return msgs, nil
+	return results, nil
 }
 
 func (s *Source) Subscribe(ctx context.Context, msgCh chan<- proto.Message, errCh chan<- error) {
@@ -243,7 +239,7 @@ func (s *Source) subscribeFactory(ctx context.Context, msgCh chan<- proto.Messag
 				subCtx, cancel := context.WithTimeout(ctx, 3*time.Minute)
 				defer cancel()
 
-				msgs, err := s.queryPairs(subCtx, int64(event.Raw.BlockNumber), 0, []ethcommon.Address{event.Pair})
+				msgs, err := s.queryPairs(subCtx, int64(event.Raw.BlockNumber), 0, []ethcommon.Address{event.Pair}, nil)
 				if err != nil {
 					errCh <- err
 					return
@@ -379,16 +375,9 @@ func (s *Source) parsePairLog(ctx context.Context, vLog types.Log) (proto.Messag
 		return nil, fmt.Errorf("error unpacking pair log: %w", err)
 	}
 
-	p, err := s.store.GetPair(ctx, vLog.Address.String())
+	p, err := s.GetPair(ctx, vLog.Address)
 	if err != nil {
-		log.Warn().Err(err).Str("address", vLog.Address.String()).Msg("Failed to get pair from store")
-	}
-
-	if p == nil {
-		p, err = s.GetPair(ctx, vLog.Address)
-		if err != nil {
-			return nil, fmt.Errorf("error getting pair %s from RPC: %w", vLog.Address, err)
-		}
+		return nil, fmt.Errorf("error getting pair %s: %w", vLog.Address, err)
 	}
 
 	switch event := event.(type) {
@@ -549,6 +538,9 @@ func (s *Source) FilterLogs(ctx context.Context, q ethereum.FilterQuery) ([]type
 }
 
 func (s *Source) GetToken(ctx context.Context, address ethcommon.Address) (*Token, error) {
+	s.tokenCacheLock.Lock(address)
+	defer s.tokenCacheLock.Unlock(address)
+
 	token, err := s.store.GetToken(ctx, address.String())
 	if err != nil {
 		return nil, err
@@ -557,13 +549,13 @@ func (s *Source) GetToken(ctx context.Context, address ethcommon.Address) (*Toke
 		return token, nil
 	}
 
-	retryCtx := common.ContextWithConditionalRetry(ctx, evm.IsRetryableError)
-	retryCtx = common.ContextWithFuncName(retryCtx, "GetToken")
+	retryCtx := common.ContextWithFuncName(ctx, "GetTokenFromRpc")
+	retryCtx = common.ContextWithOptionalRetry(retryCtx)
 
 	token, err = common.RetryT(retryCtx, func() (*Token, error) {
 		subCtx, cancel := context.WithTimeout(ctx, 10*time.Second)
 		defer cancel()
-		return s.getToken(subCtx, address)
+		return s.getTokenFromRpc(subCtx, address)
 	})
 	if err != nil {
 		return nil, err
@@ -576,7 +568,7 @@ func (s *Source) GetToken(ctx context.Context, address ethcommon.Address) (*Toke
 	return token, nil
 }
 
-func (s *Source) getToken(ctx context.Context, address ethcommon.Address) (*Token, error) {
+func (s *Source) getTokenFromRpc(ctx context.Context, address ethcommon.Address) (*Token, error) {
 	tokenContract, err := erc20.NewErc20(address, s.client)
 	if err != nil {
 		return nil, err
@@ -606,17 +598,37 @@ func (s *Source) getToken(ctx context.Context, address ethcommon.Address) (*Toke
 }
 
 func (s *Source) GetPair(ctx context.Context, address ethcommon.Address) (*Pair, error) {
-	retryCtx := common.ContextWithConditionalRetry(ctx, evm.IsRetryableError)
-	retryCtx = common.ContextWithFuncName(retryCtx, "GetPair")
+	s.pairCacheLock.Lock(address)
+	defer s.pairCacheLock.Unlock(address)
 
-	return common.RetryT(retryCtx, func() (*Pair, error) {
+	p, err := s.store.GetPair(ctx, address.String())
+	if err != nil {
+		return nil, err
+	}
+	if p != nil {
+		return p, nil
+	}
+
+	retryCtx := common.ContextWithFuncName(ctx, "GetPairFromRpc")
+	retryCtx = common.ContextWithOptionalRetry(retryCtx)
+
+	p, err = common.RetryT(retryCtx, func() (*Pair, error) {
 		subCtx, cancel := context.WithTimeout(ctx, 10*time.Second)
 		defer cancel()
-		return s.getPair(subCtx, address)
+		return s.getPairFromRpc(subCtx, address)
 	})
+	if err != nil {
+		return nil, err
+	}
+
+	if err := s.store.AddPair(ctx, p); err != nil {
+		log.Error().Err(err).Str("address", p.Address).Msg("Failed to add pair to store")
+	}
+
+	return p, nil
 }
 
-func (s *Source) getPair(ctx context.Context, address ethcommon.Address) (*Pair, error) {
+func (s *Source) getPairFromRpc(ctx context.Context, address ethcommon.Address) (*Pair, error) {
 	pairContract, err := pair.NewPair(address, s.client)
 	if err != nil {
 		return nil, err
