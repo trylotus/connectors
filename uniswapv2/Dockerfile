@@ -43,5 +43,4 @@ ENV REGISTRY_URL=http://localhost:8081
 COPY manifest.yaml .
 COPY --from=builder /src/bin .
 
-
 ENTRYPOINT [ "./bin" ]
