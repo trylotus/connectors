@@ -65,6 +65,8 @@ func main() {
 
 	go c.RegisterDescriptor(ctx, factory.File_factory_factory_proto, pair.File_pair_pair_proto)
 
+	source.Init(ctx)
+
 	if subscribe {
 		c.Subscribe(ctx)
 	}

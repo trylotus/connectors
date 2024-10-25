@@ -57,6 +57,24 @@ func NewStore(ctx context.Context, dataSource string) (*Store, error) {
 	return &store, nil
 }
 
+func (s *Store) GetScannedBlock(ctx context.Context) (int64, error) {
+	var number int64
+	if err := s.db.GetContext(ctx, &number, "SELECT number from v2_pairs_scanned_block where id = 1"); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return 0, nil
+		}
+		return 0, err
+	}
+
+	return number, nil
+}
+
+func (s *Store) SetScannedBlock(ctx context.Context, number int64) error {
+	_, err := s.db.ExecContext(ctx, "INSERT INTO v2_pairs_scanned_block (id, number) VALUES (1, $1) ON CONFLICT (id) DO UPDATE SET number = EXCLUDED.number", number)
+
+	return err
+}
+
 func (s *Store) AllPairs(ctx context.Context) (<-chan *Pair, <-chan error) {
 	pairCh := make(chan *Pair, 100)
 	errCh := make(chan error, 1)

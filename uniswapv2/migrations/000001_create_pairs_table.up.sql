@@ -6,3 +6,8 @@ CREATE TABLE IF NOT EXISTS v2_pairs (
 );
 
 CREATE UNIQUE INDEX ON v2_pairs (address);
+
+CREATE TABLE IF NOT EXISTS v2_pairs_scanned_block (
+    id INT8 PRIMARY KEY,
+    number INT8 NOT NULL
+);
