@@ -26,7 +26,6 @@ import (
 
 const (
 	blockRangeLimit             = 10000
-	defaultConcurreny           = 5
 	defaultQueryPageSize        = 2048
 	defaultSubscriptionPageSize = 100000
 )
@@ -38,27 +37,26 @@ type Source struct {
 	queryPageSize        int64 // Limit number of pools per query
 	subscriptionPageSize int64 // Limit number of pools per subscription
 
-	factoryContract     *factory.Factory
-	factoryContractAddr ethcommon.Address
-	pools               []ethcommon.Address
-	loadAllPoolsOnce    sync.Once
+	factoryAddr ethcommon.Address
+	poolAddrs   []ethcommon.Address
+
+	factoryContract *factory.Factory
+
+	poolCacheLock  *common.LockSet[ethcommon.Address]
+	tokenCacheLock *common.LockSet[ethcommon.Address]
 }
 
 var _ connector.Source = (*Source)(nil)
 
-func NewSource(client *evm.Client, store *Store, factoryContractAddr string, opts ...Option) connector.Source {
-	factoryContract, err := factory.NewFactory(ethcommon.HexToAddress(factoryContractAddr), client)
-	if err != nil {
-		log.Fatal().Err(err).Str("contract", factoryContractAddr).Msg("Failed to create factory contract")
-	}
-
+func NewSource(client *evm.Client, store *Store, factoryContractAddr string, opts ...Option) *Source {
 	source := &Source{
 		client:               client,
 		store:                store,
-		factoryContract:      factoryContract,
-		factoryContractAddr:  ethcommon.HexToAddress(factoryContractAddr),
+		factoryAddr:          ethcommon.HexToAddress(factoryContractAddr),
 		queryPageSize:        defaultQueryPageSize,
 		subscriptionPageSize: defaultSubscriptionPageSize,
+		poolCacheLock:        common.NewLockSet[ethcommon.Address](),
+		tokenCacheLock:       common.NewLockSet[ethcommon.Address](),
 	}
 
 	for _, opt := range opts {
@@ -78,37 +76,29 @@ func (s *Source) BlockNumber(ctx context.Context) (int64, error) {
 }
 
 func (s *Source) Query(ctx context.Context, fromBlock int64, toBlock int64) ([]proto.Message, error) {
-	var results []proto.Message
-
-	msgs, err := s.queryFactory(ctx, fromBlock, toBlock)
+	msgs, err := s.queryFactory(ctx, fromBlock, toBlock, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	results = append(results, msgs...)
-
-	pools := s.AllPools(ctx)
-
-	for i := 0; i < len(pools); i += int(s.queryPageSize) {
+	for i := 0; i < len(s.poolAddrs); i += int(s.queryPageSize) {
 		j := i + int(s.queryPageSize)
-		if j > len(pools) {
-			j = len(pools)
+		if j > len(s.poolAddrs) {
+			j = len(s.poolAddrs)
 		}
 
-		msgs, err := s.queryPools(ctx, fromBlock, toBlock, pools[i:j])
+		msgs, err = s.queryPools(ctx, fromBlock, toBlock, s.poolAddrs[i:j], msgs)
 		if err != nil {
 			return nil, err
 		}
-
-		results = append(results, msgs...)
 	}
 
-	return results, nil
+	return msgs, nil
 }
 
-func (s *Source) queryFactory(ctx context.Context, fromBlock int64, toBlock int64) ([]proto.Message, error) {
+func (s *Source) queryFactory(ctx context.Context, fromBlock int64, toBlock int64, results []proto.Message) ([]proto.Message, error) {
 	filter := ethereum.FilterQuery{
-		Addresses: []ethcommon.Address{s.factoryContractAddr},
+		Addresses: []ethcommon.Address{s.factoryAddr},
 		FromBlock: big.NewInt(fromBlock),
 	}
 
@@ -121,27 +111,29 @@ func (s *Source) queryFactory(ctx context.Context, fromBlock int64, toBlock int6
 		return nil, err
 	}
 
-	msgs := make([]proto.Message, 0, len(logs))
-
 	for _, vLog := range logs {
 		select {
 		case <-ctx.Done():
 			return nil, ctx.Err()
 		default:
+			if vLog.Removed {
+				continue
+			}
+
 			msg, err := s.ParseFactoryLog(ctx, vLog, false, nil, nil)
 			if err != nil {
 				log.Error().Err(err).Str("tx", vLog.TxHash.String()).Uint("index", vLog.Index).Msg("Invalid factory log")
 				continue
 			}
 
-			msgs = append(msgs, msg)
+			results = append(results, msg)
 		}
 	}
 
-	return msgs, nil
+	return results, nil
 }
 
-func (s *Source) queryPools(ctx context.Context, fromBlock int64, toBlock int64, pools []ethcommon.Address) ([]proto.Message, error) {
+func (s *Source) queryPools(ctx context.Context, fromBlock int64, toBlock int64, pools []ethcommon.Address, results []proto.Message) ([]proto.Message, error) {
 	filter := ethereum.FilterQuery{
 		Addresses: pools,
 		FromBlock: big.NewInt(fromBlock),
@@ -156,24 +148,26 @@ func (s *Source) queryPools(ctx context.Context, fromBlock int64, toBlock int64,
 		return nil, err
 	}
 
-	msgs := make([]proto.Message, 0, len(logs))
-
 	for _, vLog := range logs {
 		select {
 		case <-ctx.Done():
 			return nil, ctx.Err()
 		default:
+			if vLog.Removed {
+				continue
+			}
+
 			msg, err := s.ParsePoolLog(ctx, vLog)
 			if err != nil {
 				log.Error().Err(err).Str("tx", vLog.TxHash.String()).Uint("index", vLog.Index).Msg("Invalid pool log")
 				continue
 			}
 
-			msgs = append(msgs, msg)
+			results = append(results, msg)
 		}
 	}
 
-	return msgs, nil
+	return results, nil
 }
 
 func (s *Source) Subscribe(ctx context.Context, msgCh chan<- proto.Message, errCh chan<- error) {
@@ -185,17 +179,15 @@ func (s *Source) Subscribe(ctx context.Context, msgCh chan<- proto.Message, errC
 		s.subscribeFactory(ctx, msgCh, errCh)
 	}()
 
-	pools := s.AllPools(ctx)
-
-	for i := 0; i < len(pools); i += int(s.subscriptionPageSize) {
+	for i := 0; i < len(s.poolAddrs); i += int(s.subscriptionPageSize) {
 		j := i + int(s.subscriptionPageSize)
-		if j > len(pools) {
-			j = len(pools)
+		if j > len(s.poolAddrs) {
+			j = len(s.poolAddrs)
 		}
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			s.subscribePools(ctx, pools[i:j], msgCh, errCh)
+			s.subscribePools(ctx, s.poolAddrs[i:j], msgCh, errCh)
 		}()
 	}
 
@@ -205,7 +197,7 @@ func (s *Source) Subscribe(ctx context.Context, msgCh chan<- proto.Message, errC
 func (s *Source) subscribeFactory(ctx context.Context, msgCh chan<- proto.Message, errCh chan<- error) {
 	logCh := make(chan types.Log, 2048)
 
-	sub, err := s.client.SubscribeFilterLogs(ctx, ethereum.FilterQuery{Addresses: []ethcommon.Address{s.factoryContractAddr}}, logCh)
+	sub, err := s.client.SubscribeFilterLogs(ctx, ethereum.FilterQuery{Addresses: []ethcommon.Address{s.factoryAddr}}, logCh)
 	if err != nil {
 		log.Fatal().Err(err).Msg("Failed to subscribe to factory contract")
 	}
@@ -218,6 +210,10 @@ func (s *Source) subscribeFactory(ctx context.Context, msgCh chan<- proto.Messag
 			errCh <- err
 			return
 		case vLog := <-logCh:
+			if vLog.Removed {
+				continue
+			}
+
 			msg, err := s.ParseFactoryLog(ctx, vLog, true, msgCh, errCh)
 			if err != nil {
 				log.Error().Err(err).Str("tx", vLog.TxHash.String()).Uint("index", vLog.Index).Msg("Invalid factory log")
@@ -245,6 +241,10 @@ func (s *Source) subscribePools(ctx context.Context, pools []ethcommon.Address, 
 			errCh <- err
 			return
 		case vLog := <-logCh:
+			if vLog.Removed {
+				continue
+			}
+
 			msg, err := s.ParsePoolLog(ctx, vLog)
 			if err != nil {
 				log.Error().Err(err).Str("tx", vLog.TxHash.String()).Uint("index", vLog.Index).Msg("Invalid pool log")
@@ -306,7 +306,7 @@ func (s *Source) parseFactoryLog(ctx context.Context, vLog types.Log, subscribe 
 				subCtx, cancel := context.WithTimeout(ctx, 3*time.Minute)
 				defer cancel()
 
-				msgs, err := s.queryPools(subCtx, int64(event.Raw.BlockNumber), 0, []ethcommon.Address{event.Pool})
+				msgs, err := s.queryPools(subCtx, int64(event.Raw.BlockNumber), 0, []ethcommon.Address{event.Pool}, nil)
 				if err != nil {
 					errCh <- err
 					return
@@ -384,16 +384,9 @@ func (s *Source) parsePoolLog(ctx context.Context, vLog types.Log) (proto.Messag
 		return nil, fmt.Errorf("error unpacking pool log: %w", err)
 	}
 
-	p, err := s.store.GetPool(ctx, vLog.Address.String())
+	p, err := s.GetPool(ctx, vLog.Address)
 	if err != nil {
-		log.Error().Err(err).Str("address", vLog.Address.String()).Msg("Failed to get pool from store")
-	}
-
-	if p == nil {
-		p, err = s.GetPool(ctx, vLog.Address)
-		if err != nil {
-			return nil, fmt.Errorf("error getting pool %s from RPC: %w", vLog.Address, err)
-		}
+		return nil, fmt.Errorf("error getting pool %s: %w", vLog.Address, err)
 	}
 
 	switch event := event.(type) {
@@ -624,15 +617,10 @@ func (s *Source) FilterLogs(ctx context.Context, q ethereum.FilterQuery) ([]type
 	})
 }
 
-func (s *Source) AllPools(ctx context.Context) []ethcommon.Address {
-	s.loadAllPoolsOnce.Do(func() {
-		s.loadAllPools(ctx)
-	})
-
-	return s.pools
-}
-
 func (s *Source) GetToken(ctx context.Context, address ethcommon.Address) (*Token, error) {
+	s.tokenCacheLock.Lock(address)
+	defer s.tokenCacheLock.Unlock(address)
+
 	token, err := s.store.GetToken(ctx, address.String())
 	if err != nil {
 		return nil, err
@@ -641,13 +629,13 @@ func (s *Source) GetToken(ctx context.Context, address ethcommon.Address) (*Toke
 		return token, nil
 	}
 
-	retryCtx := common.ContextWithConditionalRetry(ctx, evm.IsRetryableError)
-	retryCtx = common.ContextWithFuncName(retryCtx, "GetToken")
+	retryCtx := common.ContextWithFuncName(ctx, "GetTokenFromRpc")
+	retryCtx = common.ContextWithOptionalRetry(retryCtx)
 
 	token, err = common.RetryT(retryCtx, func() (*Token, error) {
 		subCtx, cancel := context.WithTimeout(ctx, 10*time.Second)
 		defer cancel()
-		return s.getToken(subCtx, address)
+		return s.getTokenFromRpc(subCtx, address)
 	})
 	if err != nil {
 		return nil, err
@@ -660,7 +648,7 @@ func (s *Source) GetToken(ctx context.Context, address ethcommon.Address) (*Toke
 	return token, nil
 }
 
-func (s *Source) getToken(ctx context.Context, address ethcommon.Address) (*Token, error) {
+func (s *Source) getTokenFromRpc(ctx context.Context, address ethcommon.Address) (*Token, error) {
 	tokenContract, err := erc20.NewErc20(address, s.client)
 	if err != nil {
 		return nil, err
@@ -690,17 +678,37 @@ func (s *Source) getToken(ctx context.Context, address ethcommon.Address) (*Toke
 }
 
 func (s *Source) GetPool(ctx context.Context, address ethcommon.Address) (*Pool, error) {
-	retryCtx := common.ContextWithConditionalRetry(ctx, evm.IsRetryableError)
-	retryCtx = common.ContextWithFuncName(retryCtx, "GetPool")
+	s.poolCacheLock.Lock(address)
+	defer s.poolCacheLock.Unlock(address)
 
-	return common.RetryT(retryCtx, func() (*Pool, error) {
+	p, err := s.store.GetPool(ctx, address.String())
+	if err != nil {
+		return nil, err
+	}
+	if p != nil {
+		return p, nil
+	}
+
+	retryCtx := common.ContextWithFuncName(ctx, "GetPoolFromRpc")
+	retryCtx = common.ContextWithOptionalRetry(retryCtx)
+
+	p, err = common.RetryT(retryCtx, func() (*Pool, error) {
 		subCtx, cancel := context.WithTimeout(ctx, 10*time.Second)
 		defer cancel()
-		return s.getPool(subCtx, address)
+		return s.getPoolFromRpc(subCtx, address)
 	})
+	if err != nil {
+		return nil, err
+	}
+
+	if err := s.store.AddPool(ctx, p); err != nil {
+		log.Error().Err(err).Str("address", p.Address).Msg("Failed to add pool to store")
+	}
+
+	return p, nil
 }
 
-func (s *Source) getPool(ctx context.Context, address ethcommon.Address) (*Pool, error) {
+func (s *Source) getPoolFromRpc(ctx context.Context, address ethcommon.Address) (*Pool, error) {
 	poolContract, err := pool.NewPool(address, s.client)
 	if err != nil {
 		return nil, err
@@ -735,7 +743,14 @@ func (s *Source) getPool(ctx context.Context, address ethcommon.Address) (*Pool,
 	}, nil
 }
 
-func (s *Source) loadAllPools(ctx context.Context) {
+func (s *Source) Init(ctx context.Context) {
+	factoryContract, err := factory.NewFactory(ethcommon.HexToAddress(s.factoryAddr.String()), s.client)
+	if err != nil {
+		log.Fatal().Err(err).Str("contract", s.factoryAddr.String()).Msg("Failed to create factory contract")
+	}
+
+	s.factoryContract = factoryContract
+
 	log.Info().Msg("Loading all pools")
 
 	s.loadPoolsFromStore(ctx)
@@ -745,21 +760,21 @@ func (s *Source) loadAllPools(ctx context.Context) {
 		log.Fatal().Err(err).Msg("Failed to get scanned block number")
 	}
 
-	blockNumber, err := s.client.BlockNumber(ctx)
+	blockNumber, err := s.BlockNumber(ctx)
 	if err != nil {
 		log.Fatal().Err(err).Msg("Failed to get block number")
 	}
 
-	for i := uint64(scannedBlock); i <= blockNumber; i += blockRangeLimit {
+	for i := scannedBlock; i <= blockNumber; i += blockRangeLimit {
 		j := i + blockRangeLimit - 1
 		if j > blockNumber {
 			j = blockNumber
 		}
 
-		s.loadPoolsFromRPC(ctx, i, j)
+		s.loadPoolsFromRPC(ctx, uint64(i), uint64(j))
 	}
 
-	log.Info().Int("total", len(s.pools)).Msg("Successfully loaded all pools")
+	log.Info().Int("total", len(s.poolAddrs)).Msg("Successfully loaded all pools")
 }
 
 func (s *Source) loadPoolsFromStore(ctx context.Context) {
@@ -768,7 +783,7 @@ func (s *Source) loadPoolsFromStore(ctx context.Context) {
 	poolCh, errCh := s.store.AllPools(ctx)
 
 	for pool := range poolCh {
-		s.pools = append(s.pools, ethcommon.HexToAddress(pool.Address))
+		s.poolAddrs = append(s.poolAddrs, ethcommon.HexToAddress(pool.Address))
 
 		log.Debug().Str("address", pool.Address).Msg("Loaded pool from store")
 	}
@@ -777,7 +792,7 @@ func (s *Source) loadPoolsFromStore(ctx context.Context) {
 		log.Fatal().Err(err).Msg("Failed to load pools from store")
 	}
 
-	log.Info().Int("total", len(s.pools)).Msg("Successfully loaded pools from store")
+	log.Info().Int("total", len(s.poolAddrs)).Msg("Successfully loaded pools from store")
 }
 
 func (s *Source) loadPoolsFromRPC(ctx context.Context, from uint64, to uint64) {
@@ -801,7 +816,11 @@ func (s *Source) loadPoolsFromRPC(ctx context.Context, from uint64, to uint64) {
 			log.Fatal().Err(err).Uint64("from", from).Uint64("to", to).Msg("Failed to load pool from RPC")
 		}
 
-		s.pools = append(s.pools, it.Event.Pool)
+		if it.Event.Raw.Removed {
+			continue
+		}
+
+		s.poolAddrs = append(s.poolAddrs, it.Event.Pool)
 
 		pool := Pool{
 			Address:     it.Event.Pool.String(),
