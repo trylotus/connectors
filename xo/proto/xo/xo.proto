@@ -308,3 +308,4 @@ message SaveStreak {
   bytes user_id = 5 [(lotus.bytes).format = FORMAT_TYPE_HEX];
   string streak = 6 [(lotus.numeric) = {precision: 78}]; // uint256
 }
+
