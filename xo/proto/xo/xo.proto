@@ -117,6 +117,7 @@ message Post {
     ]
   };
 
+
   option (lotus.composite).index = {
     fields: [
       "tx_hash",
