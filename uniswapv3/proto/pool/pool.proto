@@ -20,7 +20,7 @@ message Burn {
   option (lotus.composite).index = {
     fields: [
       "pool",
-      "ts"
+      "t"
     ]
   };
 
@@ -50,7 +50,7 @@ message Collect {
   option (lotus.composite).index = {
     fields: [
       "pool",
-      "ts"
+      "t"
     ]
   };
 
@@ -80,7 +80,7 @@ message CollectProtocol {
   option (lotus.composite).index = {
     fields: [
       "pool",
-      "ts"
+      "t"
     ]
   };
 
@@ -108,7 +108,7 @@ message Flash {
   option (lotus.composite).index = {
     fields: [
       "pool",
-      "ts"
+      "t"
     ]
   };
 
@@ -138,7 +138,7 @@ message IncreaseObservationCardinalityNext {
   option (lotus.composite).index = {
     fields: [
       "pool",
-      "ts"
+      "t"
     ]
   };
 
@@ -164,7 +164,7 @@ message Initialize {
   option (lotus.composite).index = {
     fields: [
       "pool",
-      "ts"
+      "t"
     ]
   };
 
@@ -190,7 +190,7 @@ message Mint {
   option (lotus.composite).index = {
     fields: [
       "pool",
-      "ts"
+      "t"
     ]
   };
 
@@ -221,7 +221,7 @@ message SetFeeProtocol {
   option (lotus.composite).index = {
     fields: [
       "pool",
-      "ts"
+      "t"
     ]
   };
 
@@ -249,7 +249,7 @@ message Swap {
   option (lotus.composite).index = {
     fields: [
       "pool",
-      "ts"
+      "t"
     ]
   };
 
@@ -308,20 +308,22 @@ message Trade1min {
     (lotus.projection) = "last(abs(amount1) / abs(amount0), ts)",
     (lotus.numeric) = {}
   ];
-  int64 tx_count = 7 [(lotus.projection) = "count(*)"];
-  string volume0_buy = 8 [
+  int64 makers = 7 [(lotus.projection) = "count(distinct sender)"];
+  int64 txns_buy = 8 [(lotus.projection) = "sum(case when amount0 < 0 then 1 else 0 end)"];
+  int64 txns_sell = 9 [(lotus.projection) = "sum(case when amount0 > 0 then 1 else 0 end)"];
+  string volume0_buy = 10 [
     (lotus.projection) = "sum(case when amount0 < 0 then -amount0 else 0 end)",
     (lotus.numeric) = {}
   ];
-  string volume0_sell = 9 [
+  string volume0_sell = 11 [
     (lotus.projection) = "sum(case when amount0 > 0 then amount0 else 0 end)",
     (lotus.numeric) = {}
   ];
-  string volume1_buy = 10 [
+  string volume1_buy = 12 [
     (lotus.projection) = "sum(case when amount1 < 0 then -amount1 else 0 end)",
     (lotus.numeric) = {}
   ];
-  string volume1_sell = 11 [
+  string volume1_sell = 13 [
     (lotus.projection) = "sum(case when amount1 > 0 then amount1 else 0 end)",
     (lotus.numeric) = {}
   ];
@@ -368,20 +370,22 @@ message Trade10min {
     (lotus.projection) = "last(abs(amount1) / abs(amount0), ts)",
     (lotus.numeric) = {}
   ];
-  int64 tx_count = 7 [(lotus.projection) = "count(*)"];
-  string volume0_buy = 8 [
+  int64 makers = 7 [(lotus.projection) = "count(distinct sender)"];
+  int64 txns_buy = 8 [(lotus.projection) = "sum(case when amount0 < 0 then 1 else 0 end)"];
+  int64 txns_sell = 9 [(lotus.projection) = "sum(case when amount0 > 0 then 1 else 0 end)"];
+  string volume0_buy = 10 [
     (lotus.projection) = "sum(case when amount0 < 0 then -amount0 else 0 end)",
     (lotus.numeric) = {}
   ];
-  string volume0_sell = 9 [
+  string volume0_sell = 11 [
     (lotus.projection) = "sum(case when amount0 > 0 then amount0 else 0 end)",
     (lotus.numeric) = {}
   ];
-  string volume1_buy = 10 [
+  string volume1_buy = 12 [
     (lotus.projection) = "sum(case when amount1 < 0 then -amount1 else 0 end)",
     (lotus.numeric) = {}
   ];
-  string volume1_sell = 11 [
+  string volume1_sell = 13 [
     (lotus.projection) = "sum(case when amount1 > 0 then amount1 else 0 end)",
     (lotus.numeric) = {}
   ];
@@ -428,20 +432,22 @@ message Trade1h {
     (lotus.projection) = "last(abs(amount1) / abs(amount0), ts)",
     (lotus.numeric) = {}
   ];
-  int64 tx_count = 7 [(lotus.projection) = "count(*)"];
-  string volume0_buy = 8 [
+  int64 makers = 7 [(lotus.projection) = "count(distinct sender)"];
+  int64 txns_buy = 8 [(lotus.projection) = "sum(case when amount0 < 0 then 1 else 0 end)"];
+  int64 txns_sell = 9 [(lotus.projection) = "sum(case when amount0 > 0 then 1 else 0 end)"];
+  string volume0_buy = 10 [
     (lotus.projection) = "sum(case when amount0 < 0 then -amount0 else 0 end)",
     (lotus.numeric) = {}
   ];
-  string volume0_sell = 9 [
+  string volume0_sell = 11 [
     (lotus.projection) = "sum(case when amount0 > 0 then amount0 else 0 end)",
     (lotus.numeric) = {}
   ];
-  string volume1_buy = 10 [
+  string volume1_buy = 12 [
     (lotus.projection) = "sum(case when amount1 < 0 then -amount1 else 0 end)",
     (lotus.numeric) = {}
   ];
-  string volume1_sell = 11 [
+  string volume1_sell = 13 [
     (lotus.projection) = "sum(case when amount1 > 0 then amount1 else 0 end)",
     (lotus.numeric) = {}
   ];
@@ -488,20 +494,22 @@ message Trade1d {
     (lotus.projection) = "last(abs(amount1) / abs(amount0), ts)",
     (lotus.numeric) = {}
   ];
-  int64 tx_count = 7 [(lotus.projection) = "count(*)"];
-  string volume0_buy = 8 [
+  int64 makers = 7 [(lotus.projection) = "count(distinct sender)"];
+  int64 txns_buy = 8 [(lotus.projection) = "sum(case when amount0 < 0 then 1 else 0 end)"];
+  int64 txns_sell = 9 [(lotus.projection) = "sum(case when amount0 > 0 then 1 else 0 end)"];
+  string volume0_buy = 10 [
     (lotus.projection) = "sum(case when amount0 < 0 then -amount0 else 0 end)",
     (lotus.numeric) = {}
   ];
-  string volume0_sell = 9 [
+  string volume0_sell = 11 [
     (lotus.projection) = "sum(case when amount0 > 0 then amount0 else 0 end)",
     (lotus.numeric) = {}
   ];
-  string volume1_buy = 10 [
+  string volume1_buy = 12 [
     (lotus.projection) = "sum(case when amount1 < 0 then -amount1 else 0 end)",
     (lotus.numeric) = {}
   ];
-  string volume1_sell = 11 [
+  string volume1_sell = 13 [
     (lotus.projection) = "sum(case when amount1 > 0 then amount1 else 0 end)",
     (lotus.numeric) = {}
   ];
@@ -548,20 +556,22 @@ message Trade1mon {
     (lotus.projection) = "last(abs(amount1) / abs(amount0), ts)",
     (lotus.numeric) = {}
   ];
-  int64 tx_count = 7 [(lotus.projection) = "count(*)"];
-  string volume0_buy = 8 [
+  int64 makers = 7 [(lotus.projection) = "count(distinct sender)"];
+  int64 txns_buy = 8 [(lotus.projection) = "sum(case when amount0 < 0 then 1 else 0 end)"];
+  int64 txns_sell = 9 [(lotus.projection) = "sum(case when amount0 > 0 then 1 else 0 end)"];
+  string volume0_buy = 10 [
     (lotus.projection) = "sum(case when amount0 < 0 then -amount0 else 0 end)",
     (lotus.numeric) = {}
   ];
-  string volume0_sell = 9 [
+  string volume0_sell = 11 [
     (lotus.projection) = "sum(case when amount0 > 0 then amount0 else 0 end)",
     (lotus.numeric) = {}
   ];
-  string volume1_buy = 10 [
+  string volume1_buy = 12 [
     (lotus.projection) = "sum(case when amount1 < 0 then -amount1 else 0 end)",
     (lotus.numeric) = {}
   ];
-  string volume1_sell = 11 [
+  string volume1_sell = 13 [
     (lotus.projection) = "sum(case when amount1 > 0 then amount1 else 0 end)",
     (lotus.numeric) = {}
   ];
@@ -608,20 +618,22 @@ message Trade1y {
     (lotus.projection) = "last(abs(amount1) / abs(amount0), ts)",
     (lotus.numeric) = {}
   ];
-  int64 tx_count = 7 [(lotus.projection) = "count(*)"];
-  string volume0_buy = 8 [
+  int64 makers = 7 [(lotus.projection) = "count(distinct sender)"];
+  int64 txns_buy = 8 [(lotus.projection) = "sum(case when amount0 < 0 then 1 else 0 end)"];
+  int64 txns_sell = 9 [(lotus.projection) = "sum(case when amount0 > 0 then 1 else 0 end)"];
+  string volume0_buy = 10 [
     (lotus.projection) = "sum(case when amount0 < 0 then -amount0 else 0 end)",
     (lotus.numeric) = {}
   ];
-  string volume0_sell = 9 [
+  string volume0_sell = 11 [
     (lotus.projection) = "sum(case when amount0 > 0 then amount0 else 0 end)",
     (lotus.numeric) = {}
   ];
-  string volume1_buy = 10 [
+  string volume1_buy = 12 [
     (lotus.projection) = "sum(case when amount1 < 0 then -amount1 else 0 end)",
     (lotus.numeric) = {}
   ];
-  string volume1_sell = 11 [
+  string volume1_sell = 13 [
     (lotus.projection) = "sum(case when amount1 > 0 then amount1 else 0 end)",
     (lotus.numeric) = {}
   ];
