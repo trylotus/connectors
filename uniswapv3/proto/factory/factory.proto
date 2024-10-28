@@ -11,7 +11,7 @@ message FeeAmountEnabled {
   option (lotus.composite).index = {
     unique: true
     fields: [
-      "block_number",
+      "tx_hash",
       "log_index",
       "ts"
     ]
@@ -19,10 +19,7 @@ message FeeAmountEnabled {
 
   google.protobuf.Timestamp ts = 1;
   uint64 block_number = 2 [(lotus.index) = {}];
-  bytes tx_hash = 3 [
-    (lotus.bytes) = {format: FORMAT_TYPE_HEX},
-    (lotus.index) = {}
-  ]; // Hash
+  bytes tx_hash = 3 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Hash
   uint64 log_index = 4;
   uint32 fee = 5; // uint24
   int32 tick_spacing = 6; // int24
@@ -32,7 +29,7 @@ message OwnerChanged {
   option (lotus.composite).index = {
     unique: true
     fields: [
-      "block_number",
+      "tx_hash",
       "log_index",
       "ts"
     ]
@@ -40,10 +37,7 @@ message OwnerChanged {
 
   google.protobuf.Timestamp ts = 1;
   uint64 block_number = 2 [(lotus.index) = {}];
-  bytes tx_hash = 3 [
-    (lotus.bytes) = {format: FORMAT_TYPE_HEX},
-    (lotus.index) = {}
-  ]; // Hash
+  bytes tx_hash = 3 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Hash
   uint64 log_index = 4;
   bytes old_owner = 5 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
   bytes new_owner = 6 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
@@ -53,7 +47,7 @@ message PoolCreated {
   option (lotus.composite).index = {
     unique: true
     fields: [
-      "block_number",
+      "tx_hash",
       "log_index",
       "ts"
     ]
@@ -69,10 +63,7 @@ message PoolCreated {
 
   google.protobuf.Timestamp ts = 1;
   uint64 block_number = 2 [(lotus.index) = {}];
-  bytes tx_hash = 3 [
-    (lotus.bytes) = {format: FORMAT_TYPE_HEX},
-    (lotus.index) = {}
-  ]; // Hash
+  bytes tx_hash = 3 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Hash
   uint64 log_index = 4;
   bytes token0 = 5 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
   bytes token1 = 6 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
