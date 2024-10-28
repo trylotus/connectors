@@ -12,24 +12,20 @@ message PaidDM {
     unique: true
     fields: [
       "ts",
-      "tx_hash",
-      "log_index"
-    ]
-  };
-
-  option (lotus.composite).index = {
-    fields: [
-      "tx_hash",
+      "block_number",
       "log_index"
     ]
   };
 
   google.protobuf.Timestamp ts = 1;
   uint64 block_number = 2 [(lotus.index) = {}];
-  bytes tx_hash = 3 [(lotus.bytes).format = FORMAT_TYPE_HEX];
+  bytes tx_hash = 3 [
+    (lotus.bytes).format = FORMAT_TYPE_HEX,
+    (lotus.index) = {}
+  ]; // Hash
   uint64 log_index = 4;
-  bytes user_id = 5 [(lotus.bytes).format = FORMAT_TYPE_HEX];
-  bytes denom = 6 [(lotus.bytes).format = FORMAT_TYPE_HEX];
+  bytes user_id = 5 [(lotus.bytes).format = FORMAT_TYPE_HEX]; // Hash
+  bytes denom = 6 [(lotus.bytes).format = FORMAT_TYPE_HEX]; // Hash
   string amount = 7 [(lotus.numeric) = {precision: 78}]; // uint256
 }
 
@@ -38,21 +34,17 @@ message RoleAdminChanged {
     unique: true
     fields: [
       "ts",
-      "tx_hash",
-      "log_index"
-    ]
-  };
-
-  option (lotus.composite).index = {
-    fields: [
-      "tx_hash",
+      "block_number",
       "log_index"
     ]
   };
 
   google.protobuf.Timestamp ts = 1;
   uint64 block_number = 2 [(lotus.index) = {}];
-  bytes tx_hash = 3 [(lotus.bytes).format = FORMAT_TYPE_HEX];
+  bytes tx_hash = 3 [
+    (lotus.bytes).format = FORMAT_TYPE_HEX,
+    (lotus.index) = {}
+  ]; // Hash
   uint64 log_index = 4;
   bytes role = 5;
   bytes previous_admin_role = 6;
@@ -64,23 +56,19 @@ message SBTUpdated {
     unique: true
     fields: [
       "ts",
-      "tx_hash",
-      "log_index"
-    ]
-  };
-
-  option (lotus.composite).index = {
-    fields: [
-      "tx_hash",
+      "block_number",
       "log_index"
     ]
   };
 
   google.protobuf.Timestamp ts = 1;
   uint64 block_number = 2 [(lotus.index) = {}];
-  bytes tx_hash = 3 [(lotus.bytes).format = FORMAT_TYPE_HEX];
+  bytes tx_hash = 3 [
+    (lotus.bytes).format = FORMAT_TYPE_HEX,
+    (lotus.index) = {}
+  ]; // Hash
   uint64 log_index = 4;
-  bytes post_id = 5 [(lotus.bytes).format = FORMAT_TYPE_HEX];
+  bytes post_id = 5 [(lotus.bytes).format = FORMAT_TYPE_HEX]; // Hash
 }
 
 message NewGoodVibes {
@@ -88,23 +76,19 @@ message NewGoodVibes {
     unique: true
     fields: [
       "ts",
-      "tx_hash",
-      "log_index"
-    ]
-  };
-
-  option (lotus.composite).index = {
-    fields: [
-      "tx_hash",
+      "block_number",
       "log_index"
     ]
   };
 
   google.protobuf.Timestamp ts = 1;
   uint64 block_number = 2 [(lotus.index) = {}];
-  bytes tx_hash = 3 [(lotus.bytes).format = FORMAT_TYPE_HEX];
+  bytes tx_hash = 3 [
+    (lotus.bytes).format = FORMAT_TYPE_HEX,
+    (lotus.index) = {}
+  ]; // Hash
   uint64 log_index = 4;
-  bytes post_id = 5 [(lotus.bytes).format = FORMAT_TYPE_HEX];
+  bytes post_id = 5 [(lotus.bytes).format = FORMAT_TYPE_HEX]; // Hash
 }
 
 message Post {
@@ -112,24 +96,20 @@ message Post {
     unique: true
     fields: [
       "ts",
-      "tx_hash",
-      "log_index"
-    ]
-  };
-
-  option (lotus.composite).index = {
-    fields: [
-      "tx_hash",
+      "block_number",
       "log_index"
     ]
   };
 
   google.protobuf.Timestamp ts = 1;
   uint64 block_number = 2 [(lotus.index) = {}];
-  bytes tx_hash = 3 [(lotus.bytes).format = FORMAT_TYPE_HEX];
+  bytes tx_hash = 3 [
+    (lotus.bytes).format = FORMAT_TYPE_HEX,
+    (lotus.index) = {}
+  ]; // Hash
   uint64 log_index = 4;
-  bytes poster = 5 [(lotus.bytes).format = FORMAT_TYPE_HEX];
-  bytes post_id = 6 [(lotus.bytes).format = FORMAT_TYPE_HEX];
+  bytes poster = 5 [(lotus.bytes).format = FORMAT_TYPE_HEX]; // Address
+  bytes post_id = 6 [(lotus.bytes).format = FORMAT_TYPE_HEX]; // Hash
 }
 
 message RoleGranted {
@@ -137,25 +117,21 @@ message RoleGranted {
     unique: true
     fields: [
       "ts",
-      "tx_hash",
-      "log_index"
-    ]
-  };
-
-  option (lotus.composite).index = {
-    fields: [
-      "tx_hash",
+      "block_number",
       "log_index"
     ]
   };
 
   google.protobuf.Timestamp ts = 1;
   uint64 block_number = 2 [(lotus.index) = {}];
-  bytes tx_hash = 3 [(lotus.bytes).format = FORMAT_TYPE_HEX];
+  bytes tx_hash = 3 [
+    (lotus.bytes).format = FORMAT_TYPE_HEX,
+    (lotus.index) = {}
+  ]; // Hash
   uint64 log_index = 4;
   bytes role = 5;
-  bytes account = 6 [(lotus.bytes).format = FORMAT_TYPE_HEX];
-  bytes sender = 7 [(lotus.bytes).format = FORMAT_TYPE_HEX];
+  bytes account = 6 [(lotus.bytes).format = FORMAT_TYPE_HEX]; // Address
+  bytes sender = 7 [(lotus.bytes).format = FORMAT_TYPE_HEX]; // Address
 }
 
 message Initialized {
@@ -163,21 +139,17 @@ message Initialized {
     unique: true
     fields: [
       "ts",
-      "tx_hash",
-      "log_index"
-    ]
-  };
-
-  option (lotus.composite).index = {
-    fields: [
-      "tx_hash",
+      "block_number",
       "log_index"
     ]
   };
 
   google.protobuf.Timestamp ts = 1;
   uint64 block_number = 2 [(lotus.index) = {}];
-  bytes tx_hash = 3 [(lotus.bytes).format = FORMAT_TYPE_HEX];
+  bytes tx_hash = 3 [
+    (lotus.bytes).format = FORMAT_TYPE_HEX,
+    (lotus.index) = {}
+  ]; // Hash
   uint64 log_index = 4;
   uint64 version = 5;
 }
@@ -187,24 +159,20 @@ message NewMutualLike {
     unique: true
     fields: [
       "ts",
-      "tx_hash",
-      "log_index"
-    ]
-  };
-
-  option (lotus.composite).index = {
-    fields: [
-      "tx_hash",
+      "block_number",
       "log_index"
     ]
   };
 
   google.protobuf.Timestamp ts = 1;
   uint64 block_number = 2 [(lotus.index) = {}];
-  bytes tx_hash = 3 [(lotus.bytes).format = FORMAT_TYPE_HEX];
+  bytes tx_hash = 3 [
+    (lotus.bytes).format = FORMAT_TYPE_HEX,
+    (lotus.index) = {}
+  ]; // Hash
   uint64 log_index = 4;
-  bytes my_id = 5 [(lotus.bytes).format = FORMAT_TYPE_HEX];
-  bytes target_id = 6 [(lotus.bytes).format = FORMAT_TYPE_HEX];
+  bytes my_id = 5 [(lotus.bytes).format = FORMAT_TYPE_HEX]; // Hash
+  bytes target_id = 6 [(lotus.bytes).format = FORMAT_TYPE_HEX]; // Hash
 }
 
 message RoleRevoked {
@@ -212,25 +180,21 @@ message RoleRevoked {
     unique: true
     fields: [
       "ts",
-      "tx_hash",
-      "log_index"
-    ]
-  };
-
-  option (lotus.composite).index = {
-    fields: [
-      "tx_hash",
+      "block_number",
       "log_index"
     ]
   };
 
   google.protobuf.Timestamp ts = 1;
   uint64 block_number = 2 [(lotus.index) = {}];
-  bytes tx_hash = 3 [(lotus.bytes).format = FORMAT_TYPE_HEX];
+  bytes tx_hash = 3 [
+    (lotus.bytes).format = FORMAT_TYPE_HEX,
+    (lotus.index) = {}
+  ]; // Hash
   uint64 log_index = 4;
   bytes role = 5;
-  bytes account = 6 [(lotus.bytes).format = FORMAT_TYPE_HEX];
-  bytes sender = 7 [(lotus.bytes).format = FORMAT_TYPE_HEX];
+  bytes account = 6 [(lotus.bytes).format = FORMAT_TYPE_HEX]; // Address
+  bytes sender = 7 [(lotus.bytes).format = FORMAT_TYPE_HEX]; // Address
 }
 
 message Swiped {
@@ -238,25 +202,21 @@ message Swiped {
     unique: true
     fields: [
       "ts",
-      "tx_hash",
-      "log_index"
-    ]
-  };
-
-  option (lotus.composite).index = {
-    fields: [
-      "tx_hash",
+      "block_number",
       "log_index"
     ]
   };
 
   google.protobuf.Timestamp ts = 1;
   uint64 block_number = 2 [(lotus.index) = {}];
-  bytes tx_hash = 3 [(lotus.bytes).format = FORMAT_TYPE_HEX];
+  bytes tx_hash = 3 [
+    (lotus.bytes).format = FORMAT_TYPE_HEX,
+    (lotus.index) = {}
+  ]; // Hash
   uint64 log_index = 4;
-  bytes sender = 5 [(lotus.bytes).format = FORMAT_TYPE_HEX];
-  bytes swiped_user_id = 6 [(lotus.bytes).format = FORMAT_TYPE_HEX];
-  bytes card_id = 7 [(lotus.bytes).format = FORMAT_TYPE_HEX];
+  bytes sender = 5 [(lotus.bytes).format = FORMAT_TYPE_HEX]; // Address
+  bytes swiped_user_id = 6 [(lotus.bytes).format = FORMAT_TYPE_HEX]; // Hash
+  bytes card_id = 7 [(lotus.bytes).format = FORMAT_TYPE_HEX]; // Hash
 }
 
 message Streak {
@@ -264,23 +224,19 @@ message Streak {
     unique: true
     fields: [
       "ts",
-      "tx_hash",
-      "log_index"
-    ]
-  };
-
-  option (lotus.composite).index = {
-    fields: [
-      "tx_hash",
+      "block_number",
       "log_index"
     ]
   };
 
   google.protobuf.Timestamp ts = 1;
   uint64 block_number = 2 [(lotus.index) = {}];
-  bytes tx_hash = 3 [(lotus.bytes).format = FORMAT_TYPE_HEX];
+  bytes tx_hash = 3 [
+    (lotus.bytes).format = FORMAT_TYPE_HEX,
+    (lotus.index) = {}
+  ]; // Hash
   uint64 log_index = 4;
-  bytes user_id = 5 [(lotus.bytes).format = FORMAT_TYPE_HEX];
+  bytes user_id = 5 [(lotus.bytes).format = FORMAT_TYPE_HEX]; // Hash
   string streak = 6 [(lotus.numeric) = {precision: 78}]; // uint256
 }
 
@@ -289,22 +245,18 @@ message SaveStreak {
     unique: true
     fields: [
       "ts",
-      "tx_hash",
-      "log_index"
-    ]
-  };
-
-  option (lotus.composite).index = {
-    fields: [
-      "tx_hash",
+      "block_number",
       "log_index"
     ]
   };
 
   google.protobuf.Timestamp ts = 1;
   uint64 block_number = 2 [(lotus.index) = {}];
-  bytes tx_hash = 3 [(lotus.bytes).format = FORMAT_TYPE_HEX];
+  bytes tx_hash = 3 [
+    (lotus.bytes).format = FORMAT_TYPE_HEX,
+    (lotus.index) = {}
+  ]; // Hash
   uint64 log_index = 4;
-  bytes user_id = 5 [(lotus.bytes).format = FORMAT_TYPE_HEX];
+  bytes user_id = 5 [(lotus.bytes).format = FORMAT_TYPE_HEX]; // Hash
   string streak = 6 [(lotus.numeric) = {precision: 78}]; // uint256
 }
