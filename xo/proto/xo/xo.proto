@@ -309,3 +309,4 @@ message SaveStreak {
   string streak = 6 [(lotus.numeric) = {precision: 78}]; // uint256
 }
 
+
