@@ -11,17 +11,12 @@ message Approval {
   option (lotus.composite).index = {
     unique: true
     fields: [
-      "ts",
       "tx_hash",
-      "log_index"
+      "log_index",
+      "ts"
     ]
   };
-  option (lotus.composite).index = {
-    fields: [
-      "tx_hash",
-      "log_index"
-    ]
-  };
+
   option (lotus.composite).index = {
     fields: [
       "pair",
@@ -31,11 +26,11 @@ message Approval {
 
   google.protobuf.Timestamp ts = 1;
   uint64 block_number = 2 [(lotus.index) = {}];
-  bytes tx_hash = 3 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}];
+  bytes tx_hash = 3 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Hash
   uint64 log_index = 4;
-  bytes pair = 5 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}];
-  bytes owner = 6 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}];
-  bytes spender = 7 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}];
+  bytes pair = 5 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
+  bytes owner = 6 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
+  bytes spender = 7 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
   string value = 8 [(lotus.numeric) = {}];
 }
 
@@ -43,17 +38,12 @@ message Burn {
   option (lotus.composite).index = {
     unique: true
     fields: [
-      "ts",
       "tx_hash",
-      "log_index"
+      "log_index",
+      "ts"
     ]
   };
-  option (lotus.composite).index = {
-    fields: [
-      "tx_hash",
-      "log_index"
-    ]
-  };
+
   option (lotus.composite).index = {
     fields: [
       "pair",
@@ -63,30 +53,25 @@ message Burn {
 
   google.protobuf.Timestamp ts = 1;
   uint64 block_number = 2 [(lotus.index) = {}];
-  bytes tx_hash = 3 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}];
+  bytes tx_hash = 3 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Hash
   uint64 log_index = 4;
-  bytes pair = 5 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}];
-  bytes sender = 6 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}];
+  bytes pair = 5 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
+  bytes sender = 6 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
   string amount0 = 7 [(lotus.numeric) = {}];
   string amount1 = 8 [(lotus.numeric) = {}];
-  bytes to = 9 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}];
+  bytes to = 9 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
 }
 
 message Mint {
   option (lotus.composite).index = {
     unique: true
     fields: [
-      "ts",
       "tx_hash",
-      "log_index"
+      "log_index",
+      "ts"
     ]
   };
-  option (lotus.composite).index = {
-    fields: [
-      "tx_hash",
-      "log_index"
-    ]
-  };
+
   option (lotus.composite).index = {
     fields: [
       "pair",
@@ -96,10 +81,10 @@ message Mint {
 
   google.protobuf.Timestamp ts = 1;
   uint64 block_number = 2 [(lotus.index) = {}];
-  bytes tx_hash = 3 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}];
+  bytes tx_hash = 3 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Hash
   uint64 log_index = 4;
-  bytes pair = 5 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}];
-  bytes sender = 6 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}];
+  bytes pair = 5 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
+  bytes sender = 6 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
   string amount0 = 7 [(lotus.numeric) = {}];
   string amount1 = 8 [(lotus.numeric) = {}];
 }
@@ -108,17 +93,12 @@ message Swap {
   option (lotus.composite).index = {
     unique: true
     fields: [
-      "ts",
       "tx_hash",
-      "log_index"
+      "log_index",
+      "ts"
     ]
   };
-  option (lotus.composite).index = {
-    fields: [
-      "tx_hash",
-      "log_index"
-    ]
-  };
+
   option (lotus.composite).index = {
     fields: [
       "pair",
@@ -128,32 +108,27 @@ message Swap {
 
   google.protobuf.Timestamp ts = 1;
   uint64 block_number = 2 [(lotus.index) = {}];
-  bytes tx_hash = 3 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}];
+  bytes tx_hash = 3 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Hash
   uint64 log_index = 4;
-  bytes pair = 5 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}];
-  bytes sender = 6 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}];
+  bytes pair = 5 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
+  bytes sender = 6 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
   string amount0_in = 7 [(lotus.numeric) = {}];
   string amount1_in = 8 [(lotus.numeric) = {}];
   string amount0_out = 9 [(lotus.numeric) = {}];
   string amount1_out = 10 [(lotus.numeric) = {}];
-  bytes to = 11 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}];
+  bytes to = 11 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
 }
 
 message Sync {
   option (lotus.composite).index = {
     unique: true
     fields: [
-      "ts",
       "tx_hash",
-      "log_index"
+      "log_index",
+      "ts"
     ]
   };
-  option (lotus.composite).index = {
-    fields: [
-      "tx_hash",
-      "log_index"
-    ]
-  };
+
   option (lotus.composite).index = {
     fields: [
       "pair",
@@ -163,9 +138,9 @@ message Sync {
 
   google.protobuf.Timestamp ts = 1;
   uint64 block_number = 2 [(lotus.index) = {}];
-  bytes tx_hash = 3 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}];
+  bytes tx_hash = 3 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Hash
   uint64 log_index = 4;
-  bytes pair = 5 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}];
+  bytes pair = 5 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
   string reserve0 = 6 [(lotus.numeric) = {}];
   string reserve1 = 7 [(lotus.numeric) = {}];
 }
@@ -174,17 +149,12 @@ message Transfer {
   option (lotus.composite).index = {
     unique: true
     fields: [
-      "ts",
       "tx_hash",
-      "log_index"
+      "log_index",
+      "ts"
     ]
   };
-  option (lotus.composite).index = {
-    fields: [
-      "tx_hash",
-      "log_index"
-    ]
-  };
+
   option (lotus.composite).index = {
     fields: [
       "pair",
@@ -194,11 +164,11 @@ message Transfer {
 
   google.protobuf.Timestamp ts = 1;
   uint64 block_number = 2 [(lotus.index) = {}];
-  bytes tx_hash = 3 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}];
+  bytes tx_hash = 3 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Hash
   uint64 log_index = 4;
-  bytes pair = 5 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}];
-  bytes from = 6 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}];
-  bytes to = 7 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}];
+  bytes pair = 5 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
+  bytes from = 6 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
+  bytes to = 7 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
   string value = 8 [(lotus.numeric) = {}];
 }
 
