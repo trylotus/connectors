@@ -3,7 +3,8 @@ CREATE TABLE IF NOT EXISTS v3_pools (
     token0 TEXT NOT NULL,
     token1 TEXT NOT NULL,
     fee INT8 NOT NULL,
-    tick_spacing INT8 NOT NULL
+    tick_spacing INT8 NOT NULL,
+    block_number INT8 NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS v3_pools_scanned_block (

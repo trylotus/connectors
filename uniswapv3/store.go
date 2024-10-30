@@ -20,6 +20,7 @@ type Pool struct {
 	Token1      string `db:"token1"`
 	Fee         int64  `db:"fee"`
 	TickSpacing int64  `db:"tick_spacing"`
+	BlockNumber int64  `db:"block_number"`
 }
 
 type Token struct {
@@ -112,7 +113,7 @@ func (s *Store) AllPools(ctx context.Context) (<-chan *Pool, <-chan error) {
 func (s *Store) AddPool(ctx context.Context, pool *Pool) error {
 	s.poolCache.Add(pool.Address, pool)
 
-	_, err := s.db.NamedExecContext(ctx, "INSERT INTO v3_pools (address, token0, token1, fee, tick_spacing) VALUES (:address, :token0, :token1, :fee, :tick_spacing) ON CONFLICT DO NOTHING", pool)
+	_, err := s.db.NamedExecContext(ctx, "INSERT INTO v3_pools (address, token0, token1, fee, tick_spacing, block_number) VALUES (:address, :token0, :token1, :fee, :tick_spacing, :block_number) ON CONFLICT DO NOTHING", pool)
 
 	return err
 }

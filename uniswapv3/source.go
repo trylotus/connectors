@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"math/big"
 	"reflect"
-	"strings"
 	"sync"
 	"time"
 
@@ -38,7 +37,7 @@ type Source struct {
 	subscriptionPageSize int64 // Limit number of pools per subscription
 
 	factoryAddr ethcommon.Address
-	poolAddrs   []ethcommon.Address
+	pools       PoolList
 
 	factoryContract *factory.Factory
 
@@ -81,13 +80,15 @@ func (s *Source) Query(ctx context.Context, fromBlock int64, toBlock int64) ([]p
 		return nil, err
 	}
 
-	for i := 0; i < len(s.poolAddrs); i += int(s.queryPageSize) {
+	poolAddrs := s.pools.Search(toBlock)
+
+	for i := 0; i < len(poolAddrs); i += int(s.queryPageSize) {
 		j := i + int(s.queryPageSize)
-		if j > len(s.poolAddrs) {
-			j = len(s.poolAddrs)
+		if j > len(poolAddrs) {
+			j = len(poolAddrs)
 		}
 
-		msgs, err = s.queryPools(ctx, fromBlock, toBlock, s.poolAddrs[i:j], msgs)
+		msgs, err = s.queryPools(ctx, fromBlock, toBlock, poolAddrs[i:j], msgs)
 		if err != nil {
 			return nil, err
 		}
@@ -179,15 +180,17 @@ func (s *Source) Subscribe(ctx context.Context, msgCh chan<- proto.Message, errC
 		s.subscribeFactory(ctx, msgCh, errCh)
 	}()
 
-	for i := 0; i < len(s.poolAddrs); i += int(s.subscriptionPageSize) {
+	poolAddrs := s.pools.Addresses
+
+	for i := 0; i < len(poolAddrs); i += int(s.subscriptionPageSize) {
 		j := i + int(s.subscriptionPageSize)
-		if j > len(s.poolAddrs) {
-			j = len(s.poolAddrs)
+		if j > len(poolAddrs) {
+			j = len(poolAddrs)
 		}
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			s.subscribePools(ctx, s.poolAddrs[i:j], msgCh, errCh)
+			s.subscribePools(ctx, poolAddrs[i:j], msgCh, errCh)
 		}()
 	}
 
@@ -765,7 +768,7 @@ func (s *Source) Init(ctx context.Context) {
 		log.Fatal().Err(err).Msg("Failed to get block number")
 	}
 
-	for i := scannedBlock; i <= blockNumber; i += blockRangeLimit {
+	for i := scannedBlock + 1; i <= blockNumber; i += blockRangeLimit {
 		j := i + blockRangeLimit - 1
 		if j > blockNumber {
 			j = blockNumber
@@ -774,16 +777,16 @@ func (s *Source) Init(ctx context.Context) {
 		s.loadPoolsFromRPC(ctx, uint64(i), uint64(j))
 	}
 
-	log.Info().Int("total", len(s.poolAddrs)).Msg("Successfully loaded all pools")
+	s.pools.SortAndRemoveDuplicates()
+
+	log.Info().Int("total", s.pools.Len()).Msg("Loaded all pools")
 }
 
 func (s *Source) loadPoolsFromStore(ctx context.Context) {
-	log.Info().Msg("Loading pools from store")
-
 	poolCh, errCh := s.store.AllPools(ctx)
 
 	for pool := range poolCh {
-		s.poolAddrs = append(s.poolAddrs, ethcommon.HexToAddress(pool.Address))
+		s.pools.Add(ethcommon.HexToAddress(pool.Address), pool.BlockNumber)
 
 		log.Debug().Str("address", pool.Address).Msg("Loaded pool from store")
 	}
@@ -792,12 +795,10 @@ func (s *Source) loadPoolsFromStore(ctx context.Context) {
 		log.Fatal().Err(err).Msg("Failed to load pools from store")
 	}
 
-	log.Info().Int("total", len(s.poolAddrs)).Msg("Successfully loaded pools from store")
+	log.Info().Int("total", s.pools.Len()).Msg("Loaded pools from store")
 }
 
 func (s *Source) loadPoolsFromRPC(ctx context.Context, from uint64, to uint64) {
-	log.Info().Uint64("from", from).Uint64("to", to).Msg("Loading pools from RPC")
-
 	opts := &bind.FilterOpts{
 		Context: ctx,
 		Start:   from,
@@ -820,7 +821,7 @@ func (s *Source) loadPoolsFromRPC(ctx context.Context, from uint64, to uint64) {
 			continue
 		}
 
-		s.poolAddrs = append(s.poolAddrs, it.Event.Pool)
+		s.pools.Add(it.Event.Pool, int64(it.Event.Raw.BlockNumber))
 
 		pool := Pool{
 			Address:     it.Event.Pool.String(),
@@ -828,6 +829,7 @@ func (s *Source) loadPoolsFromRPC(ctx context.Context, from uint64, to uint64) {
 			Token1:      it.Event.Token1.String(),
 			Fee:         it.Event.Fee.Int64(),
 			TickSpacing: it.Event.TickSpacing.Int64(),
+			BlockNumber: int64(it.Event.Raw.BlockNumber),
 		}
 
 		if err := s.store.AddPool(ctx, &pool); err != nil {
@@ -835,33 +837,9 @@ func (s *Source) loadPoolsFromRPC(ctx context.Context, from uint64, to uint64) {
 		}
 	}
 
-	log.Info().Uint64("from", from).Uint64("to", to).Msg("Successfully loaded pools from RPC")
+	log.Info().Uint64("from", from).Uint64("to", to).Msg("Loaded pools from RPC")
 
 	if err := s.store.SetScannedBlock(ctx, int64(to)); err != nil {
 		log.Error().Err(err).Uint64("number", to).Msg("Failed to set scanned block")
-	}
-}
-
-func tokenAmount(rawAmount *big.Int, decimals uint8) *big.Rat {
-	return new(big.Rat).SetFrac(rawAmount, new(big.Int).Exp(big.NewInt(10), big.NewInt(int64(decimals)), nil))
-}
-
-func floatString(n *big.Rat) string {
-	return removeTrailingZeros(n.FloatString(18))
-}
-
-func removeTrailingZeros(number string) string {
-	decimalIndex := strings.Index(number, ".")
-	if decimalIndex == -1 {
-		return number
-	}
-
-	integralPart := number[:decimalIndex]
-	factionalPart := strings.TrimRight(number[decimalIndex+1:], "0")
-
-	if factionalPart == "" {
-		return integralPart
-	} else {
-		return fmt.Sprintf("%s.%s", integralPart, factionalPart)
 	}
 }
