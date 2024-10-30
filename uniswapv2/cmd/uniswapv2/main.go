@@ -4,6 +4,8 @@ import (
 	"context"
 	"os"
 
+	"github.com/ethereum/go-ethereum/ethclient"
+	"github.com/ethereum/go-ethereum/rpc"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 	"github.com/spf13/pflag"
@@ -37,16 +39,16 @@ func main() {
 	defer cancel()
 
 	rpcUrl := os.Getenv("RPC_URL")
-
 	log.Info().Str("url", rpcUrl).Msg("Connecting to RPC")
 
-	client, err := evm.DialContext(ctx, rpcUrl)
+	rpcClient, err := rpc.DialOptions(ctx, rpcUrl, rpc.WithWebsocketMessageSizeLimit(0))
 	if err != nil {
 		log.Fatal().Err(err).Str("url", rpcUrl).Msg("Failed to connect to RPC")
 	}
 
-	dataSource := os.Getenv("DATA_SOURCE")
+	client := evm.NewClient(ethclient.NewClient(rpcClient))
 
+	dataSource := os.Getenv("DATA_SOURCE")
 	log.Info().Str("source", dataSource).Msg("Connecting to store")
 
 	store, err := uniswapv2.NewStore(ctx, dataSource)
