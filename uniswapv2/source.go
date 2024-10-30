@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"math/big"
 	"reflect"
-	"strings"
 	"sync"
 	"time"
 
@@ -38,7 +37,7 @@ type Source struct {
 	subscriptionPageSize int64 // Limit number of pairs per subscription
 
 	factoryAddr ethcommon.Address
-	pairAddrs   []ethcommon.Address
+	pairs       PoolList
 
 	factoryContract *factory.Factory
 
@@ -81,13 +80,15 @@ func (s *Source) Query(ctx context.Context, fromBlock int64, toBlock int64) ([]p
 		return nil, err
 	}
 
-	for i := 0; i < len(s.pairAddrs); i += int(s.queryPageSize) {
+	pairAddrs := s.pairs.Search(toBlock)
+
+	for i := 0; i < len(pairAddrs); i += int(s.queryPageSize) {
 		j := i + int(s.queryPageSize)
-		if j > len(s.pairAddrs) {
-			j = len(s.pairAddrs)
+		if j > len(pairAddrs) {
+			j = len(pairAddrs)
 		}
 
-		msgs, err = s.queryPairs(ctx, fromBlock, toBlock, s.pairAddrs[i:j], msgs)
+		msgs, err = s.queryPairs(ctx, fromBlock, toBlock, pairAddrs[i:j], msgs)
 		if err != nil {
 			return nil, err
 		}
@@ -186,15 +187,17 @@ func (s *Source) Subscribe(ctx context.Context, msgCh chan<- proto.Message, errC
 		s.subscribeFactory(ctx, msgCh, errCh)
 	}()
 
-	for i := 0; i < len(s.pairAddrs); i += int(s.subscriptionPageSize) {
+	pairAddrs := s.pairs.Addresses
+
+	for i := 0; i < len(pairAddrs); i += int(s.subscriptionPageSize) {
 		j := i + int(s.subscriptionPageSize)
-		if j > len(s.pairAddrs) {
-			j = len(s.pairAddrs)
+		if j > len(pairAddrs) {
+			j = len(pairAddrs)
 		}
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			s.subscribePairs(ctx, s.pairAddrs[i:j], msgCh, errCh)
+			s.subscribePairs(ctx, pairAddrs[i:j], msgCh, errCh)
 		}()
 	}
 
@@ -675,7 +678,7 @@ func (s *Source) Init(ctx context.Context) {
 		log.Fatal().Err(err).Msg("Failed to get block number")
 	}
 
-	for i := scannedBlock; i <= blockNumber; i += blockRangeLimit {
+	for i := scannedBlock + 1; i <= blockNumber; i += blockRangeLimit {
 		j := i + blockRangeLimit - 1
 		if j > blockNumber {
 			j = blockNumber
@@ -684,16 +687,16 @@ func (s *Source) Init(ctx context.Context) {
 		s.loadPairsFromRPC(ctx, uint64(i), uint64(j))
 	}
 
-	log.Info().Int("total", len(s.pairAddrs)).Msg("Successfully loaded all pairs")
+	s.pairs.SortAndRemoveDuplicates()
+
+	log.Info().Int("total", s.pairs.Len()).Msg("Loaded all pairs")
 }
 
 func (s *Source) loadPairsFromStore(ctx context.Context) {
-	log.Info().Msg("Loading pairs from store")
-
 	pairCh, errCh := s.store.AllPairs(ctx)
 
 	for pair := range pairCh {
-		s.pairAddrs = append(s.pairAddrs, ethcommon.HexToAddress(pair.Address))
+		s.pairs.Add(ethcommon.HexToAddress(pair.Address), pair.BlockNumber)
 
 		log.Debug().Str("address", pair.Address).Msg("Loaded pair from store")
 	}
@@ -701,11 +704,11 @@ func (s *Source) loadPairsFromStore(ctx context.Context) {
 	for err := range errCh {
 		log.Fatal().Err(err).Msg("Failed to load pairs from store")
 	}
+
+	log.Info().Int("total", s.pairs.Len()).Msg("Loaded pairs from store")
 }
 
 func (s *Source) loadPairsFromRPC(ctx context.Context, from uint64, to uint64) {
-	log.Info().Uint64("from", from).Uint64("to", to).Msg("Loading pairs from RPC")
-
 	opts := &bind.FilterOpts{
 		Context: ctx,
 		Start:   from,
@@ -728,13 +731,14 @@ func (s *Source) loadPairsFromRPC(ctx context.Context, from uint64, to uint64) {
 			continue
 		}
 
-		s.pairAddrs = append(s.pairAddrs, it.Event.Pair)
+		s.pairs.Add(it.Event.Pair, int64(it.Event.Raw.BlockNumber))
 
 		pair := Pair{
-			Number:  it.Event.Arg3.Int64(),
-			Address: it.Event.Pair.String(),
-			Token0:  it.Event.Token0.String(),
-			Token1:  it.Event.Token1.String(),
+			Number:      it.Event.Arg3.Int64(),
+			Address:     it.Event.Pair.String(),
+			Token0:      it.Event.Token0.String(),
+			Token1:      it.Event.Token1.String(),
+			BlockNumber: int64(it.Event.Raw.BlockNumber),
 		}
 
 		if err := s.store.AddPair(ctx, &pair); err != nil {
@@ -742,33 +746,9 @@ func (s *Source) loadPairsFromRPC(ctx context.Context, from uint64, to uint64) {
 		}
 	}
 
-	log.Info().Uint64("from", from).Uint64("to", to).Msg("Successfully loaded pairs from RPC")
+	log.Info().Uint64("from", from).Uint64("to", to).Msg("Loaded pairs from RPC")
 
 	if err := s.store.SetScannedBlock(ctx, int64(to)); err != nil {
 		log.Error().Err(err).Uint64("number", to).Msg("Failed to set scanned block")
-	}
-}
-
-func tokenAmount(rawAmount *big.Int, decimals uint8) *big.Rat {
-	return new(big.Rat).SetFrac(rawAmount, new(big.Int).Exp(big.NewInt(10), big.NewInt(int64(decimals)), nil))
-}
-
-func floatString(n *big.Rat) string {
-	return removeTrailingZeros(n.FloatString(18))
-}
-
-func removeTrailingZeros(number string) string {
-	decimalIndex := strings.Index(number, ".")
-	if decimalIndex == -1 {
-		return number
-	}
-
-	integralPart := number[:decimalIndex]
-	factionalPart := strings.TrimRight(number[decimalIndex+1:], "0")
-
-	if factionalPart == "" {
-		return integralPart
-	} else {
-		return fmt.Sprintf("%s.%s", integralPart, factionalPart)
 	}
 }

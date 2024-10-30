@@ -15,10 +15,11 @@ const (
 )
 
 type Pair struct {
-	Number  int64  `db:"number"`
-	Address string `db:"address"`
-	Token0  string `db:"token0"`
-	Token1  string `db:"token1"`
+	Number      int64  `db:"number"`
+	Address     string `db:"address"`
+	Token0      string `db:"token0"`
+	Token1      string `db:"token1"`
+	BlockNumber int64  `db:"block_number"`
 }
 
 type Token struct {
@@ -111,7 +112,7 @@ func (s *Store) AllPairs(ctx context.Context) (<-chan *Pair, <-chan error) {
 func (s *Store) AddPair(ctx context.Context, pair *Pair) error {
 	s.pairCache.Add(pair.Address, pair)
 
-	_, err := s.db.NamedExecContext(ctx, "INSERT INTO v2_pairs (number, address, token0, token1) VALUES (:number, :address, :token0, :token1) ON CONFLICT DO NOTHING", pair)
+	_, err := s.db.NamedExecContext(ctx, "INSERT INTO v2_pairs (number, address, token0, token1, block_number) VALUES (:number, :address, :token0, :token1, :block_number) ON CONFLICT DO NOTHING", pair)
 
 	return err
 }
