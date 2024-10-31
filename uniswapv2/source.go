@@ -1,6 +1,7 @@
 package uniswapv2
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"math/big"
@@ -28,6 +29,8 @@ const (
 	defaultQueryPageSize        = 2048
 	defaultSubscriptionPageSize = 100000
 )
+
+var pairCreatedTopic = ethcommon.HexToHash("0x0d3648bd0f6ba80134a33ba9275ac585d9d315f0ad8355cddefde31afa28d0e9")
 
 type Source struct {
 	client *evm.Client
@@ -165,6 +168,10 @@ func (s *Source) queryPairs(ctx context.Context, fromBlock int64, toBlock int64,
 				continue
 			}
 
+			if bytes.Equal(vLog.Topics[0].Bytes(), pairCreatedTopic.Bytes()) {
+				continue
+			}
+
 			msg, err := s.ParsePairLog(ctx, vLog)
 			if err != nil {
 				log.Error().Err(err).Str("tx", vLog.TxHash.String()).Uint("index", vLog.Index).Msg("Invalid pair log")
@@ -283,6 +290,10 @@ func (s *Source) subscribePairs(ctx context.Context, pairs []ethcommon.Address, 
 			return
 		case vLog := <-logCh:
 			if vLog.Removed {
+				continue
+			}
+
+			if bytes.Equal(vLog.Topics[0].Bytes(), pairCreatedTopic.Bytes()) {
 				continue
 			}
 
