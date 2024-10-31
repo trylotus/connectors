@@ -40,18 +40,14 @@ func main() {
 
 	log.Info().Str("url", rpcUrl).Msg("Connecting to RPC")
 
-	client, err := evm.DialContext(ctx, rpcUrl)
+	client, err := evm.DialContext(ctx, os.Getenv("RPC_URL"))
 	if err != nil {
-		log.Fatal().Err(err).Str("url", rpcUrl).Msg("Failed to connect to RPC")
+		log.Fatal().Err(err).Str("url", os.Getenv("RPC_URL")).Msg("Failed to connect to RPC")
 	}
 
-	dataSource := os.Getenv("DATA_SOURCE")
-
-	log.Info().Str("source", dataSource).Msg("Connecting to store")
-
-	store, err := uniswapv3.NewStore(ctx, dataSource)
+	store, err := uniswapv3.NewStore(ctx, os.Getenv("DATA_SOURCE"))
 	if err != nil {
-		log.Fatal().Err(err).Str("source", dataSource).Msg("Failed to create store")
+		log.Fatal().Err(err).Str("source", os.Getenv("DATA_SOURCE")).Msg("Failed to create store")
 	}
 
 	source := uniswapv3.NewSource(client, store, FactoryContractAddr, uniswapv3.WithDefaultOptions())
