@@ -23,7 +23,7 @@ var _ evm.SmartContract = (*SmartContract)(nil)
 func NewContract(addr string) *SmartContract {
 	contractAbi, err := abi.JSON(strings.NewReader(XoMetaData.ABI))
 	if err != nil {
-		log.Fatal().Err(err).Msg("error reading xo ABI")
+		log.Fatal().Err(err).Msg("Failed to read xo ABI")
 	}
 	return &SmartContract{Addr: addr, Abi: contractAbi}
 }
@@ -35,13 +35,13 @@ func (c *SmartContract) Address() string {
 func (c *SmartContract) Message(vLog types.Log, ts *timestamppb.Timestamp) (proto.Message, error) {
 	ev, err := c.Abi.EventByID(vLog.Topics[0])
 	if err != nil {
-		return nil, fmt.Errorf("cannot find event by ID: %v", err)
+		return nil, fmt.Errorf("no event with id: %s", vLog.Topics[0].Hex())
 	}
 	switch ev.Name {
 	case "PaidDM":
 		var event XoPaidDM
 		if err := common.UnpackLog(c.Abi, &event, ev.Name, vLog); err != nil {
-			return nil, fmt.Errorf("error unpacking event: %s", ev.Name)
+			return nil, fmt.Errorf("error unpacking event %s: %w", ev.Name, err)
 		}
 		return &PaidDM{
 			Ts:          ts,
@@ -55,7 +55,7 @@ func (c *SmartContract) Message(vLog types.Log, ts *timestamppb.Timestamp) (prot
 	case "RoleAdminChanged":
 		var event XoRoleAdminChanged
 		if err := common.UnpackLog(c.Abi, &event, ev.Name, vLog); err != nil {
-			return nil, fmt.Errorf("error unpacking event: %s", ev.Name)
+			return nil, fmt.Errorf("error unpacking event %s: %w", ev.Name, err)
 		}
 		return &RoleAdminChanged{
 			Ts:                ts,
@@ -69,7 +69,7 @@ func (c *SmartContract) Message(vLog types.Log, ts *timestamppb.Timestamp) (prot
 	case "SBTUpdated":
 		var event XoSBTUpdated
 		if err := common.UnpackLog(c.Abi, &event, ev.Name, vLog); err != nil {
-			return nil, fmt.Errorf("error unpacking event: %s", ev.Name)
+			return nil, fmt.Errorf("error unpacking event %s: %w", ev.Name, err)
 		}
 		return &SBTUpdated{
 			Ts:          ts,
@@ -81,7 +81,7 @@ func (c *SmartContract) Message(vLog types.Log, ts *timestamppb.Timestamp) (prot
 	case "NewGoodVibes":
 		var event XoNewGoodVibes
 		if err := common.UnpackLog(c.Abi, &event, ev.Name, vLog); err != nil {
-			return nil, fmt.Errorf("error unpacking event: %s", ev.Name)
+			return nil, fmt.Errorf("error unpacking event %s: %w", ev.Name, err)
 		}
 		return &NewGoodVibes{
 			Ts:          ts,
@@ -93,7 +93,7 @@ func (c *SmartContract) Message(vLog types.Log, ts *timestamppb.Timestamp) (prot
 	case "Post":
 		var event XoPost
 		if err := common.UnpackLog(c.Abi, &event, ev.Name, vLog); err != nil {
-			return nil, fmt.Errorf("error unpacking event: %s", ev.Name)
+			return nil, fmt.Errorf("error unpacking event %s: %w", ev.Name, err)
 		}
 		return &Post{
 			Ts:          ts,
@@ -106,7 +106,7 @@ func (c *SmartContract) Message(vLog types.Log, ts *timestamppb.Timestamp) (prot
 	case "RoleGranted":
 		var event XoRoleGranted
 		if err := common.UnpackLog(c.Abi, &event, ev.Name, vLog); err != nil {
-			return nil, fmt.Errorf("error unpacking event: %s", ev.Name)
+			return nil, fmt.Errorf("error unpacking event %s: %w", ev.Name, err)
 		}
 		return &RoleGranted{
 			Ts:          ts,
@@ -120,7 +120,7 @@ func (c *SmartContract) Message(vLog types.Log, ts *timestamppb.Timestamp) (prot
 	case "Initialized":
 		var event XoInitialized
 		if err := common.UnpackLog(c.Abi, &event, ev.Name, vLog); err != nil {
-			return nil, fmt.Errorf("error unpacking event: %s", ev.Name)
+			return nil, fmt.Errorf("error unpacking event %s: %w", ev.Name, err)
 		}
 		return &Initialized{
 			Ts:          ts,
@@ -132,7 +132,7 @@ func (c *SmartContract) Message(vLog types.Log, ts *timestamppb.Timestamp) (prot
 	case "NewMutualLike":
 		var event XoNewMutualLike
 		if err := common.UnpackLog(c.Abi, &event, ev.Name, vLog); err != nil {
-			return nil, fmt.Errorf("error unpacking event: %s", ev.Name)
+			return nil, fmt.Errorf("error unpacking event %s: %w", ev.Name, err)
 		}
 		return &NewMutualLike{
 			Ts:          ts,
@@ -145,7 +145,7 @@ func (c *SmartContract) Message(vLog types.Log, ts *timestamppb.Timestamp) (prot
 	case "RoleRevoked":
 		var event XoRoleRevoked
 		if err := common.UnpackLog(c.Abi, &event, ev.Name, vLog); err != nil {
-			return nil, fmt.Errorf("error unpacking event: %s", ev.Name)
+			return nil, fmt.Errorf("error unpacking event %s: %w", ev.Name, err)
 		}
 		return &RoleRevoked{
 			Ts:          ts,
@@ -159,7 +159,7 @@ func (c *SmartContract) Message(vLog types.Log, ts *timestamppb.Timestamp) (prot
 	case "Swiped":
 		var event XoSwiped
 		if err := common.UnpackLog(c.Abi, &event, ev.Name, vLog); err != nil {
-			return nil, fmt.Errorf("error unpacking event: %s", ev.Name)
+			return nil, fmt.Errorf("error unpacking event %s: %w", ev.Name, err)
 		}
 		return &Swiped{
 			Ts:           ts,
@@ -173,7 +173,7 @@ func (c *SmartContract) Message(vLog types.Log, ts *timestamppb.Timestamp) (prot
 	case "Streak":
 		var event XoStreak
 		if err := common.UnpackLog(c.Abi, &event, ev.Name, vLog); err != nil {
-			return nil, fmt.Errorf("error unpacking event: %s", ev.Name)
+			return nil, fmt.Errorf("error unpacking event %s: %w", ev.Name, err)
 		}
 		return &Streak{
 			Ts:          ts,
@@ -186,7 +186,7 @@ func (c *SmartContract) Message(vLog types.Log, ts *timestamppb.Timestamp) (prot
 	case "SaveStreak":
 		var event XoSaveStreak
 		if err := common.UnpackLog(c.Abi, &event, ev.Name, vLog); err != nil {
-			return nil, fmt.Errorf("error unpacking event: %s", ev.Name)
+			return nil, fmt.Errorf("error unpacking event %s: %w", ev.Name, err)
 		}
 		return &SaveStreak{
 			Ts:          ts,
