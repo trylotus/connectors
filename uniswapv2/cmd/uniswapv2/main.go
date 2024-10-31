@@ -4,8 +4,6 @@ import (
 	"context"
 	"os"
 
-	"github.com/ethereum/go-ethereum/ethclient"
-	"github.com/ethereum/go-ethereum/rpc"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 	"github.com/spf13/pflag"
@@ -38,22 +36,14 @@ func main() {
 	ctx, cancel := common.ContextWithSignal(context.Background(), os.Interrupt)
 	defer cancel()
 
-	rpcUrl := os.Getenv("RPC_URL")
-	log.Info().Str("url", rpcUrl).Msg("Connecting to RPC")
-
-	rpcClient, err := rpc.DialOptions(ctx, rpcUrl, rpc.WithWebsocketMessageSizeLimit(0))
+	client, err := evm.DialContext(ctx, os.Getenv("RPC_URL"))
 	if err != nil {
-		log.Fatal().Err(err).Str("url", rpcUrl).Msg("Failed to connect to RPC")
+		log.Fatal().Err(err).Str("url", os.Getenv("RPC_URL")).Msg("Failed to connect to RPC")
 	}
 
-	client := evm.NewClient(ethclient.NewClient(rpcClient))
-
-	dataSource := os.Getenv("DATA_SOURCE")
-	log.Info().Str("source", dataSource).Msg("Connecting to store")
-
-	store, err := uniswapv2.NewStore(ctx, dataSource)
+	store, err := uniswapv2.NewStore(ctx, os.Getenv("DATA_SOURCE"))
 	if err != nil {
-		log.Fatal().Err(err).Str("source", dataSource).Msg("Failed to create store")
+		log.Fatal().Err(err).Str("source", os.Getenv("DATA_SOURCE")).Msg("Failed to create store")
 	}
 
 	source := uniswapv2.NewSource(client, store, FactoryContractAddr, uniswapv2.WithDefaultOptions())
