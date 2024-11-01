@@ -11,7 +11,7 @@ message PairCreated {
   option (lotus.composite).index = {
     unique: true
     fields: [
-      "tx_hash",
+      "block_hash",
       "log_index",
       "ts"
     ]
@@ -26,19 +26,23 @@ message PairCreated {
 
   google.protobuf.Timestamp ts = 1;
   uint64 block_number = 2 [(lotus.index) = {}];
-  bytes tx_hash = 3 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Hash
-  uint64 log_index = 4;
-  bytes token0 = 5 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
-  bytes token1 = 6 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
-  bytes pair = 7 [
+  bytes block_hash = 3 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Hash
+  bytes tx_hash = 4 [
+    (lotus.bytes) = {format: FORMAT_TYPE_HEX},
+    (lotus.index) = {}
+  ]; // Hash
+  uint64 log_index = 5;
+  bytes token0 = 6 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
+  bytes token1 = 7 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
+  bytes pair = 8 [
     (lotus.bytes) = {format: FORMAT_TYPE_HEX},
     (lotus.index) = {}
   ]; // Address
-  string arg3 = 8 [(lotus.numeric) = {precision: 78}]; // uint256
-  string token0_name = 9;
-  string token0_symbol = 10;
-  uint32 token0_decimals = 11;
-  string token1_name = 12;
-  string token1_symbol = 13;
-  uint32 token1_decimals = 14;
+  string arg3 = 9 [(lotus.numeric) = {precision: 78}]; // uint256
+  string token0_name = 10;
+  string token0_symbol = 11;
+  uint32 token0_decimals = 12;
+  string token1_name = 13;
+  string token1_symbol = 14;
+  uint32 token1_decimals = 15;
 }

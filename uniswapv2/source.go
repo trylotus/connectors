@@ -50,11 +50,11 @@ type Source struct {
 
 var _ connector.Source = (*Source)(nil)
 
-func NewSource(client *evm.Client, store *Store, factoryContractAddr string, opts ...Option) *Source {
+func NewSource(client *evm.Client, store *Store, factoryAddr ethcommon.Address, opts ...Option) *Source {
 	source := &Source{
 		client:               client,
 		store:                store,
-		factoryAddr:          ethcommon.HexToAddress(factoryContractAddr),
+		factoryAddr:          factoryAddr,
 		queryPageSize:        defaultQueryPageSize,
 		subscriptionPageSize: defaultSubscriptionPageSize,
 		pairCacheLock:        common.NewLockSet[ethcommon.Address](),
@@ -320,7 +320,7 @@ func (s *Source) ParsePairCreatedEvent(ctx context.Context, event *factory.Facto
 }
 
 func (s *Source) parsePairCreatedEvent(ctx context.Context, event *factory.FactoryPairCreated) (proto.Message, error) {
-	t, err := s.BlockTime(ctx, event.Raw.BlockNumber)
+	t, err := s.BlockTime(ctx, event.Raw.BlockHash)
 	if err != nil {
 		return nil, fmt.Errorf("error retrieving timestamp: %w", err)
 	}
@@ -342,6 +342,7 @@ func (s *Source) parsePairCreatedEvent(ctx context.Context, event *factory.Facto
 	msg := &factory.PairCreated{
 		Ts:          &timestamppb.Timestamp{Seconds: int64(t)},
 		BlockNumber: event.Raw.BlockNumber,
+		BlockHash:   event.Raw.BlockHash.Bytes(),
 		TxHash:      event.Raw.TxHash.Bytes(),
 		LogIndex:    uint64(event.Raw.Index),
 		Token0:      event.Token0.Bytes(),
@@ -377,7 +378,7 @@ func (s *Source) ParsePairLog(ctx context.Context, vLog types.Log) (proto.Messag
 }
 
 func (s *Source) parsePairLog(ctx context.Context, vLog types.Log) (proto.Message, error) {
-	t, err := s.BlockTime(ctx, vLog.BlockNumber)
+	t, err := s.BlockTime(ctx, vLog.BlockHash)
 	if err != nil {
 		return nil, fmt.Errorf("error retrieving timestamp: %w", err)
 	}
@@ -412,6 +413,7 @@ func (s *Source) parsePairLog(ctx context.Context, vLog types.Log) (proto.Messag
 		return &pair.Mint{
 			Ts:          ts,
 			BlockNumber: vLog.BlockNumber,
+			BlockHash:   vLog.BlockHash.Bytes(),
 			TxHash:      vLog.TxHash.Bytes(),
 			LogIndex:    uint64(vLog.Index),
 			Pair:        vLog.Address.Bytes(),
@@ -438,6 +440,7 @@ func (s *Source) parsePairLog(ctx context.Context, vLog types.Log) (proto.Messag
 		return &pair.Swap{
 			Ts:          ts,
 			BlockNumber: vLog.BlockNumber,
+			BlockHash:   vLog.BlockHash.Bytes(),
 			TxHash:      vLog.TxHash.Bytes(),
 			LogIndex:    uint64(vLog.Index),
 			Pair:        vLog.Address.Bytes(),
@@ -465,6 +468,7 @@ func (s *Source) parsePairLog(ctx context.Context, vLog types.Log) (proto.Messag
 		return &pair.Sync{
 			Ts:          ts,
 			BlockNumber: vLog.BlockNumber,
+			BlockHash:   vLog.BlockHash.Bytes(),
 			TxHash:      vLog.TxHash.Bytes(),
 			LogIndex:    uint64(vLog.Index),
 			Pair:        vLog.Address.Bytes(),
@@ -478,6 +482,7 @@ func (s *Source) parsePairLog(ctx context.Context, vLog types.Log) (proto.Messag
 		return &pair.Transfer{
 			Ts:          ts,
 			BlockNumber: vLog.BlockNumber,
+			BlockHash:   vLog.BlockHash.Bytes(),
 			TxHash:      vLog.TxHash.Bytes(),
 			LogIndex:    uint64(vLog.Index),
 			Pair:        vLog.Address.Bytes(),
@@ -492,6 +497,7 @@ func (s *Source) parsePairLog(ctx context.Context, vLog types.Log) (proto.Messag
 		return &pair.Approval{
 			Ts:          ts,
 			BlockNumber: vLog.BlockNumber,
+			BlockHash:   vLog.BlockHash.Bytes(),
 			TxHash:      vLog.TxHash.Bytes(),
 			LogIndex:    uint64(vLog.Index),
 			Pair:        vLog.Address.Bytes(),
@@ -516,6 +522,7 @@ func (s *Source) parsePairLog(ctx context.Context, vLog types.Log) (proto.Messag
 		return &pair.Burn{
 			Ts:          ts,
 			BlockNumber: vLog.BlockNumber,
+			BlockHash:   vLog.BlockHash.Bytes(),
 			TxHash:      vLog.TxHash.Bytes(),
 			LogIndex:    uint64(vLog.Index),
 			Pair:        vLog.Address.Bytes(),
@@ -529,14 +536,14 @@ func (s *Source) parsePairLog(ctx context.Context, vLog types.Log) (proto.Messag
 	}
 }
 
-func (s *Source) BlockTime(ctx context.Context, blockNumber uint64) (uint64, error) {
+func (s *Source) BlockTime(ctx context.Context, hash ethcommon.Hash) (uint64, error) {
 	retryCtx := common.ContextWithFuncName(ctx, "BlockTime")
 	retryCtx = common.ContextWithOptionalRetry(retryCtx)
 
 	return common.RetryT(retryCtx, func() (uint64, error) {
 		subCtx, cancel := context.WithTimeout(ctx, 10*time.Second)
 		defer cancel()
-		return s.client.BlockTime(subCtx, blockNumber)
+		return s.client.BlockTime(subCtx, hash)
 	})
 }
 
