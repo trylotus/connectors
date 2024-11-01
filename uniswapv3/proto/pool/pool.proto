@@ -20,7 +20,7 @@ message Burn {
   option (lotus.composite).index = {
     fields: [
       "pool",
-      "t"
+      "ts"
     ]
   };
 
@@ -54,7 +54,7 @@ message Collect {
   option (lotus.composite).index = {
     fields: [
       "pool",
-      "t"
+      "ts"
     ]
   };
 
@@ -88,7 +88,7 @@ message CollectProtocol {
   option (lotus.composite).index = {
     fields: [
       "pool",
-      "t"
+      "ts"
     ]
   };
 
@@ -120,7 +120,7 @@ message Flash {
   option (lotus.composite).index = {
     fields: [
       "pool",
-      "t"
+      "ts"
     ]
   };
 
@@ -154,7 +154,7 @@ message IncreaseObservationCardinalityNext {
   option (lotus.composite).index = {
     fields: [
       "pool",
-      "t"
+      "ts"
     ]
   };
 
@@ -184,7 +184,7 @@ message Initialize {
   option (lotus.composite).index = {
     fields: [
       "pool",
-      "t"
+      "ts"
     ]
   };
 
@@ -214,7 +214,7 @@ message Mint {
   option (lotus.composite).index = {
     fields: [
       "pool",
-      "t"
+      "ts"
     ]
   };
 
@@ -249,7 +249,7 @@ message SetFeeProtocol {
   option (lotus.composite).index = {
     fields: [
       "pool",
-      "t"
+      "ts"
     ]
   };
 
@@ -281,7 +281,7 @@ message Swap {
   option (lotus.composite).index = {
     fields: [
       "pool",
-      "t"
+      "ts"
     ]
   };
 
