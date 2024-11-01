@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package factory;
+
+import "google/protobuf/timestamp.proto";
+import "lotus/lotus.proto";
+
+option go_package = "github.com/trylotus/connectors/uniswapv2/factory";
+
+message PairCreated {
+  option (lotus.composite).index = {
+    unique: true
+    fields: [
+      "tx_hash",
+      "log_index",
+      "ts"
+    ]
+  };
+
+  option (lotus.composite).index = {
+    fields: [
+      "token0",
+      "token1"
+    ]
+  };
+
+  google.protobuf.Timestamp ts = 1;
+  uint64 block_number = 2 [(lotus.index) = {}];
+  bytes tx_hash = 3 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Hash
+  uint64 log_index = 4;
+  bytes token0 = 5 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
+  bytes token1 = 6 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
+  bytes pair = 7 [
+    (lotus.bytes) = {format: FORMAT_TYPE_HEX},
+    (lotus.index) = {}
+  ]; // Address
+  string arg3 = 8 [(lotus.numeric) = {precision: 78}]; // uint256
+  string token0_name = 9;
+  string token0_symbol = 10;
+  uint32 token0_decimals = 11;
+  string token1_name = 12;
+  string token1_symbol = 13;
+  uint32 token1_decimals = 14;
+}
