@@ -799,8 +799,6 @@ func (s *Source) loadPoolsFromStore(ctx context.Context) {
 
 	for pool := range poolCh {
 		s.pools.Add(ethcommon.HexToAddress(pool.Address), pool.BlockNumber)
-
-		log.Debug().Str("address", pool.Address).Msg("Loaded pool from store")
 	}
 
 	for err := range errCh {

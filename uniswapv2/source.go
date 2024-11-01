@@ -715,8 +715,6 @@ func (s *Source) loadPairsFromStore(ctx context.Context) {
 
 	for pair := range pairCh {
 		s.pairs.Add(ethcommon.HexToAddress(pair.Address), pair.BlockNumber)
-
-		log.Debug().Str("address", pair.Address).Msg("Loaded pair from store")
 	}
 
 	for err := range errCh {
