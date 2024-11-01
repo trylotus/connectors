@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
+	ethcommon "github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/rs/zerolog/log"
 	"github.com/trylotus/go-connector/common"
@@ -14,21 +15,21 @@ import (
 )
 
 type SmartContract struct {
-	Addr string
 	Abi  abi.ABI
+	Addr ethcommon.Address
 }
 
 var _ evm.SmartContract = (*SmartContract)(nil)
 
-func NewContract(addr string) *SmartContract {
+func NewContract(address ethcommon.Address) *SmartContract {
 	contractAbi, err := abi.JSON(strings.NewReader(XoMetaData.ABI))
 	if err != nil {
 		log.Fatal().Err(err).Msg("Failed to read xo ABI")
 	}
-	return &SmartContract{Addr: addr, Abi: contractAbi}
+	return &SmartContract{Addr: address, Abi: contractAbi}
 }
 
-func (c *SmartContract) Address() string {
+func (c *SmartContract) Address() ethcommon.Address {
 	return c.Addr
 }
 
@@ -46,6 +47,7 @@ func (c *SmartContract) Message(vLog types.Log, ts *timestamppb.Timestamp) (prot
 		return &PaidDM{
 			Ts:          ts,
 			BlockNumber: vLog.BlockNumber,
+			BlockHash:   vLog.BlockHash.Bytes(),
 			TxHash:      vLog.TxHash.Bytes(),
 			LogIndex:    uint64(vLog.Index),
 			UserId:      event.UserId.Bytes(),
@@ -60,6 +62,7 @@ func (c *SmartContract) Message(vLog types.Log, ts *timestamppb.Timestamp) (prot
 		return &RoleAdminChanged{
 			Ts:                ts,
 			BlockNumber:       vLog.BlockNumber,
+			BlockHash:         vLog.BlockHash.Bytes(),
 			TxHash:            vLog.TxHash.Bytes(),
 			LogIndex:          uint64(vLog.Index),
 			Role:              event.Role[:],
@@ -74,6 +77,7 @@ func (c *SmartContract) Message(vLog types.Log, ts *timestamppb.Timestamp) (prot
 		return &SBTUpdated{
 			Ts:          ts,
 			BlockNumber: vLog.BlockNumber,
+			BlockHash:   vLog.BlockHash.Bytes(),
 			TxHash:      vLog.TxHash.Bytes(),
 			LogIndex:    uint64(vLog.Index),
 			PostId:      event.PostId.Bytes(),
@@ -86,6 +90,7 @@ func (c *SmartContract) Message(vLog types.Log, ts *timestamppb.Timestamp) (prot
 		return &NewGoodVibes{
 			Ts:          ts,
 			BlockNumber: vLog.BlockNumber,
+			BlockHash:   vLog.BlockHash.Bytes(),
 			TxHash:      vLog.TxHash.Bytes(),
 			LogIndex:    uint64(vLog.Index),
 			PostId:      event.PostId.Bytes(),
@@ -98,6 +103,7 @@ func (c *SmartContract) Message(vLog types.Log, ts *timestamppb.Timestamp) (prot
 		return &Post{
 			Ts:          ts,
 			BlockNumber: vLog.BlockNumber,
+			BlockHash:   vLog.BlockHash.Bytes(),
 			TxHash:      vLog.TxHash.Bytes(),
 			LogIndex:    uint64(vLog.Index),
 			Poster:      event.Poster.Bytes(),
@@ -111,6 +117,7 @@ func (c *SmartContract) Message(vLog types.Log, ts *timestamppb.Timestamp) (prot
 		return &RoleGranted{
 			Ts:          ts,
 			BlockNumber: vLog.BlockNumber,
+			BlockHash:   vLog.BlockHash.Bytes(),
 			TxHash:      vLog.TxHash.Bytes(),
 			LogIndex:    uint64(vLog.Index),
 			Role:        event.Role[:],
@@ -125,6 +132,7 @@ func (c *SmartContract) Message(vLog types.Log, ts *timestamppb.Timestamp) (prot
 		return &Initialized{
 			Ts:          ts,
 			BlockNumber: vLog.BlockNumber,
+			BlockHash:   vLog.BlockHash.Bytes(),
 			TxHash:      vLog.TxHash.Bytes(),
 			LogIndex:    uint64(vLog.Index),
 			Version:     event.Version,
@@ -137,6 +145,7 @@ func (c *SmartContract) Message(vLog types.Log, ts *timestamppb.Timestamp) (prot
 		return &NewMutualLike{
 			Ts:          ts,
 			BlockNumber: vLog.BlockNumber,
+			BlockHash:   vLog.BlockHash.Bytes(),
 			TxHash:      vLog.TxHash.Bytes(),
 			LogIndex:    uint64(vLog.Index),
 			MyId:        event.MyId.Bytes(),
@@ -150,6 +159,7 @@ func (c *SmartContract) Message(vLog types.Log, ts *timestamppb.Timestamp) (prot
 		return &RoleRevoked{
 			Ts:          ts,
 			BlockNumber: vLog.BlockNumber,
+			BlockHash:   vLog.BlockHash.Bytes(),
 			TxHash:      vLog.TxHash.Bytes(),
 			LogIndex:    uint64(vLog.Index),
 			Role:        event.Role[:],
@@ -164,6 +174,7 @@ func (c *SmartContract) Message(vLog types.Log, ts *timestamppb.Timestamp) (prot
 		return &Swiped{
 			Ts:           ts,
 			BlockNumber:  vLog.BlockNumber,
+			BlockHash:    vLog.BlockHash.Bytes(),
 			TxHash:       vLog.TxHash.Bytes(),
 			LogIndex:     uint64(vLog.Index),
 			Sender:       event.Sender.Bytes(),
@@ -178,6 +189,7 @@ func (c *SmartContract) Message(vLog types.Log, ts *timestamppb.Timestamp) (prot
 		return &Streak{
 			Ts:          ts,
 			BlockNumber: vLog.BlockNumber,
+			BlockHash:   vLog.BlockHash.Bytes(),
 			TxHash:      vLog.TxHash.Bytes(),
 			LogIndex:    uint64(vLog.Index),
 			UserId:      event.UserId.Bytes(),
@@ -191,6 +203,7 @@ func (c *SmartContract) Message(vLog types.Log, ts *timestamppb.Timestamp) (prot
 		return &SaveStreak{
 			Ts:          ts,
 			BlockNumber: vLog.BlockNumber,
+			BlockHash:   vLog.BlockHash.Bytes(),
 			TxHash:      vLog.TxHash.Bytes(),
 			LogIndex:    uint64(vLog.Index),
 			UserId:      event.UserId.Bytes(),

@@ -4,6 +4,7 @@ import (
 	"context"
 	"os"
 
+	ethcommon "github.com/ethereum/go-ethereum/common"
 	"github.com/joho/godotenv"
 	"github.com/spf13/pflag"
 	"github.com/trylotus/connectors/xo/xo"
@@ -30,16 +31,16 @@ func main() {
 
 	pflag.Parse()
 
-	contracts := []evm.SmartContract{
-		xo.NewContract(XOContractAddr),
-	}
-
 	ctx, cancel := common.ContextWithSignal(context.Background(), os.Interrupt)
 	defer cancel()
 
 	client, err := evm.DialContext(ctx, os.Getenv("RPC_URL"))
 	if err != nil {
 		log.Fatal().Err(err).Str("url", os.Getenv("RPC_URL")).Msg("Failed to connect to RPC")
+	}
+
+	contracts := []evm.SmartContract{
+		xo.NewContract(ethcommon.HexToAddress(XOContractAddr)),
 	}
 
 	c := connector.NewConnector(
