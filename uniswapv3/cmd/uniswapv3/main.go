@@ -4,6 +4,7 @@ import (
 	"context"
 	"os"
 
+	ethcommon "github.com/ethereum/go-ethereum/common"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 	"github.com/spf13/pflag"
@@ -50,7 +51,12 @@ func main() {
 		log.Fatal().Err(err).Str("source", os.Getenv("DATA_SOURCE")).Msg("Failed to create store")
 	}
 
-	source := uniswapv3.NewSource(client, store, FactoryContractAddr, uniswapv3.WithDefaultOptions())
+	source := uniswapv3.NewSource(
+		client,
+		store,
+		ethcommon.HexToAddress(FactoryContractAddr),
+		uniswapv3.WithDefaultOptions(),
+	)
 
 	c := connector.NewConnector(
 		source,

@@ -11,7 +11,7 @@ message FeeAmountEnabled {
   option (lotus.composite).index = {
     unique: true
     fields: [
-      "tx_hash",
+      "block_hash",
       "log_index",
       "ts"
     ]
@@ -19,17 +19,21 @@ message FeeAmountEnabled {
 
   google.protobuf.Timestamp ts = 1;
   uint64 block_number = 2 [(lotus.index) = {}];
-  bytes tx_hash = 3 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Hash
-  uint64 log_index = 4;
-  uint32 fee = 5; // uint24
-  int32 tick_spacing = 6; // int24
+  bytes block_hash = 3 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Hash
+  bytes tx_hash = 4 [
+    (lotus.bytes) = {format: FORMAT_TYPE_HEX},
+    (lotus.index) = {}
+  ]; // Hash
+  uint64 log_index = 5;
+  uint32 fee = 6; // uint24
+  int32 tick_spacing = 7; // int24
 }
 
 message OwnerChanged {
   option (lotus.composite).index = {
     unique: true
     fields: [
-      "tx_hash",
+      "block_hash",
       "log_index",
       "ts"
     ]
@@ -37,17 +41,21 @@ message OwnerChanged {
 
   google.protobuf.Timestamp ts = 1;
   uint64 block_number = 2 [(lotus.index) = {}];
-  bytes tx_hash = 3 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Hash
-  uint64 log_index = 4;
-  bytes old_owner = 5 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
-  bytes new_owner = 6 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
+  bytes block_hash = 3 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Hash
+  bytes tx_hash = 4 [
+    (lotus.bytes) = {format: FORMAT_TYPE_HEX},
+    (lotus.index) = {}
+  ]; // Hash
+  uint64 log_index = 5;
+  bytes old_owner = 6 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
+  bytes new_owner = 7 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
 }
 
 message PoolCreated {
   option (lotus.composite).index = {
     unique: true
     fields: [
-      "tx_hash",
+      "block_hash",
       "log_index",
       "ts"
     ]
@@ -63,20 +71,24 @@ message PoolCreated {
 
   google.protobuf.Timestamp ts = 1;
   uint64 block_number = 2 [(lotus.index) = {}];
-  bytes tx_hash = 3 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Hash
-  uint64 log_index = 4;
-  bytes token0 = 5 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
-  bytes token1 = 6 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
-  uint32 fee = 7; // uint24
-  int32 tick_spacing = 8; // int24
-  bytes pool = 9 [
+  bytes block_hash = 3 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Hash
+  bytes tx_hash = 4 [
+    (lotus.bytes) = {format: FORMAT_TYPE_HEX},
+    (lotus.index) = {}
+  ]; // Hash
+  uint64 log_index = 5;
+  bytes token0 = 6 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
+  bytes token1 = 7 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
+  uint32 fee = 8; // uint24
+  int32 tick_spacing = 9; // int24
+  bytes pool = 10 [
     (lotus.bytes) = {format: FORMAT_TYPE_HEX},
     (lotus.index) = {}
   ]; // Address
-  string token0_name = 10;
-  string token0_symbol = 11;
-  uint32 token0_decimals = 12;
-  string token1_name = 13;
-  string token1_symbol = 14;
-  uint32 token1_decimals = 15;
+  string token0_name = 11;
+  string token0_symbol = 12;
+  uint32 token0_decimals = 13;
+  string token1_name = 14;
+  string token1_symbol = 15;
+  uint32 token1_decimals = 16;
 }
