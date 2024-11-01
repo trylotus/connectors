@@ -18,7 +18,7 @@ import (
 	"github.com/trylotus/go-connector/source/evm"
 )
 
-const FactoryContractAddr = "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f"
+const FactoryContractAddr = "TKWJdrQkqHisa1X8HUdHEfREvTzw4pMAaY"
 
 func main() {
 	_ = godotenv.Load()

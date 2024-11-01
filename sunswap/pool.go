@@ -17,23 +17,27 @@ func (pl *PoolList) Add(address ethcommon.Address, blockNumber int64) {
 }
 
 func (pl *PoolList) SortAndRemoveDuplicates() {
-	// Create a slice of indices to track sorting
+	if len(pl.BlockNumbers) == 0 || len(pl.Addresses) == 0 {
+		return
+	}
+
+	if len(pl.BlockNumbers) <= 1 {
+		return
+	}
+
 	indices := make([]int, len(pl.BlockNumbers))
 	for i := range indices {
 		indices[i] = i
 	}
 
-	// Sort the indices based on block number and address
 	sort.Slice(indices, func(i, j int) bool {
 		b1 := pl.BlockNumbers[indices[i]]
 		b2 := pl.BlockNumbers[indices[j]]
 		a1 := pl.Addresses[indices[i]]
 		a2 := pl.Addresses[indices[j]]
-
 		return (b1 < b2) || ((b1 == b2) && (a1.Cmp(a2) < 0))
 	})
 
-	// Reorder addresses and block numbers based on the sorted indices
 	sortedAddresses := make([]ethcommon.Address, len(pl.Addresses))
 	sortedBlockNumbers := make([]int64, len(pl.BlockNumbers))
 
@@ -45,7 +49,6 @@ func (pl *PoolList) SortAndRemoveDuplicates() {
 	pl.Addresses = sortedAddresses
 	pl.BlockNumbers = sortedBlockNumbers
 
-	// Remove duplicates
 	i := 0
 	for j := 1; j < len(pl.Addresses); j++ {
 		if pl.Addresses[i] != pl.Addresses[j] {

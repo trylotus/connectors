@@ -3,9 +3,11 @@ package sunswap
 import (
 	"bytes"
 	"context"
+	"encoding/hex"
 	"fmt"
 	"math/big"
 	"reflect"
+	"strconv"
 	"sync"
 	"time"
 
@@ -185,17 +187,94 @@ func (s *Source) queryPairs(ctx context.Context, fromBlock int64, toBlock int64,
 	return results, nil
 }
 
+func (s *Source) pollFactoryEvents(ctx context.Context, msgCh chan<- proto.Message, errCh chan<- error) {
+	ticker := time.NewTicker(2 * time.Second)
+	defer ticker.Stop()
+
+	lastCheckedBlock, err := s.store.GetScannedBlock(ctx)
+	if err != nil {
+		log.Fatal().Err(err).Msg("Failed to get last scanned block number")
+		return
+	}
+
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		case <-ticker.C:
+			currentBlock, err := s.BlockNumber(ctx)
+			if err != nil {
+				log.Error().Err(err).Msg("Failed to get current block number")
+				continue
+			}
+			log.Info().Int64("CurrentBlock", currentBlock).Msg("Loading")
+			log.Info().Int64("LastCheckedBlock", lastCheckedBlock).Msg("Loading")
+			msgs, err := s.queryFactory(ctx, lastCheckedBlock, currentBlock, nil)
+			if err != nil {
+				errCh <- err
+				continue
+			}
+
+			log.Info().Int("message_count", len(msgs)).Msg("Number of messages returned from queryFactory")
+
+			for _, msg := range msgs {
+				pairData, err := s.convertToPair(msg)
+				if err != nil {
+					log.Error().Err(err).Msg("Failed to convert message to Pair")
+					continue
+				}
+
+				if err := s.store.AddPair(ctx, pairData); err != nil {
+					log.Error().Err(err).Int64("number", pairData.Number).Str("address", pairData.Address).Msg("Failed to add pair to store")
+					continue
+				}
+
+				msgCh <- msg
+			}
+
+			lastCheckedBlock = currentBlock
+
+			if err := s.store.SetScannedBlock(ctx, currentBlock); err != nil {
+				log.Error().Err(err).Int64("block", currentBlock).Msg("Failed to update last scanned block")
+			}
+		}
+	}
+}
+
+func (s *Source) convertToPair(msg proto.Message) (*Pair, error) {
+	pairCreated, ok := msg.(*factory.PairCreated)
+	if !ok {
+		return nil, fmt.Errorf("message is not of type *factory.PairCreated")
+	}
+
+	number, err := strconv.ParseInt(pairCreated.Arg3, 10, 64)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse Arg3 to int64: %w", err)
+	}
+
+	pairAddress := hex.EncodeToString(pairCreated.Pair)
+	token0Address := hex.EncodeToString(pairCreated.Token0)
+	token1Address := hex.EncodeToString(pairCreated.Token1)
+
+	return &Pair{
+		Number:      number,
+		Address:     pairAddress,
+		Token0:      token0Address,
+		Token1:      token1Address,
+		BlockNumber: int64(pairCreated.BlockNumber),
+	}, nil
+}
+
 func (s *Source) Subscribe(ctx context.Context, msgCh chan<- proto.Message, errCh chan<- error) {
 	var wg sync.WaitGroup
 
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		s.subscribeFactory(ctx, msgCh, errCh)
+		s.pollFactoryEvents(ctx, msgCh, errCh)
 	}()
 
 	pairAddrs := s.pairs.Addresses
-
 	for i := 0; i < len(pairAddrs); i += int(s.subscriptionPageSize) {
 		j := i + int(s.subscriptionPageSize)
 		if j > len(pairAddrs) {
@@ -689,13 +768,23 @@ func (s *Source) Init(ctx context.Context) {
 		log.Fatal().Err(err).Msg("Failed to get block number")
 	}
 
+	log.Info().Int64("total", blockNumber).Msg("BlockNumber is: ")
+
 	for i := scannedBlock + 1; i <= blockNumber; i += blockRangeLimit {
 		j := i + blockRangeLimit - 1
 		if j > blockNumber {
 			j = blockNumber
 		}
 
-		s.loadPairsFromRPC(ctx, uint64(i), uint64(j))
+		for {
+			err := s.loadPairsFromRPC(ctx, uint64(i), uint64(j))
+			if err != nil {
+				log.Error().Err(err).Uint64("from", uint64(i)).Uint64("to", uint64(j)).Msg("Failed to load pairs from RPC, retrying...")
+				time.Sleep(5 * time.Second)
+				continue
+			}
+			break
+		}
 	}
 
 	s.pairs.SortAndRemoveDuplicates()
@@ -719,7 +808,7 @@ func (s *Source) loadPairsFromStore(ctx context.Context) {
 	log.Info().Int("total", s.pairs.Len()).Msg("Loaded pairs from store")
 }
 
-func (s *Source) loadPairsFromRPC(ctx context.Context, from uint64, to uint64) {
+func (s *Source) loadPairsFromRPC(ctx context.Context, from uint64, to uint64) error {
 	opts := &bind.FilterOpts{
 		Context: ctx,
 		Start:   from,
@@ -728,19 +817,20 @@ func (s *Source) loadPairsFromRPC(ctx context.Context, from uint64, to uint64) {
 
 	it, err := s.factoryContract.FilterPairCreated(opts, nil, nil)
 	if err != nil {
-		log.Fatal().Err(err).Uint64("from", from).Uint64("to", to).Msg("Failed to load pairs from RPC")
+		return fmt.Errorf("failed to load pairs from RPC: %w", err)
 	}
-
 	defer it.Close()
 
 	for it.Next() {
+		log.Info().Str("???ddd?", "????").Msg("Add pair to store")
 		if err := it.Error(); err != nil {
-			log.Fatal().Err(err).Uint64("from", from).Uint64("to", to).Msg("Failed to load pairs from RPC")
+			return fmt.Errorf("error while iterating over pairs: %w", err)
 		}
 
 		if it.Event.Raw.Removed {
 			continue
 		}
+		log.Info().Str("???eee?", "????").Msg("Add pair to store")
 
 		s.pairs.Add(it.Event.Pair, int64(it.Event.Raw.BlockNumber))
 
@@ -754,6 +844,8 @@ func (s *Source) loadPairsFromRPC(ctx context.Context, from uint64, to uint64) {
 
 		if err := s.store.AddPair(ctx, &pair); err != nil {
 			log.Error().Err(err).Str("address", pair.Address).Msg("Failed to add pair to store")
+		} else {
+			log.Info().Str("address", pair.Address).Msg("Add pair to store")
 		}
 	}
 
@@ -762,4 +854,6 @@ func (s *Source) loadPairsFromRPC(ctx context.Context, from uint64, to uint64) {
 	if err := s.store.SetScannedBlock(ctx, int64(to)); err != nil {
 		log.Error().Err(err).Uint64("number", to).Msg("Failed to set scanned block")
 	}
+
+	return nil
 }
