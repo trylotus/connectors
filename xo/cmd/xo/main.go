@@ -34,17 +34,13 @@ func main() {
 	ctx, cancel := common.ContextWithSignal(context.Background(), os.Interrupt)
 	defer cancel()
 
-	client, err := evm.DialContext(ctx, os.Getenv("RPC_URL"))
+	client, err := evm.Connect(ctx, os.Getenv("RPC_URL"), os.Getenv("CACHE_URL"))
 	if err != nil {
-		log.Fatal().Err(err).Str("url", os.Getenv("RPC_URL")).Msg("Failed to connect to RPC")
-	}
-
-	contracts := []evm.SmartContract{
-		xo.NewContract(ethcommon.HexToAddress(XOContractAddr)),
+		log.Fatal().Err(err).Msg("Failed to create RPC client")
 	}
 
 	c := connector.NewConnector(
-		evm.NewSource(client, contracts),
+		evm.NewSource(client, xo.NewContract(ethcommon.HexToAddress(XOContractAddr))),
 		manager.NewManager(os.Getenv("MANAGER_URL")),
 		registry.NewRegistry(os.Getenv("REGISTRY_URL")),
 		connector.WithDefaultOptions(),
