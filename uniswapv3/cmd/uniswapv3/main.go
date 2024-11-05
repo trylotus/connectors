@@ -37,13 +37,9 @@ func main() {
 	ctx, cancel := common.ContextWithSignal(context.Background(), os.Interrupt)
 	defer cancel()
 
-	rpcUrl := os.Getenv("RPC_URL")
-
-	log.Info().Str("url", rpcUrl).Msg("Connecting to RPC")
-
-	client, err := evm.DialContext(ctx, os.Getenv("RPC_URL"))
+	client, err := evm.Connect(ctx, os.Getenv("RPC_URL"), os.Getenv("CACHE_URL"))
 	if err != nil {
-		log.Fatal().Err(err).Str("url", os.Getenv("RPC_URL")).Msg("Failed to connect to RPC")
+		log.Fatal().Err(err).Msg("Failed to create RPC client")
 	}
 
 	store, err := uniswapv3.NewStore(ctx, os.Getenv("DATA_SOURCE"))
