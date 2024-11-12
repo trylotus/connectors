@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"math/big"
 	"reflect"
+	"strings"
 	"sync"
 	"time"
 
@@ -244,6 +245,14 @@ func (s *Source) subscribeFactory(ctx context.Context, msgCh chan<- proto.Messag
 				log.Error().Err(err).Int64("number", pair.Number).Str("address", pair.Address).Msg("Failed to add pair to store")
 			}
 
+			msg, err := s.ParsePairCreatedEvent(ctx, event)
+			if err != nil {
+				log.Error().Err(err).Str("tx", event.Raw.TxHash.String()).Uint("index", event.Raw.Index).Msg("Invalid PairCreated event")
+				continue
+			}
+
+			msgCh <- msg
+
 			// Prevent gaps
 			go func() {
 				subCtx, cancel := context.WithTimeout(ctx, 3*time.Minute)
@@ -261,14 +270,6 @@ func (s *Source) subscribeFactory(ctx context.Context, msgCh chan<- proto.Messag
 			}()
 
 			go s.subscribePairs(ctx, []ethcommon.Address{event.Pair}, msgCh, errCh)
-
-			msg, err := s.ParsePairCreatedEvent(ctx, event)
-			if err != nil {
-				log.Error().Err(err).Str("tx", event.Raw.TxHash.String()).Uint("index", event.Raw.Index).Msg("Invalid PairCreated event")
-				continue
-			}
-
-			msgCh <- msg
 		}
 	}
 }
@@ -322,48 +323,37 @@ func (s *Source) ParsePairCreatedEvent(ctx context.Context, event *factory.Facto
 func (s *Source) parsePairCreatedEvent(ctx context.Context, event *factory.FactoryPairCreated) (proto.Message, error) {
 	t, err := s.BlockTime(ctx, event.Raw.BlockHash)
 	if err != nil {
-		return nil, fmt.Errorf("error retrieving timestamp: %w", err)
+		return nil, fmt.Errorf("failed to get timestamp: %w", err)
 	}
 
 	token0, err := s.GetToken(ctx, event.Token0)
 	if err != nil {
-		if err.Error() != "no contract code at given address" {
-			return nil, fmt.Errorf("error getting token %s from RPC: %w", event.Token0, err)
-		}
+		return nil, fmt.Errorf("failed to get token %s: %w", event.Token0, err)
 	}
 
 	token1, err := s.GetToken(ctx, event.Token1)
 	if err != nil {
-		if err.Error() != "no contract code at given address" {
-			return nil, fmt.Errorf("error getting token %s from RPC: %w", event.Token1, err)
-		}
+		return nil, fmt.Errorf("failed to get token %s: %w", event.Token1, err)
+
 	}
 
-	msg := &factory.PairCreated{
-		Ts:          &timestamppb.Timestamp{Seconds: int64(t)},
-		BlockNumber: event.Raw.BlockNumber,
-		BlockHash:   event.Raw.BlockHash.Bytes(),
-		TxHash:      event.Raw.TxHash.Bytes(),
-		LogIndex:    uint64(event.Raw.Index),
-		Token0:      event.Token0.Bytes(),
-		Token1:      event.Token1.Bytes(),
-		Pair:        event.Pair.Bytes(),
-		Arg3:        event.Arg3.String(),
-	}
-
-	if token0 != nil {
-		msg.Token0Name = token0.Name
-		msg.Token0Symbol = token0.Symbol
-		msg.Token0Decimals = uint32(token0.Decimals)
-	}
-
-	if token1 != nil {
-		msg.Token1Name = token1.Name
-		msg.Token1Symbol = token1.Symbol
-		msg.Token1Decimals = uint32(token1.Decimals)
-	}
-
-	return msg, nil
+	return &factory.PairCreated{
+		Ts:             &timestamppb.Timestamp{Seconds: int64(t)},
+		BlockNumber:    event.Raw.BlockNumber,
+		BlockHash:      event.Raw.BlockHash.Bytes(),
+		TxHash:         event.Raw.TxHash.Bytes(),
+		LogIndex:       uint64(event.Raw.Index),
+		Token0:         event.Token0.Bytes(),
+		Token1:         event.Token1.Bytes(),
+		Pair:           event.Pair.Bytes(),
+		Arg3:           event.Arg3.String(),
+		Token0Name:     token0.Name,
+		Token0Symbol:   token0.Symbol,
+		Token0Decimals: uint32(token0.Decimals),
+		Token1Name:     token1.Name,
+		Token1Symbol:   token1.Symbol,
+		Token1Decimals: uint32(token1.Decimals),
+	}, nil
 }
 
 func (s *Source) ParsePairLog(ctx context.Context, vLog types.Log) (proto.Message, error) {
@@ -380,19 +370,19 @@ func (s *Source) ParsePairLog(ctx context.Context, vLog types.Log) (proto.Messag
 func (s *Source) parsePairLog(ctx context.Context, vLog types.Log) (proto.Message, error) {
 	t, err := s.BlockTime(ctx, vLog.BlockHash)
 	if err != nil {
-		return nil, fmt.Errorf("error retrieving timestamp: %w", err)
+		return nil, fmt.Errorf("failed to get timestamp: %w", err)
 	}
 
 	ts := &timestamppb.Timestamp{Seconds: int64(t)}
 
 	event, err := pair.UnpackLog(vLog)
 	if err != nil {
-		return nil, fmt.Errorf("error unpacking pair log: %w", err)
+		return nil, fmt.Errorf("failed to unpack pair log: %w", err)
 	}
 
 	p, err := s.GetPair(ctx, vLog.Address)
 	if err != nil {
-		return nil, fmt.Errorf("error getting pair %s: %w", vLog.Address, err)
+		return nil, fmt.Errorf("failed to get pair %s: %w", vLog.Address, err)
 	}
 
 	switch event := event.(type) {
@@ -597,17 +587,25 @@ func (s *Source) getTokenFromRpc(ctx context.Context, address ethcommon.Address)
 
 	decimals, err := tokenContract.Decimals(&bind.CallOpts{Context: ctx})
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to get token decimals: %w", err)
 	}
 
 	name, err := tokenContract.Name(&bind.CallOpts{Context: ctx})
 	if err != nil {
-		log.Error().Err(err).Str("address", address.String()).Msg("Failed to get token name")
+		if strings.HasPrefix(err.Error(), "abi") { // Decode error
+			log.Error().Err(err).Str("address", address.String()).Msg("Failed to get token name")
+		} else {
+			return nil, fmt.Errorf("failed to get token name: %w", err)
+		}
 	}
 
 	symbol, err := tokenContract.Symbol(&bind.CallOpts{Context: ctx})
 	if err != nil {
-		log.Error().Err(err).Str("address", address.String()).Msg("Failed to get token symbol")
+		if strings.HasPrefix(err.Error(), "abi") { // Decode error
+			log.Error().Err(err).Str("address", address.String()).Msg("Failed to get token symbol")
+		} else {
+			return nil, fmt.Errorf("failed to get token symbol: %w", err)
+		}
 	}
 
 	return &Token{
@@ -744,6 +742,16 @@ func (s *Source) loadPairsFromRPC(ctx context.Context, from uint64, to uint64) {
 		}
 
 		if it.Event.Raw.Removed {
+			continue
+		}
+
+		if _, err := s.GetToken(ctx, it.Event.Token0); err != nil {
+			log.Error().Err(err).Str("address", it.Event.Token0.String()).Msg("Failed to get token")
+			continue
+		}
+
+		if _, err := s.GetToken(ctx, it.Event.Token1); err != nil {
+			log.Error().Err(err).Str("address", it.Event.Token1.String()).Msg("Failed to get token")
 			continue
 		}
 
