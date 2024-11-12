@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math/big"
 	"reflect"
+	"strings"
 	"sync"
 	"time"
 
@@ -273,14 +274,14 @@ func (s *Source) ParseFactoryLog(ctx context.Context, vLog types.Log, subscribe 
 func (s *Source) parseFactoryLog(ctx context.Context, vLog types.Log, subscribe bool, msgCh chan<- proto.Message, errCh chan<- error) (proto.Message, error) {
 	t, err := s.BlockTime(ctx, vLog.BlockHash)
 	if err != nil {
-		return nil, fmt.Errorf("error retrieving timestamp: %w", err)
+		return nil, fmt.Errorf("failed to get timestamp: %w", err)
 	}
 
 	ts := &timestamppb.Timestamp{Seconds: int64(t)}
 
 	event, err := factory.UnpackLog(vLog)
 	if err != nil {
-		return nil, fmt.Errorf("error unpacking factory log: %w", err)
+		return nil, fmt.Errorf("failed to unpack factory log: %w", err)
 	}
 
 	switch event := event.(type) {
@@ -305,6 +306,16 @@ func (s *Source) parseFactoryLog(ctx context.Context, vLog types.Log, subscribe 
 			NewOwner:    event.NewOwner.Bytes(),
 		}, nil
 	case factory.FactoryPoolCreated:
+		token0, err := s.GetToken(ctx, event.Token0)
+		if err != nil {
+			return nil, err
+		}
+
+		token1, err := s.GetToken(ctx, event.Token1)
+		if err != nil {
+			return nil, err
+		}
+
 		if subscribe {
 			// Prevent gaps
 			go func() {
@@ -325,42 +336,24 @@ func (s *Source) parseFactoryLog(ctx context.Context, vLog types.Log, subscribe 
 			go s.subscribePools(ctx, []ethcommon.Address{event.Pool}, msgCh, errCh)
 		}
 
-		token0, err := s.GetToken(ctx, event.Token0)
-		if err != nil {
-			return nil, err
-		}
-
-		token1, err := s.GetToken(ctx, event.Token1)
-		if err != nil {
-			return nil, err
-		}
-
-		msg := &factory.PoolCreated{
-			Ts:          ts,
-			BlockNumber: vLog.BlockNumber,
-			BlockHash:   vLog.BlockHash.Bytes(),
-			TxHash:      vLog.TxHash.Bytes(),
-			LogIndex:    uint64(vLog.Index),
-			Token0:      event.Token0.Bytes(),
-			Token1:      event.Token1.Bytes(),
-			Fee:         uint32(event.Fee.Uint64()),
-			TickSpacing: int32(event.TickSpacing.Int64()),
-			Pool:        event.Pool.Bytes(),
-		}
-
-		if token0 != nil {
-			msg.Token0Name = token0.Name
-			msg.Token0Symbol = token0.Symbol
-			msg.Token0Decimals = uint32(token0.Decimals)
-		}
-
-		if token1 != nil {
-			msg.Token1Name = token1.Name
-			msg.Token1Symbol = token1.Symbol
-			msg.Token1Decimals = uint32(token1.Decimals)
-		}
-
-		return msg, nil
+		return &factory.PoolCreated{
+			Ts:             ts,
+			BlockNumber:    vLog.BlockNumber,
+			BlockHash:      vLog.BlockHash.Bytes(),
+			TxHash:         vLog.TxHash.Bytes(),
+			LogIndex:       uint64(vLog.Index),
+			Token0:         event.Token0.Bytes(),
+			Token1:         event.Token1.Bytes(),
+			Fee:            uint32(event.Fee.Uint64()),
+			TickSpacing:    int32(event.TickSpacing.Int64()),
+			Pool:           event.Pool.Bytes(),
+			Token0Name:     token0.Name,
+			Token0Symbol:   token0.Symbol,
+			Token0Decimals: uint32(token0.Decimals),
+			Token1Name:     token1.Name,
+			Token1Symbol:   token1.Symbol,
+			Token1Decimals: uint32(token1.Decimals),
+		}, nil
 	default:
 		return nil, fmt.Errorf("unhandled event: %s", reflect.TypeOf(event))
 	}
@@ -387,12 +380,12 @@ func (s *Source) parsePoolLog(ctx context.Context, vLog types.Log) (proto.Messag
 
 	event, err := pool.UnpackLog(vLog)
 	if err != nil {
-		return nil, fmt.Errorf("error unpacking pool log: %w", err)
+		return nil, fmt.Errorf("failed to unpack pool log: %w", err)
 	}
 
 	p, err := s.GetPool(ctx, vLog.Address)
 	if err != nil {
-		return nil, fmt.Errorf("error getting pool %s: %w", vLog.Address, err)
+		return nil, fmt.Errorf("failed to get pool %s: %w", vLog.Address, err)
 	}
 
 	switch event := event.(type) {
@@ -671,17 +664,25 @@ func (s *Source) getTokenFromRpc(ctx context.Context, address ethcommon.Address)
 
 	decimals, err := tokenContract.Decimals(&bind.CallOpts{Context: ctx})
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to get token decimals: %w", err)
 	}
 
 	name, err := tokenContract.Name(&bind.CallOpts{Context: ctx})
 	if err != nil {
-		log.Error().Err(err).Str("address", address.String()).Msg("Failed to get token name")
+		if strings.HasPrefix(err.Error(), "abi") { // Decode error
+			log.Error().Err(err).Str("address", address.String()).Msg("Failed to get token name")
+		} else {
+			return nil, fmt.Errorf("failed to get token name: %w", err)
+		}
 	}
 
 	symbol, err := tokenContract.Symbol(&bind.CallOpts{Context: ctx})
 	if err != nil {
-		log.Error().Err(err).Str("address", address.String()).Msg("Failed to get token symbol")
+		if strings.HasPrefix(err.Error(), "abi") { // Decode error
+			log.Error().Err(err).Str("address", address.String()).Msg("Failed to get token symbol")
+		} else {
+			return nil, fmt.Errorf("failed to get token symbol: %w", err)
+		}
 	}
 
 	return &Token{
@@ -828,6 +829,16 @@ func (s *Source) loadPoolsFromRPC(ctx context.Context, from uint64, to uint64) {
 		}
 
 		if it.Event.Raw.Removed {
+			continue
+		}
+
+		if _, err := s.GetToken(ctx, it.Event.Token0); err != nil {
+			log.Error().Err(err).Str("address", it.Event.Token0.String()).Msg("Failed to get token")
+			continue
+		}
+
+		if _, err := s.GetToken(ctx, it.Event.Token1); err != nil {
+			log.Error().Err(err).Str("address", it.Event.Token1.String()).Msg("Failed to get token")
 			continue
 		}
 
