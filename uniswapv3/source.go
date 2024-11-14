@@ -390,12 +390,12 @@ func (s *Source) parsePoolLog(ctx context.Context, vLog types.Log) (proto.Messag
 
 	switch event := event.(type) {
 	case pool.PoolBurn:
-		token0, err := s.GetToken(ctx, ethcommon.HexToAddress(p.Token0))
+		token0, err := s.GetToken(ctx, p.Token0)
 		if err != nil {
 			return nil, err
 		}
 
-		token1, err := s.GetToken(ctx, ethcommon.HexToAddress(p.Token0))
+		token1, err := s.GetToken(ctx, p.Token1)
 		if err != nil {
 			return nil, err
 		}
@@ -420,12 +420,12 @@ func (s *Source) parsePoolLog(ctx context.Context, vLog types.Log) (proto.Messag
 			Amount1:     floatString(amount1),
 		}, nil
 	case pool.PoolCollect:
-		token0, err := s.GetToken(ctx, ethcommon.HexToAddress(p.Token0))
+		token0, err := s.GetToken(ctx, p.Token0)
 		if err != nil {
 			return nil, err
 		}
 
-		token1, err := s.GetToken(ctx, ethcommon.HexToAddress(p.Token0))
+		token1, err := s.GetToken(ctx, p.Token1)
 		if err != nil {
 			return nil, err
 		}
@@ -448,12 +448,12 @@ func (s *Source) parsePoolLog(ctx context.Context, vLog types.Log) (proto.Messag
 			Amount1:     floatString(amount1),
 		}, nil
 	case pool.PoolCollectProtocol:
-		token0, err := s.GetToken(ctx, ethcommon.HexToAddress(p.Token0))
+		token0, err := s.GetToken(ctx, p.Token0)
 		if err != nil {
 			return nil, err
 		}
 
-		token1, err := s.GetToken(ctx, ethcommon.HexToAddress(p.Token0))
+		token1, err := s.GetToken(ctx, p.Token1)
 		if err != nil {
 			return nil, err
 		}
@@ -474,12 +474,12 @@ func (s *Source) parsePoolLog(ctx context.Context, vLog types.Log) (proto.Messag
 			Amount1:     floatString(amount1),
 		}, nil
 	case pool.PoolFlash:
-		token0, err := s.GetToken(ctx, ethcommon.HexToAddress(p.Token0))
+		token0, err := s.GetToken(ctx, p.Token0)
 		if err != nil {
 			return nil, err
 		}
 
-		token1, err := s.GetToken(ctx, ethcommon.HexToAddress(p.Token0))
+		token1, err := s.GetToken(ctx, p.Token1)
 		if err != nil {
 			return nil, err
 		}
@@ -526,12 +526,12 @@ func (s *Source) parsePoolLog(ctx context.Context, vLog types.Log) (proto.Messag
 			Tick:         int32(event.Tick.Int64()),
 		}, nil
 	case pool.PoolMint:
-		token0, err := s.GetToken(ctx, ethcommon.HexToAddress(p.Token0))
+		token0, err := s.GetToken(ctx, p.Token0)
 		if err != nil {
 			return nil, err
 		}
 
-		token1, err := s.GetToken(ctx, ethcommon.HexToAddress(p.Token0))
+		token1, err := s.GetToken(ctx, p.Token1)
 		if err != nil {
 			return nil, err
 		}
@@ -570,12 +570,12 @@ func (s *Source) parsePoolLog(ctx context.Context, vLog types.Log) (proto.Messag
 			FeeProtocol1New: uint32(event.FeeProtocol1New),
 		}, nil
 	case pool.PoolSwap:
-		token0, err := s.GetToken(ctx, ethcommon.HexToAddress(p.Token0))
+		token0, err := s.GetToken(ctx, p.Token0)
 		if err != nil {
 			return nil, err
 		}
 
-		token1, err := s.GetToken(ctx, ethcommon.HexToAddress(p.Token0))
+		token1, err := s.GetToken(ctx, p.Token1)
 		if err != nil {
 			return nil, err
 		}
@@ -629,7 +629,7 @@ func (s *Source) GetToken(ctx context.Context, address ethcommon.Address) (*Toke
 	s.tokenCacheLock.Lock(address)
 	defer s.tokenCacheLock.Unlock(address)
 
-	token, err := s.store.GetToken(ctx, address.String())
+	token, err := s.store.GetToken(ctx, address)
 	if err != nil {
 		return nil, err
 	}
@@ -650,7 +650,7 @@ func (s *Source) GetToken(ctx context.Context, address ethcommon.Address) (*Toke
 	}
 
 	if err := s.store.AddToken(ctx, token); err != nil {
-		log.Error().Err(err).Str("address", token.Address).Msg("Failed to add token to store")
+		log.Error().Err(err).Str("address", token.Address.String()).Msg("Failed to add token to store")
 	}
 
 	return token, nil
@@ -686,7 +686,7 @@ func (s *Source) getTokenFromRpc(ctx context.Context, address ethcommon.Address)
 	}
 
 	return &Token{
-		Address:  address.String(),
+		Address:  address,
 		Name:     name,
 		Symbol:   symbol,
 		Decimals: decimals,
@@ -697,7 +697,7 @@ func (s *Source) GetPool(ctx context.Context, address ethcommon.Address) (*Pool,
 	s.poolCacheLock.Lock(address)
 	defer s.poolCacheLock.Unlock(address)
 
-	p, err := s.store.GetPool(ctx, address.String())
+	p, err := s.store.GetPool(ctx, address)
 	if err != nil {
 		return nil, err
 	}
@@ -718,7 +718,7 @@ func (s *Source) GetPool(ctx context.Context, address ethcommon.Address) (*Pool,
 	}
 
 	if err := s.store.AddPool(ctx, p); err != nil {
-		log.Error().Err(err).Str("address", p.Address).Msg("Failed to add pool to store")
+		log.Error().Err(err).Str("address", p.Address.String()).Msg("Failed to add pool to store")
 	}
 
 	return p, nil
@@ -751,9 +751,9 @@ func (s *Source) getPoolFromRpc(ctx context.Context, address ethcommon.Address) 
 	}
 
 	return &Pool{
-		Address:     address.String(),
-		Token0:      token0.String(),
-		Token1:      token1.String(),
+		Address:     address,
+		Token0:      token0,
+		Token1:      token1,
 		Fee:         fee.Int64(),
 		TickSpacing: tickSpacing.Int64(),
 	}, nil
@@ -799,7 +799,7 @@ func (s *Source) loadPoolsFromStore(ctx context.Context) {
 	poolCh, errCh := s.store.AllPools(ctx)
 
 	for pool := range poolCh {
-		s.pools.Add(ethcommon.HexToAddress(pool.Address), pool.BlockNumber)
+		s.pools.Add(pool.Address, pool.BlockNumber)
 	}
 
 	for err := range errCh {
@@ -845,16 +845,16 @@ func (s *Source) loadPoolsFromRPC(ctx context.Context, from uint64, to uint64) {
 		s.pools.Add(it.Event.Pool, int64(it.Event.Raw.BlockNumber))
 
 		pool := Pool{
-			Address:     it.Event.Pool.String(),
-			Token0:      it.Event.Token0.String(),
-			Token1:      it.Event.Token1.String(),
+			Address:     it.Event.Pool,
+			Token0:      it.Event.Token0,
+			Token1:      it.Event.Token1,
 			Fee:         it.Event.Fee.Int64(),
 			TickSpacing: it.Event.TickSpacing.Int64(),
 			BlockNumber: int64(it.Event.Raw.BlockNumber),
 		}
 
 		if err := s.store.AddPool(ctx, &pool); err != nil {
-			log.Error().Err(err).Str("address", pool.Address).Msg("Failed to add pool to store")
+			log.Error().Err(err).Str("address", pool.Address.String()).Msg("Failed to add pool to store")
 		}
 	}
 

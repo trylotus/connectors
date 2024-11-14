@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 
+	ethcommon "github.com/ethereum/go-ethereum/common"
 	lru "github.com/hashicorp/golang-lru"
 	"github.com/jmoiron/sqlx"
 )
@@ -15,19 +16,19 @@ const (
 )
 
 type Pool struct {
-	Address     string `db:"address"`
-	Token0      string `db:"token0"`
-	Token1      string `db:"token1"`
-	Fee         int64  `db:"fee"`
-	TickSpacing int64  `db:"tick_spacing"`
-	BlockNumber int64  `db:"block_number"`
+	Address     ethcommon.Address `db:"address"`
+	Token0      ethcommon.Address `db:"token0"`
+	Token1      ethcommon.Address `db:"token1"`
+	Fee         int64             `db:"fee"`
+	TickSpacing int64             `db:"tick_spacing"`
+	BlockNumber int64             `db:"block_number"`
 }
 
 type Token struct {
-	Address  string `db:"address"`
-	Name     string `db:"name"`
-	Symbol   string `db:"symbol"`
-	Decimals uint8  `db:"decimals"`
+	Address  ethcommon.Address `db:"address"`
+	Name     string            `db:"name"`
+	Symbol   string            `db:"symbol"`
+	Decimals uint8             `db:"decimals"`
 }
 
 type Store struct {
@@ -118,7 +119,7 @@ func (s *Store) AddPool(ctx context.Context, pool *Pool) error {
 	return err
 }
 
-func (s *Store) GetPool(ctx context.Context, address string) (*Pool, error) {
+func (s *Store) GetPool(ctx context.Context, address ethcommon.Address) (*Pool, error) {
 	if pair, ok := s.poolCache.Get(address); ok {
 		return pair.(*Pool), nil
 	}
@@ -145,7 +146,7 @@ func (s *Store) AddToken(ctx context.Context, token *Token) error {
 	return err
 }
 
-func (s *Store) GetToken(ctx context.Context, address string) (*Token, error) {
+func (s *Store) GetToken(ctx context.Context, address ethcommon.Address) (*Token, error) {
 	if token, ok := s.tokenCache.Get(address); ok {
 		return token.(*Token), nil
 	}

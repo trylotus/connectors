@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS v3_pools (
-    address TEXT PRIMARY KEY,
-    token0 TEXT NOT NULL,
-    token1 TEXT NOT NULL,
+    address BYTEA PRIMARY KEY,
+    token0 BYTEA NOT NULL,
+    token1 BYTEA NOT NULL,
     fee INT8 NOT NULL,
     tick_spacing INT8 NOT NULL,
     block_number INT8 NOT NULL
