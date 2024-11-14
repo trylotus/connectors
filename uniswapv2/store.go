@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 
+	ethcommon "github.com/ethereum/go-ethereum/common"
 	lru "github.com/hashicorp/golang-lru"
 	"github.com/jmoiron/sqlx"
 )
@@ -15,18 +16,18 @@ const (
 )
 
 type Pair struct {
-	Number      int64  `db:"number"`
-	Address     string `db:"address"`
-	Token0      string `db:"token0"`
-	Token1      string `db:"token1"`
-	BlockNumber int64  `db:"block_number"`
+	Number      int64             `db:"number"`
+	Address     ethcommon.Address `db:"address"`
+	Token0      ethcommon.Address `db:"token0"`
+	Token1      ethcommon.Address `db:"token1"`
+	BlockNumber int64             `db:"block_number"`
 }
 
 type Token struct {
-	Address  string `db:"address"`
-	Name     string `db:"name"`
-	Symbol   string `db:"symbol"`
-	Decimals uint8  `db:"decimals"`
+	Address  ethcommon.Address `db:"address"`
+	Name     string            `db:"name"`
+	Symbol   string            `db:"symbol"`
+	Decimals uint8             `db:"decimals"`
 }
 
 type Store struct {
@@ -117,7 +118,7 @@ func (s *Store) AddPair(ctx context.Context, pair *Pair) error {
 	return err
 }
 
-func (s *Store) GetPair(ctx context.Context, address string) (*Pair, error) {
+func (s *Store) GetPair(ctx context.Context, address ethcommon.Address) (*Pair, error) {
 	if pair, ok := s.pairCache.Get(address); ok {
 		return pair.(*Pair), nil
 	}
@@ -144,7 +145,7 @@ func (s *Store) AddToken(ctx context.Context, token *Token) error {
 	return err
 }
 
-func (s *Store) GetToken(ctx context.Context, address string) (*Token, error) {
+func (s *Store) GetToken(ctx context.Context, address ethcommon.Address) (*Token, error) {
 	if token, ok := s.tokenCache.Get(address); ok {
 		return token.(*Token), nil
 	}

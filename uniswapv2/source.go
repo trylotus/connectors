@@ -237,12 +237,12 @@ func (s *Source) subscribeFactory(ctx context.Context, msgCh chan<- proto.Messag
 
 			pair := &Pair{
 				Number:  event.Arg3.Int64(),
-				Address: event.Raw.Address.String(),
-				Token0:  event.Token0.String(),
-				Token1:  event.Token1.String(),
+				Address: event.Raw.Address,
+				Token0:  event.Token0,
+				Token1:  event.Token1,
 			}
 			if err := s.store.AddPair(ctx, pair); err != nil {
-				log.Error().Err(err).Int64("number", pair.Number).Str("address", pair.Address).Msg("Failed to add pair to store")
+				log.Error().Err(err).Int64("number", pair.Number).Str("address", pair.Address.String()).Msg("Failed to add pair to store")
 			}
 
 			msg, err := s.ParsePairCreatedEvent(ctx, event)
@@ -387,12 +387,12 @@ func (s *Source) parsePairLog(ctx context.Context, vLog types.Log) (proto.Messag
 
 	switch event := event.(type) {
 	case pair.PairMint:
-		token0, err := s.GetToken(ctx, ethcommon.HexToAddress(p.Token0))
+		token0, err := s.GetToken(ctx, p.Token0)
 		if err != nil {
 			return nil, err
 		}
 
-		token1, err := s.GetToken(ctx, ethcommon.HexToAddress(p.Token0))
+		token1, err := s.GetToken(ctx, p.Token1)
 		if err != nil {
 			return nil, err
 		}
@@ -412,12 +412,12 @@ func (s *Source) parsePairLog(ctx context.Context, vLog types.Log) (proto.Messag
 			Amount1:     floatString(amount1),
 		}, nil
 	case pair.PairSwap:
-		token0, err := s.GetToken(ctx, ethcommon.HexToAddress(p.Token0))
+		token0, err := s.GetToken(ctx, p.Token0)
 		if err != nil {
 			return nil, err
 		}
 
-		token1, err := s.GetToken(ctx, ethcommon.HexToAddress(p.Token0))
+		token1, err := s.GetToken(ctx, p.Token1)
 		if err != nil {
 			return nil, err
 		}
@@ -442,12 +442,12 @@ func (s *Source) parsePairLog(ctx context.Context, vLog types.Log) (proto.Messag
 			To:          event.To.Bytes(),
 		}, nil
 	case pair.PairSync:
-		token0, err := s.GetToken(ctx, ethcommon.HexToAddress(p.Token0))
+		token0, err := s.GetToken(ctx, p.Token0)
 		if err != nil {
 			return nil, err
 		}
 
-		token1, err := s.GetToken(ctx, ethcommon.HexToAddress(p.Token0))
+		token1, err := s.GetToken(ctx, p.Token1)
 		if err != nil {
 			return nil, err
 		}
@@ -496,12 +496,12 @@ func (s *Source) parsePairLog(ctx context.Context, vLog types.Log) (proto.Messag
 			Value:       floatString(value),
 		}, nil
 	case pair.PairBurn:
-		token0, err := s.GetToken(ctx, ethcommon.HexToAddress(p.Token0))
+		token0, err := s.GetToken(ctx, p.Token0)
 		if err != nil {
 			return nil, err
 		}
 
-		token1, err := s.GetToken(ctx, ethcommon.HexToAddress(p.Token0))
+		token1, err := s.GetToken(ctx, p.Token1)
 		if err != nil {
 			return nil, err
 		}
@@ -552,7 +552,7 @@ func (s *Source) GetToken(ctx context.Context, address ethcommon.Address) (*Toke
 	s.tokenCacheLock.Lock(address)
 	defer s.tokenCacheLock.Unlock(address)
 
-	token, err := s.store.GetToken(ctx, address.String())
+	token, err := s.store.GetToken(ctx, address)
 	if err != nil {
 		return nil, err
 	}
@@ -573,7 +573,7 @@ func (s *Source) GetToken(ctx context.Context, address ethcommon.Address) (*Toke
 	}
 
 	if err := s.store.AddToken(ctx, token); err != nil {
-		log.Error().Err(err).Str("address", token.Address).Msg("Failed to add token to store")
+		log.Error().Err(err).Str("address", token.Address.String()).Msg("Failed to add token to store")
 	}
 
 	return token, nil
@@ -609,7 +609,7 @@ func (s *Source) getTokenFromRpc(ctx context.Context, address ethcommon.Address)
 	}
 
 	return &Token{
-		Address:  address.String(),
+		Address:  address,
 		Name:     name,
 		Symbol:   symbol,
 		Decimals: decimals,
@@ -620,7 +620,7 @@ func (s *Source) GetPair(ctx context.Context, address ethcommon.Address) (*Pair,
 	s.pairCacheLock.Lock(address)
 	defer s.pairCacheLock.Unlock(address)
 
-	p, err := s.store.GetPair(ctx, address.String())
+	p, err := s.store.GetPair(ctx, address)
 	if err != nil {
 		return nil, err
 	}
@@ -641,7 +641,7 @@ func (s *Source) GetPair(ctx context.Context, address ethcommon.Address) (*Pair,
 	}
 
 	if err := s.store.AddPair(ctx, p); err != nil {
-		log.Error().Err(err).Str("address", p.Address).Msg("Failed to add pair to store")
+		log.Error().Err(err).Str("address", p.Address.String()).Msg("Failed to add pair to store")
 	}
 
 	return p, nil
@@ -664,9 +664,9 @@ func (s *Source) getPairFromRpc(ctx context.Context, address ethcommon.Address) 
 	}
 
 	p := &Pair{
-		Address: address.String(),
-		Token0:  token0.String(),
-		Token1:  token1.String(),
+		Address: address,
+		Token0:  token0,
+		Token1:  token1,
 	}
 
 	return p, nil
@@ -712,7 +712,7 @@ func (s *Source) loadPairsFromStore(ctx context.Context) {
 	pairCh, errCh := s.store.AllPairs(ctx)
 
 	for pair := range pairCh {
-		s.pairs.Add(ethcommon.HexToAddress(pair.Address), pair.BlockNumber)
+		s.pairs.Add(ethcommon.HexToAddress(pair.Address.String()), pair.BlockNumber)
 	}
 
 	for err := range errCh {
@@ -759,14 +759,14 @@ func (s *Source) loadPairsFromRPC(ctx context.Context, from uint64, to uint64) {
 
 		pair := Pair{
 			Number:      it.Event.Arg3.Int64(),
-			Address:     it.Event.Pair.String(),
-			Token0:      it.Event.Token0.String(),
-			Token1:      it.Event.Token1.String(),
+			Address:     it.Event.Pair,
+			Token0:      it.Event.Token0,
+			Token1:      it.Event.Token1,
 			BlockNumber: int64(it.Event.Raw.BlockNumber),
 		}
 
 		if err := s.store.AddPair(ctx, &pair); err != nil {
-			log.Error().Err(err).Str("address", pair.Address).Msg("Failed to add pair to store")
+			log.Error().Err(err).Str("address", pair.Address.String()).Msg("Failed to add pair to store")
 		}
 	}
 

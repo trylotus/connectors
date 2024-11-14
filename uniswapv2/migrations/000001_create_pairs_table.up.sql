@@ -1,12 +1,10 @@
 CREATE TABLE IF NOT EXISTS v2_pairs (
-    number INT8 PRIMARY KEY,
-    address TEXT NOT NULL,
-    token0 TEXT NOT NULL,
-    token1 TEXT NOT NULL,
+    number INT8 NOT NULL,
+    address BYTEA PRIMARY KEY,
+    token0 BYTEA NOT NULL,
+    token1 BYTEA NOT NULL,
     block_number INT8 NOT NULL
 );
-
-CREATE UNIQUE INDEX ON v2_pairs (address);
 
 CREATE TABLE IF NOT EXISTS v2_pairs_scanned_block (
     id INT8 PRIMARY KEY,
