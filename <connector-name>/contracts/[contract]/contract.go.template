@@ -5,12 +5,13 @@ import (
 	"strings"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
+	ethcommon "github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/rs/zerolog/log"
+	"github.com/trylotus/go-connector/common"
+	"github.com/trylotus/go-connector/source/evm"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
-	"github.com/trylotus/go-connector/common"
-	ethcommon "github.com/ethereum/go-ethereum/common"
 )
 
 type SmartContract struct {
