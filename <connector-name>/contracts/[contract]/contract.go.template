@@ -10,29 +10,32 @@ import (
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"github.com/trylotus/go-connector/common"
+	ethcommon "github.com/ethereum/go-ethereum/common"
 )
 
 type SmartContract struct {
-	Addr string
+	Addr ethcommon.Address
 	Abi  abi.ABI
 }
 
-func NewContract(addr string) *SmartContract {
+var _ evm.SmartContract = (*SmartContract)(nil)
+
+func NewContract(address ethcommon.Address) *SmartContract {
 	contractAbi, err := abi.JSON(strings.NewReader({{$.ContractName | ToCamel}}MetaData.ABI))
 	if err != nil {
-		log.Fatal().Err(err).Msg("error reading abi")
+		log.Fatal().Err(err).Msg("failed to read contract ABI")
 	}
-	return &SmartContract{Addr: addr, Abi: contractAbi}
+	return &SmartContract{Addr: address, Abi: contractAbi}
 }
 
-func (c *SmartContract) Address() string {
+func (c *SmartContract) Address() ethcommon.Address {
 	return c.Addr
 }
 
 func (c *SmartContract) Message(vLog types.Log, ts *timestamppb.Timestamp) (proto.Message, error) {
 	ev, err := c.Abi.EventByID(vLog.Topics[0])
 	if err != nil {
-		return nil, fmt.Errorf("cannot find event by ID: %v", err)
+		return nil, fmt.Errorf("no event with id %s: %w", vLog.Topics[0].Hex(), err)
 	}
 	switch ev.Name {
 
