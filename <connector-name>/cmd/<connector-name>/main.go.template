@@ -4,12 +4,14 @@ import (
 	"context"
 	"os"
 
+	ethcommon "github.com/ethereum/go-ethereum/common"
 	"github.com/joho/godotenv"
 	"github.com/spf13/pflag"
-
 	"github.com/trylotus/go-connector"
 	"github.com/trylotus/go-connector/common"
 	"github.com/trylotus/go-connector/log"
+	"github.com/trylotus/go-connector/manager"
+	"github.com/trylotus/go-connector/registry"
 	"github.com/trylotus/go-connector/source/evm"
 
     {{range $idx, $contractData := .ContractList }}
@@ -18,39 +20,36 @@ import (
 
 var ContractList = []evm.SmartContract{
     {{range $idx, $contractData := .ContractList }}
-        {{$contractData.ContractName}}.NewContract("{{$contractData.ContractAddress}}"),{{end}}
+        {{$contractData.ContractName}}.NewContract(ethcommon.HexToAddress("{{$contractData.ContractAddress}}")),{{end}}
 }
 
 func main() {
 	_ = godotenv.Load()
 
 	var (
-		subscribe     bool
-		subscribeFrom int64
-		backfill      common.List
+		backfill  int64
+		subscribe bool
 	)
 
-	pflag.VarP(&backfill, "backfill", "b", "comma separated list of block numbers to backfill (optional)")
+	pflag.Int64VarP(&backfill, "backfill", "b", 0, "block number to backfill to")
 	pflag.BoolVarP(&subscribe, "subscribe", "s", true, "whether to subscribe to new blockchain events")
-	pflag.Int64VarP(&subscribeFrom, "subscribe-from", "f", 0, "block number to subscribe from (default latest block)")
 
 	pflag.Parse()
 
 	ctx, cancel := common.ContextWithSignal(context.Background(), os.Interrupt)
 	defer cancel()
 
-	rpcUrl := os.Getenv("RPC_URL")
-
-	log.Info().Str("url", rpcUrl).Msg("Connecting to RPC")
-
-	client, err := evm.DialContext(ctx, rpcUrl)
+	client, err := evm.Connect(ctx, os.Getenv("RPC_URL"), os.Getenv("CACHE_URL"))
 	if err != nil {
-		log.Fatal().Err(err).Str("url", rpcUrl).Msg("Failed to connect to RPC")
+		log.Fatal().Err(err).Msg("Failed to create RPC client")
 	}
 
-	source := evm.NewSource(client, ContractList)
-
-	c := connector.NewConnector(source, connector.WithDefaultOptions())
+	c := connector.NewConnector(
+		evm.NewSource(client, ContractList...),
+		manager.NewManager(os.Getenv("MANAGER_URL")),
+		registry.NewRegistry(os.Getenv("REGISTRY_URL")),
+		connector.WithDefaultOptions(),
+	)
 
 	go c.RegisterDescriptor(ctx,
         {{range $idx, $contractData := .ContractList }}
@@ -58,10 +57,10 @@ func main() {
 	)
 
 	if subscribe {
-		c.Subscribe(ctx, subscribeFrom)
+		c.Subscribe(ctx)
 	}
 
-	if !backfill.IsEmpty() {
+	if backfill > 0 {
 		c.Backfill(ctx, backfill)
 	}
 
