@@ -50,6 +50,7 @@ case "Approval":
 	return &Approval{
 		Ts:          ts,
 		BlockNumber: vLog.BlockNumber,
+		BlockHash:   vLog.BlockHash.Bytes(),
 		TxHash:      vLog.TxHash.Bytes(),
 		Index:       uint64(vLog.Index),
 		Src:         event.Src.String(),
@@ -67,6 +68,7 @@ case "{{ $eventData.EventName }}":
 	protoMsg := &{{ $eventData.GoProtoStructName }}{
 		Ts:          ts,
 		BlockNumber: vLog.BlockNumber,
+		BlockHash:   vLog.BlockHash.Bytes(),
 		TxHash:      vLog.TxHash.Bytes(),
 		LogIndex:       uint64(vLog.Index),
 {{ range $leftSide, $rightSide := $eventData.GoProtoStructFieldInit }}
