@@ -1,0 +1,7 @@
+version: '3'
+services:
+  connector:
+    build: .
+    container_name: ether-1731691111-connector
+    image: lotus/ether-1731691111-connector
+    restart: always
