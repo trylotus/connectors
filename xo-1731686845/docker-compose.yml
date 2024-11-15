@@ -1,0 +1,7 @@
+version: '3'
+services:
+  connector:
+    build: .
+    container_name: xo-1731686845-connector
+    image: lotus/xo-1731686845-connector
+    restart: always
