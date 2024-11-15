@@ -1,4 +1,4 @@
-module github.com/trylotus/connectors/{{.ConnectorName}}
+module github.com/trylotus/connectors/xo-1731686188
 
 go 1.23.0
 

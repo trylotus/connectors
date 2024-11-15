@@ -25,7 +25,7 @@ ENV CGO_ENABLED=1
 ENV GOFLAGS="-tags=musl"
 
 RUN go mod tidy
-RUN go build -o bin cmd/{{.ConnectorName}}/main.go
+RUN go build -o bin cmd/xo-1731686188/main.go
 
 FROM --platform=linux/amd64 alpine:3.20
 

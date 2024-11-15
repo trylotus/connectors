@@ -14,13 +14,13 @@ import (
 	"github.com/trylotus/go-connector/registry"
 	"github.com/trylotus/go-connector/source/evm"
 
-    {{range $idx, $contractData := .ContractList }}
-	"github.com/trylotus/connectors/{{$.ConnectorName}}/contracts/{{$contractData.ContractName}}"{{end}}
+    
+	"github.com/trylotus/connectors/xo-1731686188/contracts/usercontract0"
 )
 
 var ContractList = []evm.SmartContract{
-    {{range $idx, $contractData := .ContractList }}
-        {{$contractData.ContractName}}.NewContract(ethcommon.HexToAddress("{{$contractData.ContractAddress}}")),{{end}}
+    
+        usercontract0.NewContract(ethcommon.HexToAddress("0x84583e7d2d92d87d5b3bac850ab4bad37ae568e8")),
 }
 
 func main() {
@@ -52,8 +52,8 @@ func main() {
 	)
 
 	go c.RegisterDescriptor(ctx,
-        {{range $idx, $contractData := .ContractList }}
-            {{$contractData.ContractName}}.File_{{$contractData.ContractName}}_contract_proto,{{end}}
+        
+            usercontract0.File_usercontract0_contract_proto,
 	)
 
 	if subscribe {

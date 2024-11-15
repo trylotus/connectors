@@ -1,4 +1,4 @@
-name: {{.ConnectorName}}
+name: xo-1731686188
 author: lotus
 version: "0.0.0"
 workflow: true
