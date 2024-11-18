@@ -14,13 +14,17 @@ import (
 	"github.com/trylotus/go-connector/registry"
 	"github.com/trylotus/go-connector/source/evm"
 
-    {{range $idx, $contractData := .ContractList }}
-	"github.com/trylotus/connectors/{{$.ConnectorName}}/contracts/{{$contractData.ContractName}}"{{end}}
+    
+	"github.com/trylotus/connectors/pancakeswapv2-1731910845/contracts/pancake_factory"
+	"github.com/trylotus/connectors/pancakeswapv2-1731910845/contracts/tmc"
+	"github.com/trylotus/connectors/pancakeswapv2-1731910845/contracts/bep20_usdt"
 )
 
 var ContractList = []evm.SmartContract{
-    {{range $idx, $contractData := .ContractList }}
-        {{$contractData.ContractName}}.NewContract(ethcommon.HexToAddress("{{$contractData.ContractAddress}}")),{{end}}
+    
+        pancake_factory.NewContract(ethcommon.HexToAddress("0xca143ce32fe78f1f7019d7d551a6402fc5350c73")),
+        tmc.NewContract(ethcommon.HexToAddress("0x558AbE16B071057FF9b99f7eED358B4F4708a384")),
+        bep20_usdt.NewContract(ethcommon.HexToAddress("0x55d398326f99059fF775485246999027B3197955")),
 }
 
 func main() {
@@ -52,8 +56,10 @@ func main() {
 	)
 
 	go c.RegisterDescriptor(ctx,
-        {{range $idx, $contractData := .ContractList }}
-            {{$contractData.ContractName}}.File_{{$contractData.ContractName}}_contract_proto,{{end}}
+        
+            pancake_factory.File_pancake_factory_contract_proto,
+            tmc.File_tmc_contract_proto,
+            bep20_usdt.File_bep20_usdt_contract_proto,
 	)
 
 	if subscribe {

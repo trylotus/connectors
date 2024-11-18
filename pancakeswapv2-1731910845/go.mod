@@ -1,4 +1,4 @@
-module github.com/trylotus/connectors/{{.ConnectorName}}
+module github.com/trylotus/connectors/pancakeswapv2-1731910845
 
 go 1.23.0
 
