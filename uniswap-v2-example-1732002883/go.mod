@@ -1,4 +1,4 @@
-module github.com/trylotus/connectors/{{.ConnectorName}}
+module github.com/trylotus/connectors/uniswap-v2-example-1732002883
 
 go 1.23.0
 

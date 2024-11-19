@@ -1,0 +1,7 @@
+version: '3'
+services:
+  connector:
+    build: .
+    container_name: uniswap-v2-example-1732002883-connector
+    image: lotus/uniswap-v2-example-1732002883-connector
+    restart: always
