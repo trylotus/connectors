@@ -1,0 +1,165 @@
+package pancakeswapv2
+
+import (
+	"context"
+	"database/sql"
+	"errors"
+
+	ethcommon "github.com/ethereum/go-ethereum/common"
+	lru "github.com/hashicorp/golang-lru"
+	"github.com/jmoiron/sqlx"
+)
+
+const (
+	pairCacheSize  = 10000
+	tokenCacheSize = 20000
+)
+
+type Pair struct {
+	Number      int64             `db:"number"`
+	Address     ethcommon.Address `db:"address"`
+	Token0      ethcommon.Address `db:"token0"`
+	Token1      ethcommon.Address `db:"token1"`
+	BlockNumber int64             `db:"block_number"`
+}
+
+type Token struct {
+	Address  ethcommon.Address `db:"address"`
+	Name     string            `db:"name"`
+	Symbol   string            `db:"symbol"`
+	Decimals int64             `db:"decimals"`
+}
+
+type Store struct {
+	db         *sqlx.DB
+	pairCache  *lru.ARCCache
+	tokenCache *lru.ARCCache
+}
+
+func NewStore(ctx context.Context, dataSource string) (*Store, error) {
+	db, err := sqlx.ConnectContext(ctx, "postgres", dataSource)
+	if err != nil {
+		return nil, err
+	}
+	pairCache, err := lru.NewARC(pairCacheSize)
+	if err != nil {
+		return nil, err
+	}
+	tokenCache, err := lru.NewARC(tokenCacheSize)
+	if err != nil {
+		return nil, err
+	}
+
+	store := Store{
+		db:         db,
+		pairCache:  pairCache,
+		tokenCache: tokenCache,
+	}
+
+	return &store, nil
+}
+
+func (s *Store) GetScannedBlock(ctx context.Context) (int64, error) {
+	var number int64
+	if err := s.db.GetContext(ctx, &number, "SELECT number from v2_pairs_scanned_block where id = 1"); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return 0, nil
+		}
+		return 0, err
+	}
+
+	return number, nil
+}
+
+func (s *Store) SetScannedBlock(ctx context.Context, number int64) error {
+	_, err := s.db.ExecContext(ctx, "INSERT INTO v2_pairs_scanned_block (id, number) VALUES (1, $1) ON CONFLICT (id) DO UPDATE SET number = EXCLUDED.number", number)
+
+	return err
+}
+
+func (s *Store) AllPairs(ctx context.Context) (<-chan *Pair, <-chan error) {
+	pairCh := make(chan *Pair, 100)
+	errCh := make(chan error, 1)
+
+	go func() {
+		defer close(pairCh)
+		defer close(errCh)
+
+		rows, err := s.db.QueryxContext(ctx, "SELECT * FROM v2_pairs ORDER BY number")
+		if err != nil {
+			errCh <- err
+			return
+		}
+		defer rows.Close()
+
+		for rows.Next() {
+			var pair Pair
+			if err := rows.StructScan(&pair); err != nil {
+				errCh <- err
+				return
+			}
+			s.pairCache.Add(pair.Address, &pair)
+			pairCh <- &pair
+		}
+
+		if err := rows.Err(); err != nil {
+			errCh <- err
+		}
+	}()
+
+	return pairCh, errCh
+}
+
+func (s *Store) AddPair(ctx context.Context, pair *Pair) error {
+	s.pairCache.Add(pair.Address, pair)
+
+	_, err := s.db.NamedExecContext(ctx, "INSERT INTO v2_pairs (number, address, token0, token1, block_number) VALUES (:number, :address, :token0, :token1, :block_number) ON CONFLICT DO NOTHING", pair)
+
+	return err
+}
+
+func (s *Store) GetPair(ctx context.Context, address ethcommon.Address) (*Pair, error) {
+	if pair, ok := s.pairCache.Get(address); ok {
+		return pair.(*Pair), nil
+	}
+
+	var pair Pair
+	err := s.db.GetContext(ctx, &pair, "SELECT * FROM v2_pairs WHERE address = $1", address)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	s.pairCache.Add(pair.Address, &pair)
+
+	return &pair, nil
+}
+
+func (s *Store) AddToken(ctx context.Context, token *Token) error {
+	s.tokenCache.Add(token.Address, token)
+
+	_, err := s.db.NamedExecContext(ctx, "INSERT INTO bep20_tokens (address, name, symbol, decimals) VALUES (:address, :name, :symbol, :decimals) ON CONFLICT DO NOTHING", token)
+
+	return err
+}
+
+func (s *Store) GetToken(ctx context.Context, address ethcommon.Address) (*Token, error) {
+	if token, ok := s.tokenCache.Get(address); ok {
+		return token.(*Token), nil
+	}
+
+	var token Token
+	err := s.db.GetContext(ctx, &token, "SELECT * FROM bep20_tokens WHERE address = $1", address)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	s.tokenCache.Add(token.Address, &token)
+
+	return &token, nil
+}

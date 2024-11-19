@@ -1,0 +1,7 @@
+version: "3"
+services:
+  connector:
+    build: .
+    container_name: pancakeswapv2-connector
+    image: lotus/pancakeswapv2-connector
+    restart: always
