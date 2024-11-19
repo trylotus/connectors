@@ -13,6 +13,6 @@ gen-proto:
 	buf generate
 
 gen-abi:
-	abigen --abi=./erc20/erc20.abi --pkg=erc20 --out=./erc20/erc20.abi.go
-	abigen --abi=./factory/factory.abi --pkg=factory --out=./factory/factory.abi.go
-	abigen --abi=./pool/pool.abi --pkg=pool --out=./pool/pool.abi.go
+	abigen --abi=./erc20/erc20.abi.json --pkg=erc20 --out=./erc20/erc20.abi.go
+	abigen --abi=./factory/factory.abi.json --pkg=factory --out=./factory/factory.abi.go
+	abigen --abi=./pool/pool.abi.json --pkg=pool --out=./pool/pool.abi.go
