@@ -1,0 +1,7 @@
+version: '3'
+services:
+  connector:
+    build: .
+    container_name: noway-1727754677-connector
+    image: lotus/noway-1727754677-connector
+    restart: always
