@@ -45,7 +45,7 @@ jobs:
             echo "dirs=['./$CONNECTOR_NAME']" >> $GITHUB_OUTPUT
             echo "version=$CONNECTOR_VERSION" >> $GITHUB_OUTPUT
           else
-            echo "dirs=$(echo $ALL_CHANGED_FILES | xargs dirname | awk -F'/' '{print $1}' | uniq | xargs -I {} find ./{} -type f -name 'manifest.yaml' -maxdepth 1 | xargs dirname | uniq | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
+            echo "dirs=$(echo $ALL_CHANGED_FILES | xargs dirname | awk -F'/' '{print $1}' | sort | uniq | xargs -I {} find ./{} -type f -name 'manifest.yaml' -maxdepth 1 | xargs dirname | sort | uniq | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
           fi
 
   # test:
