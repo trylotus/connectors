@@ -35,7 +35,7 @@ WORKDIR /connector
 
 ENV LOG_LEVEL=debug
 ENV LOG_FORMAT=console
-ENV KAFKA_BROKERS=localhost:9092
+ENV KAFKA_CONFIG=kafka.conf
 ENV MANAGER_URL=http://localhost:8084
 ENV REGISTRY_URL=http://localhost:8081
 
