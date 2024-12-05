@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"math/big"
 	"reflect"
-	"strings"
 	"sync"
 	"time"
 
@@ -664,25 +663,19 @@ func (s *Source) getTokenFromRpc(ctx context.Context, address ethcommon.Address)
 
 	decimals, err := tokenContract.Decimals(&bind.CallOpts{Context: ctx})
 	if err != nil {
-		return nil, fmt.Errorf("failed to get token decimals: %w", err)
+		return nil, err
 	}
 
 	name, err := tokenContract.Name(&bind.CallOpts{Context: ctx})
 	if err != nil {
-		if strings.HasPrefix(err.Error(), "abi") { // Decode error
-			log.Error().Err(err).Str("address", address.String()).Msg("Failed to get token name")
-		} else {
-			return nil, fmt.Errorf("failed to get token name: %w", err)
-		}
+		// Ignore this error since token name is not required
+		log.Warn().Err(err).Str("address", address.String()).Msg("Failed to get token name")
 	}
 
 	symbol, err := tokenContract.Symbol(&bind.CallOpts{Context: ctx})
 	if err != nil {
-		if strings.HasPrefix(err.Error(), "abi") { // Decode error
-			log.Error().Err(err).Str("address", address.String()).Msg("Failed to get token symbol")
-		} else {
-			return nil, fmt.Errorf("failed to get token symbol: %w", err)
-		}
+		// Ignore this error since token symbol is not required
+		log.Warn().Err(err).Str("address", address.String()).Msg("Failed to get token symbol")
 	}
 
 	return &Token{
