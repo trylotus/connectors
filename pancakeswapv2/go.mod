@@ -11,7 +11,7 @@ require (
 	github.com/rs/zerolog v1.33.0
 	github.com/spf13/pflag v1.0.5
 	github.com/trylotus/go-connector v1.4.2
-	github.com/trylotus/go-connector/source/evm v1.4.2
+	github.com/trylotus/go-connector/source/evm v1.4.3-0.20241209023028-8ba54c954f29
 	github.com/trylotus/go-lotus-proto v1.0.0
 	google.golang.org/protobuf v1.34.2
 )
