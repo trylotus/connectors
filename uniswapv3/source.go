@@ -107,7 +107,7 @@ func (s *Source) queryFactory(ctx context.Context, fromBlock int64, toBlock int6
 		filter.ToBlock = big.NewInt(toBlock)
 	}
 
-	logs, err := s.FilterLogs(ctx, filter)
+	logs, err := s.client.FilterLogs(ctx, filter)
 	if err != nil {
 		return nil, err
 	}
@@ -121,7 +121,7 @@ func (s *Source) queryFactory(ctx context.Context, fromBlock int64, toBlock int6
 				continue
 			}
 
-			msg, err := s.ParseFactoryLog(ctx, vLog, false, nil, nil)
+			msg, err := s.parseFactoryLog(ctx, vLog, false, nil, nil)
 			if err != nil {
 				log.Error().Err(err).Str("tx", vLog.TxHash.String()).Uint("index", vLog.Index).Msg("Invalid factory log")
 				continue
@@ -144,7 +144,7 @@ func (s *Source) queryPools(ctx context.Context, fromBlock int64, toBlock int64,
 		filter.ToBlock = big.NewInt(toBlock)
 	}
 
-	logs, err := s.FilterLogs(ctx, filter)
+	logs, err := s.client.FilterLogs(ctx, filter)
 	if err != nil {
 		return nil, err
 	}
@@ -158,7 +158,7 @@ func (s *Source) queryPools(ctx context.Context, fromBlock int64, toBlock int64,
 				continue
 			}
 
-			msg, err := s.ParsePoolLog(ctx, vLog)
+			msg, err := s.parsePoolLog(ctx, vLog)
 			if err != nil {
 				log.Error().Err(err).Str("tx", vLog.TxHash.String()).Uint("index", vLog.Index).Msg("Invalid pool log")
 				continue
@@ -217,7 +217,7 @@ func (s *Source) subscribeFactory(ctx context.Context, msgCh chan<- proto.Messag
 				continue
 			}
 
-			msg, err := s.ParseFactoryLog(ctx, vLog, true, msgCh, errCh)
+			msg, err := s.parseFactoryLog(ctx, vLog, true, msgCh, errCh)
 			if err != nil {
 				log.Error().Err(err).Str("tx", vLog.TxHash.String()).Uint("index", vLog.Index).Msg("Invalid factory log")
 				continue
@@ -248,7 +248,7 @@ func (s *Source) subscribePools(ctx context.Context, pools []ethcommon.Address, 
 				continue
 			}
 
-			msg, err := s.ParsePoolLog(ctx, vLog)
+			msg, err := s.parsePoolLog(ctx, vLog)
 			if err != nil {
 				log.Error().Err(err).Str("tx", vLog.TxHash.String()).Uint("index", vLog.Index).Msg("Invalid pool log")
 				continue
@@ -259,19 +259,8 @@ func (s *Source) subscribePools(ctx context.Context, pools []ethcommon.Address, 
 	}
 }
 
-func (s *Source) ParseFactoryLog(ctx context.Context, vLog types.Log, subscribe bool, msgCh chan<- proto.Message, errCh chan<- error) (proto.Message, error) {
-	retryCtx := common.ContextWithFuncName(ctx, "ParseFactoryLog")
-	retryCtx = common.ContextWithOptionalRetry(retryCtx)
-
-	return common.RetryT(retryCtx, func() (proto.Message, error) {
-		subCtx, cancel := context.WithTimeout(ctx, 1*time.Minute)
-		defer cancel()
-		return s.parseFactoryLog(subCtx, vLog, subscribe, msgCh, errCh)
-	})
-}
-
 func (s *Source) parseFactoryLog(ctx context.Context, vLog types.Log, subscribe bool, msgCh chan<- proto.Message, errCh chan<- error) (proto.Message, error) {
-	t, err := s.BlockTime(ctx, vLog.BlockHash)
+	t, err := s.client.BlockTime(ctx, vLog.BlockHash)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get timestamp: %w", err)
 	}
@@ -358,21 +347,10 @@ func (s *Source) parseFactoryLog(ctx context.Context, vLog types.Log, subscribe 
 	}
 }
 
-func (s *Source) ParsePoolLog(ctx context.Context, vLog types.Log) (proto.Message, error) {
-	retryCtx := common.ContextWithFuncName(ctx, "ParsePoolLog")
-	retryCtx = common.ContextWithOptionalRetry(retryCtx)
-
-	return common.RetryT(retryCtx, func() (proto.Message, error) {
-		subCtx, cancel := context.WithTimeout(ctx, 1*time.Minute)
-		defer cancel()
-		return s.parsePoolLog(subCtx, vLog)
-	})
-}
-
 func (s *Source) parsePoolLog(ctx context.Context, vLog types.Log) (proto.Message, error) {
-	t, err := s.BlockTime(ctx, vLog.BlockHash)
+	t, err := s.client.BlockTime(ctx, vLog.BlockHash)
 	if err != nil {
-		return nil, fmt.Errorf("error retrieving timestamp: %w", err)
+		return nil, fmt.Errorf("failed to get timestamp: %w", err)
 	}
 
 	ts := &timestamppb.Timestamp{Seconds: int64(t)}
@@ -602,52 +580,22 @@ func (s *Source) parsePoolLog(ctx context.Context, vLog types.Log) (proto.Messag
 	}
 }
 
-func (s *Source) BlockTime(ctx context.Context, hash ethcommon.Hash) (uint64, error) {
-	retryCtx := common.ContextWithFuncName(ctx, "BlockTime")
-	retryCtx = common.ContextWithOptionalRetry(retryCtx)
-
-	return common.RetryT(retryCtx, func() (uint64, error) {
-		subCtx, cancel := context.WithTimeout(ctx, 10*time.Second)
-		defer cancel()
-		return s.client.BlockTime(subCtx, hash)
-	})
-}
-
-func (s *Source) FilterLogs(ctx context.Context, q ethereum.FilterQuery) ([]types.Log, error) {
-	retryCtx := common.ContextWithFuncName(ctx, "FilterLogs")
-	retryCtx = common.ContextWithOptionalRetry(retryCtx)
-
-	return common.RetryT(retryCtx, func() ([]types.Log, error) {
-		subCtx, cancel := context.WithTimeout(ctx, 3*time.Minute)
-		defer cancel()
-		return s.client.FilterLogs(subCtx, q)
-	})
-}
-
 func (s *Source) GetToken(ctx context.Context, address ethcommon.Address) (*Token, error) {
 	s.tokenCacheLock.Lock(address)
 	defer s.tokenCacheLock.Unlock(address)
 
 	token, err := s.store.GetToken(ctx, address)
 	if err != nil {
-		return nil, err
+		log.Error().Err(err).Str("address", address.String()).Msg("Failed to get token from store")
 	}
 	if token != nil {
 		return token, nil
 	}
 
-	retryCtx := common.ContextWithFuncName(ctx, "GetTokenFromRpc")
-	retryCtx = common.ContextWithOptionalRetry(retryCtx)
-
-	token, err = common.RetryT(retryCtx, func() (*Token, error) {
-		subCtx, cancel := context.WithTimeout(ctx, 10*time.Second)
-		defer cancel()
-		return s.getTokenFromRpc(subCtx, address)
-	})
+	token, err = s.getTokenFromRpc(ctx, address)
 	if err != nil {
 		return nil, err
 	}
-
 	if err := s.store.AddToken(ctx, token); err != nil {
 		log.Error().Err(err).Str("address", token.Address.String()).Msg("Failed to add token to store")
 	}
@@ -692,24 +640,16 @@ func (s *Source) GetPool(ctx context.Context, address ethcommon.Address) (*Pool,
 
 	p, err := s.store.GetPool(ctx, address)
 	if err != nil {
-		return nil, err
+		log.Error().Err(err).Str("address", address.String()).Msg("Failed to get pool from store")
 	}
 	if p != nil {
 		return p, nil
 	}
 
-	retryCtx := common.ContextWithFuncName(ctx, "GetPoolFromRpc")
-	retryCtx = common.ContextWithOptionalRetry(retryCtx)
-
-	p, err = common.RetryT(retryCtx, func() (*Pool, error) {
-		subCtx, cancel := context.WithTimeout(ctx, 10*time.Second)
-		defer cancel()
-		return s.getPoolFromRpc(subCtx, address)
-	})
+	p, err = s.getPoolFromRpc(ctx, address)
 	if err != nil {
 		return nil, err
 	}
-
 	if err := s.store.AddPool(ctx, p); err != nil {
 		log.Error().Err(err).Str("address", p.Address.String()).Msg("Failed to add pool to store")
 	}
@@ -817,10 +757,6 @@ func (s *Source) loadPoolsFromRPC(ctx context.Context, from uint64, to uint64) {
 	defer it.Close()
 
 	for it.Next() {
-		if err := it.Error(); err != nil {
-			log.Fatal().Err(err).Uint64("from", from).Uint64("to", to).Msg("Failed to load pool from RPC")
-		}
-
 		if it.Event.Raw.Removed {
 			continue
 		}
@@ -849,6 +785,10 @@ func (s *Source) loadPoolsFromRPC(ctx context.Context, from uint64, to uint64) {
 		if err := s.store.AddPool(ctx, &pool); err != nil {
 			log.Error().Err(err).Str("address", pool.Address.String()).Msg("Failed to add pool to store")
 		}
+	}
+
+	if err := it.Error(); err != nil {
+		log.Fatal().Err(err).Uint64("from", from).Uint64("to", to).Msg("Failed to load pool from RPC")
 	}
 
 	log.Info().Uint64("from", from).Uint64("to", to).Msg("Loaded pools from RPC")
