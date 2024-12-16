@@ -111,7 +111,7 @@ func (s *Source) queryFactory(ctx context.Context, fromBlock int64, toBlock int6
 		filter.ToBlock = big.NewInt(toBlock)
 	}
 
-	logs, err := s.FilterLogs(ctx, filter)
+	logs, err := s.client.FilterLogs(ctx, filter)
 	if err != nil {
 		return nil, err
 	}
@@ -131,9 +131,9 @@ func (s *Source) queryFactory(ctx context.Context, fromBlock int64, toBlock int6
 				continue
 			}
 
-			msg, err := s.ParsePairCreatedEvent(ctx, event)
+			msg, err := s.parsePairCreatedEvent(ctx, event)
 			if err != nil {
-				log.Error().Err(err).Str("tx", vLog.TxHash.String()).Uint("index", vLog.Index).Msgf("Invalid PairCreated event")
+				log.Error().Err(err).Str("tx", vLog.TxHash.String()).Uint("index", vLog.Index).Msgf("Invalid factory log")
 				continue
 			}
 
@@ -154,7 +154,7 @@ func (s *Source) queryPairs(ctx context.Context, fromBlock int64, toBlock int64,
 		filter.ToBlock = big.NewInt(toBlock)
 	}
 
-	logs, err := s.FilterLogs(ctx, filter)
+	logs, err := s.client.FilterLogs(ctx, filter)
 	if err != nil {
 		return nil, err
 	}
@@ -172,7 +172,7 @@ func (s *Source) queryPairs(ctx context.Context, fromBlock int64, toBlock int64,
 				continue
 			}
 
-			msg, err := s.ParsePairLog(ctx, vLog)
+			msg, err := s.parsePairLog(ctx, vLog)
 			if err != nil {
 				log.Error().Err(err).Str("tx", vLog.TxHash.String()).Uint("index", vLog.Index).Msg("Invalid pair log")
 				continue
@@ -244,9 +244,9 @@ func (s *Source) subscribeFactory(ctx context.Context, msgCh chan<- proto.Messag
 				log.Error().Err(err).Int64("number", pair.Number).Str("address", pair.Address.String()).Msg("Failed to add pair to store")
 			}
 
-			msg, err := s.ParsePairCreatedEvent(ctx, event)
+			msg, err := s.parsePairCreatedEvent(ctx, event)
 			if err != nil {
-				log.Error().Err(err).Str("tx", event.Raw.TxHash.String()).Uint("index", event.Raw.Index).Msg("Invalid PairCreated event")
+				log.Error().Err(err).Str("tx", event.Raw.TxHash.String()).Uint("index", event.Raw.Index).Msg("Invalid factory log")
 				continue
 			}
 
@@ -297,7 +297,7 @@ func (s *Source) subscribePairs(ctx context.Context, pairs []ethcommon.Address, 
 				continue
 			}
 
-			msg, err := s.ParsePairLog(ctx, vLog)
+			msg, err := s.parsePairLog(ctx, vLog)
 			if err != nil {
 				log.Error().Err(err).Str("tx", vLog.TxHash.String()).Uint("index", vLog.Index).Msg("Invalid pair log")
 				continue
@@ -308,19 +308,8 @@ func (s *Source) subscribePairs(ctx context.Context, pairs []ethcommon.Address, 
 	}
 }
 
-func (s *Source) ParsePairCreatedEvent(ctx context.Context, event *factory.FactoryPairCreated) (proto.Message, error) {
-	retryCtx := common.ContextWithFuncName(ctx, "ParsePairCreatedEvent")
-	retryCtx = common.ContextWithOptionalRetry(retryCtx)
-
-	return common.RetryT(retryCtx, func() (proto.Message, error) {
-		subCtx, cancel := context.WithTimeout(ctx, 1*time.Minute)
-		defer cancel()
-		return s.parsePairCreatedEvent(subCtx, event)
-	})
-}
-
 func (s *Source) parsePairCreatedEvent(ctx context.Context, event *factory.FactoryPairCreated) (proto.Message, error) {
-	t, err := s.BlockTime(ctx, event.Raw.BlockHash)
+	t, err := s.client.BlockTime(ctx, event.Raw.BlockHash)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get timestamp: %w", err)
 	}
@@ -355,19 +344,8 @@ func (s *Source) parsePairCreatedEvent(ctx context.Context, event *factory.Facto
 	}, nil
 }
 
-func (s *Source) ParsePairLog(ctx context.Context, vLog types.Log) (proto.Message, error) {
-	retryCtx := common.ContextWithFuncName(ctx, "ParsePairLog")
-	retryCtx = common.ContextWithOptionalRetry(retryCtx)
-
-	return common.RetryT(retryCtx, func() (proto.Message, error) {
-		subCtx, cancel := context.WithTimeout(ctx, 1*time.Minute)
-		defer cancel()
-		return s.parsePairLog(subCtx, vLog)
-	})
-}
-
 func (s *Source) parsePairLog(ctx context.Context, vLog types.Log) (proto.Message, error) {
-	t, err := s.BlockTime(ctx, vLog.BlockHash)
+	t, err := s.client.BlockTime(ctx, vLog.BlockHash)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get timestamp: %w", err)
 	}
@@ -525,48 +503,19 @@ func (s *Source) parsePairLog(ctx context.Context, vLog types.Log) (proto.Messag
 	}
 }
 
-func (s *Source) BlockTime(ctx context.Context, hash ethcommon.Hash) (uint64, error) {
-	retryCtx := common.ContextWithFuncName(ctx, "BlockTime")
-	retryCtx = common.ContextWithOptionalRetry(retryCtx)
-
-	return common.RetryT(retryCtx, func() (uint64, error) {
-		subCtx, cancel := context.WithTimeout(ctx, 10*time.Second)
-		defer cancel()
-		return s.client.BlockTime(subCtx, hash)
-	})
-}
-
-func (s *Source) FilterLogs(ctx context.Context, q ethereum.FilterQuery) ([]types.Log, error) {
-	retryCtx := common.ContextWithFuncName(ctx, "FilterLogs")
-	retryCtx = common.ContextWithOptionalRetry(retryCtx)
-
-	return common.RetryT(retryCtx, func() ([]types.Log, error) {
-		subCtx, cancel := context.WithTimeout(ctx, 3*time.Minute)
-		defer cancel()
-		return s.client.FilterLogs(subCtx, q)
-	})
-}
-
 func (s *Source) GetToken(ctx context.Context, address ethcommon.Address) (*Token, error) {
 	s.tokenCacheLock.Lock(address)
 	defer s.tokenCacheLock.Unlock(address)
 
 	token, err := s.store.GetToken(ctx, address)
 	if err != nil {
-		return nil, err
+		log.Error().Err(err).Str("address", address.String()).Msg("Failed to get token from store")
 	}
 	if token != nil {
 		return token, nil
 	}
 
-	retryCtx := common.ContextWithFuncName(ctx, "GetTokenFromRpc")
-	retryCtx = common.ContextWithOptionalRetry(retryCtx)
-
-	token, err = common.RetryT(retryCtx, func() (*Token, error) {
-		subCtx, cancel := context.WithTimeout(ctx, 10*time.Second)
-		defer cancel()
-		return s.getTokenFromRpc(subCtx, address)
-	})
+	token, err = s.getTokenFromRpc(ctx, address)
 	if err != nil {
 		return nil, err
 	}
@@ -615,24 +564,16 @@ func (s *Source) GetPair(ctx context.Context, address ethcommon.Address) (*Pair,
 
 	p, err := s.store.GetPair(ctx, address)
 	if err != nil {
-		return nil, err
+		log.Error().Err(err).Str("address", address.String()).Msg("Failed to get pair from store")
 	}
 	if p != nil {
 		return p, nil
 	}
 
-	retryCtx := common.ContextWithFuncName(ctx, "GetPairFromRpc")
-	retryCtx = common.ContextWithOptionalRetry(retryCtx)
-
-	p, err = common.RetryT(retryCtx, func() (*Pair, error) {
-		subCtx, cancel := context.WithTimeout(ctx, 10*time.Second)
-		defer cancel()
-		return s.getPairFromRpc(subCtx, address)
-	})
+	p, err = s.getPairFromRpc(ctx, address)
 	if err != nil {
 		return nil, err
 	}
-
 	if err := s.store.AddPair(ctx, p); err != nil {
 		log.Error().Err(err).Str("address", p.Address.String()).Msg("Failed to add pair to store")
 	}
@@ -722,8 +663,6 @@ func (s *Source) loadPairsFromRPC(ctx context.Context, from uint64, to uint64) {
 		End:     &to,
 	}
 
-	var successCount, failedCount int
-
 	it, err := s.factoryContract.FilterPairCreated(opts, nil, nil)
 	if err != nil {
 		log.Fatal().Err(err).Uint64("from", from).Uint64("to", to).Msg("Failed to load pairs from RPC")
@@ -732,27 +671,19 @@ func (s *Source) loadPairsFromRPC(ctx context.Context, from uint64, to uint64) {
 	defer it.Close()
 
 	for it.Next() {
-		if err := it.Error(); err != nil {
-			log.Fatal().Err(err).Uint64("from", from).Uint64("to", to).Msg("Failed to load pairs from RPC")
-		}
-
 		if it.Event.Raw.Removed {
 			continue
 		}
 
 		if _, err := s.GetToken(ctx, it.Event.Token0); err != nil {
-			failedCount++
 			log.Error().Err(err).Str("address", it.Event.Token0.String()).Msg("Failed to get token")
 			continue
 		}
 
 		if _, err := s.GetToken(ctx, it.Event.Token1); err != nil {
-			failedCount++
 			log.Error().Err(err).Str("address", it.Event.Token1.String()).Msg("Failed to get token")
 			continue
 		}
-
-		successCount++
 
 		s.pairs.Add(it.Event.Pair, int64(it.Event.Raw.BlockNumber))
 
@@ -769,7 +700,11 @@ func (s *Source) loadPairsFromRPC(ctx context.Context, from uint64, to uint64) {
 		}
 	}
 
-	log.Info().Uint64("from", from).Uint64("to", to).Int("success", successCount).Int("failed", failedCount).Msg("Loaded pairs from RPC")
+	if err := it.Error(); err != nil {
+		log.Fatal().Err(err).Uint64("from", from).Uint64("to", to).Msg("Failed to load pairs from RPC")
+	}
+
+	log.Info().Uint64("from", from).Uint64("to", to).Msg("Loaded pairs from RPC")
 
 	if err := s.store.SetScannedBlock(ctx, int64(to)); err != nil {
 		log.Error().Err(err).Uint64("number", to).Msg("Failed to set scanned block")
