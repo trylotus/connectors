@@ -1,0 +1,37 @@
+{
+  "name": "pumpfun",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/main.ts",
+  "scripts": {
+    "dev": "ts-node src/main.ts",
+    "build": "tsc --outDir dist",
+    "start": "node dist/main.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/async-lock": "^1.4.2",
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^22.10.5",
+    "typescript": "^5.7.2"
+  },
+  "dependencies": {
+    "@bufbuild/protobuf": "^2.2.3",
+    "@project-serum/anchor": "^0.26.0",
+    "@solana/web3.js": "^1.98.0",
+    "async-lock": "^1.4.1",
+    "axios": "^1.7.9",
+    "decimal.js": "^10.4.3",
+    "dotenv": "^16.4.7",
+    "joi": "^17.13.3",
+    "js-yaml": "^4.1.0",
+    "kafkajs": "^2.2.4",
+    "lru-cache": "^11.0.2",
+    "pg": "^8.13.1",
+    "queue-typescript": "^1.0.1",
+    "reflect-metadata": "^0.2.2",
+    "typeorm": "^0.3.20"
+  }
+}

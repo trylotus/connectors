@@ -1,0 +1,8 @@
+version: v2
+plugins:
+  - remote: buf.build/bufbuild/es:v2.2.3
+    opt: target=ts
+    out: src
+    include_imports: true
+inputs:
+  - directory: src/proto
