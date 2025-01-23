@@ -1,0 +1,569 @@
+syntax = "proto3";
+
+package pair;
+
+import "google/protobuf/timestamp.proto";
+import "lotus/lotus.proto";
+
+option go_package = "github.com/trylotus/connectors/sushiswapv2/pair";
+
+message Approval {
+  option (lotus.composite).index = {
+    unique: true
+    fields: [
+      "block_hash",
+      "log_index",
+      "ts"
+    ]
+  };
+
+  option (lotus.composite).index = {
+    fields: [
+      "pair",
+      "ts"
+    ]
+  };
+
+  google.protobuf.Timestamp ts = 1;
+  uint64 block_number = 2 [(lotus.index) = {}];
+  bytes block_hash = 3 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Hash
+  bytes tx_hash = 4 [
+    (lotus.bytes) = {format: FORMAT_TYPE_HEX},
+    (lotus.index) = {}
+  ]; // Hash
+  uint64 log_index = 5;
+  bytes pair = 6 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
+  bytes owner = 7 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
+  bytes spender = 8 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
+  string value = 9 [(lotus.numeric) = {}];
+}
+
+message Burn {
+  option (lotus.composite).index = {
+    unique: true
+    fields: [
+      "block_hash",
+      "log_index",
+      "ts"
+    ]
+  };
+
+  option (lotus.composite).index = {
+    fields: [
+      "pair",
+      "ts"
+    ]
+  };
+
+  google.protobuf.Timestamp ts = 1;
+  uint64 block_number = 2 [(lotus.index) = {}];
+  bytes block_hash = 3 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Hash
+  bytes tx_hash = 4 [
+    (lotus.bytes) = {format: FORMAT_TYPE_HEX},
+    (lotus.index) = {}
+  ]; // Hash
+  uint64 log_index = 5;
+  bytes pair = 6 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
+  bytes sender = 7 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
+  string amount0 = 8 [(lotus.numeric) = {}];
+  string amount1 = 9 [(lotus.numeric) = {}];
+  bytes to = 10 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
+}
+
+message Mint {
+  option (lotus.composite).index = {
+    unique: true
+    fields: [
+      "block_hash",
+      "log_index",
+      "ts"
+    ]
+  };
+
+  option (lotus.composite).index = {
+    fields: [
+      "pair",
+      "ts"
+    ]
+  };
+
+  google.protobuf.Timestamp ts = 1;
+  uint64 block_number = 2 [(lotus.index) = {}];
+  bytes block_hash = 3 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Hash
+  bytes tx_hash = 4 [
+    (lotus.bytes) = {format: FORMAT_TYPE_HEX},
+    (lotus.index) = {}
+  ]; // Hash
+  uint64 log_index = 5;
+  bytes pair = 6 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
+  bytes sender = 7 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
+  string amount0 = 8 [(lotus.numeric) = {}];
+  string amount1 = 9 [(lotus.numeric) = {}];
+}
+
+message Swap {
+  option (lotus.composite).index = {
+    unique: true
+    fields: [
+      "block_hash",
+      "log_index",
+      "ts"
+    ]
+  };
+
+  option (lotus.composite).index = {
+    fields: [
+      "pair",
+      "ts"
+    ]
+  };
+
+  google.protobuf.Timestamp ts = 1;
+  uint64 block_number = 2 [(lotus.index) = {}];
+  bytes block_hash = 3 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Hash
+  bytes tx_hash = 4 [
+    (lotus.bytes) = {format: FORMAT_TYPE_HEX},
+    (lotus.index) = {}
+  ]; // Hash
+  uint64 log_index = 5;
+  bytes pair = 6 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
+  bytes sender = 7 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
+  string amount0_in = 8 [(lotus.numeric) = {}];
+  string amount1_in = 9 [(lotus.numeric) = {}];
+  string amount0_out = 10 [(lotus.numeric) = {}];
+  string amount1_out = 11 [(lotus.numeric) = {}];
+  bytes to = 12 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
+}
+
+message Sync {
+  option (lotus.composite).index = {
+    unique: true
+    fields: [
+      "block_hash",
+      "log_index",
+      "ts"
+    ]
+  };
+
+  option (lotus.composite).index = {
+    fields: [
+      "pair",
+      "ts"
+    ]
+  };
+
+  google.protobuf.Timestamp ts = 1;
+  uint64 block_number = 2 [(lotus.index) = {}];
+  bytes block_hash = 3 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Hash
+  bytes tx_hash = 4 [
+    (lotus.bytes) = {format: FORMAT_TYPE_HEX},
+    (lotus.index) = {}
+  ]; // Hash
+  uint64 log_index = 5;
+  bytes pair = 6 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
+  string reserve0 = 7 [(lotus.numeric) = {}];
+  string reserve1 = 8 [(lotus.numeric) = {}];
+}
+
+message Transfer {
+  option (lotus.composite).index = {
+    unique: true
+    fields: [
+      "block_hash",
+      "log_index",
+      "ts"
+    ]
+  };
+
+  option (lotus.composite).index = {
+    fields: [
+      "pair",
+      "ts"
+    ]
+  };
+
+  google.protobuf.Timestamp ts = 1;
+  uint64 block_number = 2 [(lotus.index) = {}];
+  bytes block_hash = 3 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Hash
+  bytes tx_hash = 4 [
+    (lotus.bytes) = {format: FORMAT_TYPE_HEX},
+    (lotus.index) = {}
+  ]; // Hash
+  uint64 log_index = 5;
+  bytes pair = 6 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
+  bytes from = 7 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
+  bytes to = 8 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Address
+  string value = 9 [(lotus.numeric) = {}];
+}
+
+message Trade5min {
+  option (lotus.view) = {
+    topic: "lotus.sushiswapv2.0_0_0.pair_Swap"
+    materialized: true
+    refresh_interval: '5 min'
+    options: ["timescaledb.continuous"]
+    group_by: [
+      "t",
+      "pair"
+    ]
+    where: "(amount0_in + amount0_out) > 0"
+  };
+
+  option (lotus.composite).index = {
+    fields: [
+      "pair",
+      "t"
+    ]
+  };
+
+  google.protobuf.Timestamp t = 1 [(lotus.projection) = "time_bucket('5 min', ts)"];
+  bytes pair = 2 [
+    (lotus.projection) = "pair",
+    (lotus.bytes) = {format: FORMAT_TYPE_HEX}
+  ];
+  string open_price = 3 [
+    (lotus.projection) = "first((amount1_in + amount1_out) / (amount0_in + amount0_out), ts)",
+    (lotus.numeric) = {}
+  ];
+  string high_price = 4 [
+    (lotus.projection) = "max((amount1_in + amount1_out) / (amount0_in + amount0_out))",
+    (lotus.numeric) = {}
+  ];
+  string low_price = 5 [
+    (lotus.projection) = "min((amount1_in + amount1_out) / (amount0_in + amount0_out))",
+    (lotus.numeric) = {}
+  ];
+  string close_price = 6 [
+    (lotus.projection) = "last((amount1_in + amount1_out) / (amount0_in + amount0_out), ts)",
+    (lotus.numeric) = {}
+  ];
+  int64 makers = 7 [(lotus.projection) = "count(distinct sender)"];
+  int64 txns_buy = 8 [(lotus.projection) = "sum(case when amount0_out > 0 then 1 else 0 end)"];
+  int64 txns_sell = 9 [(lotus.projection) = "sum(case when amount0_in > 0 then 1 else 0 end)"];
+  string volume0_buy = 10 [
+    (lotus.projection) = "sum(amount0_out)",
+    (lotus.numeric) = {}
+  ];
+  string volume0_sell = 11 [
+    (lotus.projection) = "sum(amount0_in)",
+    (lotus.numeric) = {}
+  ];
+  string volume1_buy = 12 [
+    (lotus.projection) = "sum(amount1_out)",
+    (lotus.numeric) = {}
+  ];
+  string volume1_sell = 13 [
+    (lotus.projection) = "sum(amount1_in)",
+    (lotus.numeric) = {}
+  ];
+}
+
+message Trade1h {
+  option (lotus.view) = {
+    topic: "lotus.sushiswapv2.0_0_0.pair_Swap"
+    materialized: true
+    refresh_interval: '30 min'
+    options: ["timescaledb.continuous"]
+    group_by: [
+      "t",
+      "pair"
+    ]
+    where: "(amount0_in + amount0_out) > 0"
+  };
+
+  option (lotus.composite).index = {
+    fields: [
+      "pair",
+      "t"
+    ]
+  };
+
+  google.protobuf.Timestamp t = 1 [(lotus.projection) = "time_bucket('1 hour', ts)"];
+  bytes pair = 2 [
+    (lotus.projection) = "pair",
+    (lotus.bytes) = {format: FORMAT_TYPE_HEX}
+  ];
+  string open_price = 3 [
+    (lotus.projection) = "first((amount1_in + amount1_out) / (amount0_in + amount0_out), ts)",
+    (lotus.numeric) = {}
+  ];
+  string high_price = 4 [
+    (lotus.projection) = "max((amount1_in + amount1_out) / (amount0_in + amount0_out))",
+    (lotus.numeric) = {}
+  ];
+  string low_price = 5 [
+    (lotus.projection) = "min((amount1_in + amount1_out) / (amount0_in + amount0_out))",
+    (lotus.numeric) = {}
+  ];
+  string close_price = 6 [
+    (lotus.projection) = "last((amount1_in + amount1_out) / (amount0_in + amount0_out), ts)",
+    (lotus.numeric) = {}
+  ];
+  int64 makers = 7 [(lotus.projection) = "count(distinct sender)"];
+  int64 txns_buy = 8 [(lotus.projection) = "sum(case when amount0_out > 0 then 1 else 0 end)"];
+  int64 txns_sell = 9 [(lotus.projection) = "sum(case when amount0_in > 0 then 1 else 0 end)"];
+  string volume0_buy = 10 [
+    (lotus.projection) = "sum(amount0_out)",
+    (lotus.numeric) = {}
+  ];
+  string volume0_sell = 11 [
+    (lotus.projection) = "sum(amount0_in)",
+    (lotus.numeric) = {}
+  ];
+  string volume1_buy = 12 [
+    (lotus.projection) = "sum(amount1_out)",
+    (lotus.numeric) = {}
+  ];
+  string volume1_sell = 13 [
+    (lotus.projection) = "sum(amount1_in)",
+    (lotus.numeric) = {}
+  ];
+}
+
+message Trade6h {
+  option (lotus.view) = {
+    topic: "lotus.sushiswapv2.0_0_0.pair_Swap"
+    materialized: true
+    refresh_interval: '1 hour'
+    options: ["timescaledb.continuous"]
+    group_by: [
+      "t",
+      "pair"
+    ]
+    where: "(amount0_in + amount0_out) > 0"
+  };
+
+  option (lotus.composite).index = {
+    fields: [
+      "pair",
+      "t"
+    ]
+  };
+
+  google.protobuf.Timestamp t = 1 [(lotus.projection) = "time_bucket('6 hour', ts)"];
+  bytes pair = 2 [
+    (lotus.projection) = "pair",
+    (lotus.bytes) = {format: FORMAT_TYPE_HEX}
+  ];
+  string open_price = 3 [
+    (lotus.projection) = "first((amount1_in + amount1_out) / (amount0_in + amount0_out), ts)",
+    (lotus.numeric) = {}
+  ];
+  string high_price = 4 [
+    (lotus.projection) = "max((amount1_in + amount1_out) / (amount0_in + amount0_out))",
+    (lotus.numeric) = {}
+  ];
+  string low_price = 5 [
+    (lotus.projection) = "min((amount1_in + amount1_out) / (amount0_in + amount0_out))",
+    (lotus.numeric) = {}
+  ];
+  string close_price = 6 [
+    (lotus.projection) = "last((amount1_in + amount1_out) / (amount0_in + amount0_out), ts)",
+    (lotus.numeric) = {}
+  ];
+  int64 makers = 7 [(lotus.projection) = "count(distinct sender)"];
+  int64 txns_buy = 8 [(lotus.projection) = "sum(case when amount0_out > 0 then 1 else 0 end)"];
+  int64 txns_sell = 9 [(lotus.projection) = "sum(case when amount0_in > 0 then 1 else 0 end)"];
+  string volume0_buy = 10 [
+    (lotus.projection) = "sum(amount0_out)",
+    (lotus.numeric) = {}
+  ];
+  string volume0_sell = 11 [
+    (lotus.projection) = "sum(amount0_in)",
+    (lotus.numeric) = {}
+  ];
+  string volume1_buy = 12 [
+    (lotus.projection) = "sum(amount1_out)",
+    (lotus.numeric) = {}
+  ];
+  string volume1_sell = 13 [
+    (lotus.projection) = "sum(amount1_in)",
+    (lotus.numeric) = {}
+  ];
+}
+
+message Trade1d {
+  option (lotus.view) = {
+    topic: "lotus.sushiswapv2.0_0_0.pair_Swap"
+    materialized: true
+    refresh_interval: '1 hour'
+    options: ["timescaledb.continuous"]
+    group_by: [
+      "t",
+      "pair"
+    ]
+    where: "(amount0_in + amount0_out) > 0"
+  };
+
+  option (lotus.composite).index = {
+    fields: [
+      "pair",
+      "t"
+    ]
+  };
+
+  google.protobuf.Timestamp t = 1 [(lotus.projection) = "time_bucket('1 day', ts)"];
+  bytes pair = 2 [
+    (lotus.projection) = "pair",
+    (lotus.bytes) = {format: FORMAT_TYPE_HEX}
+  ];
+  string open_price = 3 [
+    (lotus.projection) = "first((amount1_in + amount1_out) / (amount0_in + amount0_out), ts)",
+    (lotus.numeric) = {}
+  ];
+  string high_price = 4 [
+    (lotus.projection) = "max((amount1_in + amount1_out) / (amount0_in + amount0_out))",
+    (lotus.numeric) = {}
+  ];
+  string low_price = 5 [
+    (lotus.projection) = "min((amount1_in + amount1_out) / (amount0_in + amount0_out))",
+    (lotus.numeric) = {}
+  ];
+  string close_price = 6 [
+    (lotus.projection) = "last((amount1_in + amount1_out) / (amount0_in + amount0_out), ts)",
+    (lotus.numeric) = {}
+  ];
+  int64 makers = 7 [(lotus.projection) = "count(distinct sender)"];
+  int64 txns_buy = 8 [(lotus.projection) = "sum(case when amount0_out > 0 then 1 else 0 end)"];
+  int64 txns_sell = 9 [(lotus.projection) = "sum(case when amount0_in > 0 then 1 else 0 end)"];
+  string volume0_buy = 10 [
+    (lotus.projection) = "sum(amount0_out)",
+    (lotus.numeric) = {}
+  ];
+  string volume0_sell = 11 [
+    (lotus.projection) = "sum(amount0_in)",
+    (lotus.numeric) = {}
+  ];
+  string volume1_buy = 12 [
+    (lotus.projection) = "sum(amount1_out)",
+    (lotus.numeric) = {}
+  ];
+  string volume1_sell = 13 [
+    (lotus.projection) = "sum(amount1_in)",
+    (lotus.numeric) = {}
+  ];
+}
+
+message Trade1mon {
+  option (lotus.view) = {
+    topic: "lotus.sushiswapv2.0_0_0.pair_Swap"
+    materialized: true
+    refresh_interval: '1 hour'
+    options: ["timescaledb.continuous"]
+    group_by: [
+      "t",
+      "pair"
+    ]
+    where: "(amount0_in + amount0_out) > 0"
+  };
+
+  option (lotus.composite).index = {
+    fields: [
+      "pair",
+      "t"
+    ]
+  };
+
+  google.protobuf.Timestamp t = 1 [(lotus.projection) = "time_bucket('1 month', ts)"];
+  bytes pair = 2 [
+    (lotus.projection) = "pair",
+    (lotus.bytes) = {format: FORMAT_TYPE_HEX}
+  ];
+  string open_price = 3 [
+    (lotus.projection) = "first((amount1_in + amount1_out) / (amount0_in + amount0_out), ts)",
+    (lotus.numeric) = {}
+  ];
+  string high_price = 4 [
+    (lotus.projection) = "max((amount1_in + amount1_out) / (amount0_in + amount0_out))",
+    (lotus.numeric) = {}
+  ];
+  string low_price = 5 [
+    (lotus.projection) = "min((amount1_in + amount1_out) / (amount0_in + amount0_out))",
+    (lotus.numeric) = {}
+  ];
+  string close_price = 6 [
+    (lotus.projection) = "last((amount1_in + amount1_out) / (amount0_in + amount0_out), ts)",
+    (lotus.numeric) = {}
+  ];
+  int64 makers = 7 [(lotus.projection) = "count(distinct sender)"];
+  int64 txns_buy = 8 [(lotus.projection) = "sum(case when amount0_out > 0 then 1 else 0 end)"];
+  int64 txns_sell = 9 [(lotus.projection) = "sum(case when amount0_in > 0 then 1 else 0 end)"];
+  string volume0_buy = 10 [
+    (lotus.projection) = "sum(amount0_out)",
+    (lotus.numeric) = {}
+  ];
+  string volume0_sell = 11 [
+    (lotus.projection) = "sum(amount0_in)",
+    (lotus.numeric) = {}
+  ];
+  string volume1_buy = 12 [
+    (lotus.projection) = "sum(amount1_out)",
+    (lotus.numeric) = {}
+  ];
+  string volume1_sell = 13 [
+    (lotus.projection) = "sum(amount1_in)",
+    (lotus.numeric) = {}
+  ];
+}
+
+message Trade1y {
+  option (lotus.view) = {
+    topic: "lotus.sushiswapv2.0_0_0.pair_Swap"
+    materialized: true
+    refresh_interval: '1 hour'
+    options: ["timescaledb.continuous"]
+    group_by: [
+      "t",
+      "pair"
+    ]
+    where: "(amount0_in + amount0_out) > 0"
+  };
+
+  option (lotus.composite).index = {
+    fields: [
+      "pair",
+      "t"
+    ]
+  };
+
+  google.protobuf.Timestamp t = 1 [(lotus.projection) = "time_bucket('1 year', ts)"];
+  bytes pair = 2 [
+    (lotus.projection) = "pair",
+    (lotus.bytes) = {format: FORMAT_TYPE_HEX}
+  ];
+  string open_price = 3 [
+    (lotus.projection) = "first((amount1_in + amount1_out) / (amount0_in + amount0_out), ts)",
+    (lotus.numeric) = {}
+  ];
+  string high_price = 4 [
+    (lotus.projection) = "max((amount1_in + amount1_out) / (amount0_in + amount0_out))",
+    (lotus.numeric) = {}
+  ];
+  string low_price = 5 [
+    (lotus.projection) = "min((amount1_in + amount1_out) / (amount0_in + amount0_out))",
+    (lotus.numeric) = {}
+  ];
+  string close_price = 6 [
+    (lotus.projection) = "last((amount1_in + amount1_out) / (amount0_in + amount0_out), ts)",
+    (lotus.numeric) = {}
+  ];
+  int64 makers = 7 [(lotus.projection) = "count(distinct sender)"];
+  int64 txns_buy = 8 [(lotus.projection) = "sum(case when amount0_out > 0 then 1 else 0 end)"];
+  int64 txns_sell = 9 [(lotus.projection) = "sum(case when amount0_in > 0 then 1 else 0 end)"];
+  string volume0_buy = 10 [
+    (lotus.projection) = "sum(amount0_out)",
+    (lotus.numeric) = {}
+  ];
+  string volume0_sell = 11 [
+    (lotus.projection) = "sum(amount0_in)",
+    (lotus.numeric) = {}
+  ];
+  string volume1_buy = 12 [
+    (lotus.projection) = "sum(amount1_out)",
+    (lotus.numeric) = {}
+  ];
+  string volume1_sell = 13 [
+    (lotus.projection) = "sum(amount1_in)",
+    (lotus.numeric) = {}
+  ];
+}
