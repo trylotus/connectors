@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+package evm;
+
+import "google/protobuf/timestamp.proto";
+import "lotus/lotus.proto";
+
+option go_package = "github.com/trylotus/connectors/monad/evm";
+
+message Block {
+  google.protobuf.Timestamp ts = 1;
+  bytes hash = 2 [
+    (lotus.bytes) = {format: FORMAT_TYPE_HEX},
+    (lotus.index) = {}
+  ]; // Hash
+  string number = 3 [
+    (lotus.numeric) = {},
+    (lotus.index) = {}
+  ]; // bigint
+  string difficulty = 4 [(lotus.numeric) = {}]; // bigint
+  uint64 gas_limit = 5;
+  uint64 gas_used = 6;
+  uint64 nonce = 7;
+}
+
+message Transaction {
+  google.protobuf.Timestamp ts = 1;
+  bytes hash = 2 [
+    (lotus.bytes) = {format: FORMAT_TYPE_HEX},
+    (lotus.index) = {}
+  ]; // Hash
+  bytes from = 3 [
+    (lotus.bytes) = {format: FORMAT_TYPE_HEX},
+    (lotus.index) = {}
+  ]; // Address
+  bytes to = 4 [
+    (lotus.bytes) = {format: FORMAT_TYPE_HEX},
+    (lotus.index) = {}
+  ]; // Address
+  uint64 size = 5;
+  uint64 nonce = 6;
+  uint64 gas = 7;
+  string gas_price = 8 [(lotus.numeric) = {}]; // bigint
+  string value = 9 [(lotus.numeric) = {}]; // bigint
+  bytes data = 10;
+  string v = 11 [(lotus.numeric) = {}]; // bigint
+  string r = 12 [(lotus.numeric) = {}]; // bigint
+  string s = 13 [(lotus.numeric) = {}]; // bigint
+}
