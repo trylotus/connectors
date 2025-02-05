@@ -3,9 +3,10 @@ package monad
 import (
 	"context"
 	"math/big"
+	"time"
 
-	protoevm "github.com/trylotus/connectors/monad/evm"
 	"github.com/ethereum/go-ethereum/core/types"
+	protoevm "github.com/trylotus/connectors/monad/evm"
 	"github.com/trylotus/go-connector"
 	"github.com/trylotus/go-connector/source/evm"
 	"google.golang.org/protobuf/proto"
@@ -53,44 +54,48 @@ func (s *Source) Query(ctx context.Context, fromBlock int64, toBlock int64) ([]p
 }
 
 func (s *Source) Subscribe(ctx context.Context, msgCh chan<- proto.Message, errCh chan<- error) {
-	ch := make(chan *types.Header, 1024)
-
-	sub, err := s.client.SubscribeNewHead(ctx, ch)
+	latestBlock, err := s.BlockNumber(ctx)
 	if err != nil {
 		errCh <- err
 		return
 	}
 
-	defer sub.Unsubscribe()
+	msgs, err := s.Query(ctx, latestBlock, latestBlock)
+	if err != nil {
+		errCh <- err
+		return
+	}
+
+	for _, msg := range msgs {
+		msgCh <- msg
+	}
+
+	t := time.NewTicker(1 * time.Second)
 
 	for {
-		select {
-		case err := <-sub.Err():
+		<-t.C
+
+		currentBlock, err := s.BlockNumber(ctx)
+		if err != nil {
 			errCh <- err
 			return
-		case <-ctx.Done():
-			errCh <- ctx.Err()
-			return
-		case header := <-ch:
-			msgBlock := parseBlock(header)
-			msgCh <- msgBlock
-
-			block, err := s.client.BlockByHash(ctx, header.Hash())
-			if err != nil {
-				errCh <- err
-				return
-			}
-
-			for _, tx := range block.Transactions() {
-				msgTx, err := parseTransaction(msgBlock.Ts, tx)
-				if err != nil {
-					errCh <- err
-					return
-				}
-
-				msgCh <- msgTx
-			}
 		}
+
+		if currentBlock <= latestBlock {
+			continue
+		}
+
+		msgs, err := s.Query(ctx, latestBlock+1, currentBlock)
+		if err != nil {
+			errCh <- err
+			return
+		}
+
+		for _, msg := range msgs {
+			msgCh <- msg
+		}
+
+		latestBlock = currentBlock
 	}
 }
 
