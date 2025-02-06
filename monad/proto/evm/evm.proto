@@ -8,11 +8,16 @@ import "lotus/lotus.proto";
 option go_package = "github.com/trylotus/connectors/monad/evm";
 
 message Block {
+  option (lotus.composite).index = {
+    unique: true
+    fields: [
+      "hash",
+      "ts"
+    ]
+  };
+
   google.protobuf.Timestamp ts = 1;
-  bytes hash = 2 [
-    (lotus.bytes) = {format: FORMAT_TYPE_HEX},
-    (lotus.index) = {unique: true}
-  ]; // Hash
+  bytes hash = 2 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Hash
   uint64 number = 3 [
     (lotus.numeric) = {},
     (lotus.index) = {}
@@ -24,16 +29,22 @@ message Block {
 }
 
 message Transaction {
+  option (lotus.composite).index = {
+    unique: true
+    fields: [
+      "hash",
+      "block_hash",
+      "ts"
+    ]
+  };
+
   google.protobuf.Timestamp ts = 1;
   bytes block_hash = 2 [
     (lotus.bytes) = {format: FORMAT_TYPE_HEX},
     (lotus.index) = {}
   ]; // Hash
   uint64 block_number = 3 [(lotus.index) = {}];
-  bytes hash = 4 [
-    (lotus.bytes) = {format: FORMAT_TYPE_HEX},
-    (lotus.index) = {unique: true}
-  ]; // Hash
+  bytes hash = 4 [(lotus.bytes) = {format: FORMAT_TYPE_HEX}]; // Hash
   bytes from = 5 [
     (lotus.bytes) = {format: FORMAT_TYPE_HEX},
     (lotus.index) = {}
