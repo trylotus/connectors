@@ -82,12 +82,13 @@ export class Connector {
   async run(signal: Signal) {
     await Promise.all([this.producer.connect(), this.database.initialize()]);
 
-    const { earliestSignature, latestSignature } =
-      await this.database.getProgram(PROGRAM_ID.toBase58());
+    const { latestSignature } = await this.database.getProgram(
+      PROGRAM_ID.toBase58()
+    );
 
     await Promise.all([
       this.subscribe(signal, latestSignature),
-      this.backfill(signal, earliestSignature),
+      // this.backfill(signal, earliestSignature),
     ]);
   }
 
