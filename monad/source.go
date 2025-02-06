@@ -37,11 +37,13 @@ func (s *Source) Query(ctx context.Context, fromBlock int64, toBlock int64) ([]p
 			return nil, err
 		}
 
-		msgBlock := parseBlock(block.Header())
+		header := block.Header()
+
+		msgBlock := parseBlock(header)
 		msgs = append(msgs, msgBlock)
 
 		for _, tx := range block.Transactions() {
-			msgTx, err := parseTransaction(msgBlock.Ts, tx)
+			msgTx, err := parseTransaction(header, tx)
 			if err != nil {
 				return nil, err
 			}
@@ -105,7 +107,7 @@ func parseBlock(header *types.Header) *protoevm.Block {
 			Seconds: int64(header.Time),
 		},
 		Hash:       header.Hash().Bytes(),
-		Number:     header.Number.String(),
+		Number:     header.Number.Uint64(),
 		Difficulty: header.Difficulty.String(),
 		GasLimit:   header.GasLimit,
 		GasUsed:    header.GasUsed,
@@ -113,7 +115,7 @@ func parseBlock(header *types.Header) *protoevm.Block {
 	}
 }
 
-func parseTransaction(ts *timestamppb.Timestamp, tx *types.Transaction) (*protoevm.Transaction, error) {
+func parseTransaction(header *types.Header, tx *types.Transaction) (*protoevm.Transaction, error) {
 	from, err := types.Sender(types.LatestSignerForChainID(tx.ChainId()), tx)
 	if err != nil {
 		return nil, err
@@ -127,19 +129,23 @@ func parseTransaction(ts *timestamppb.Timestamp, tx *types.Transaction) (*protoe
 	v, r, s := tx.RawSignatureValues()
 
 	msgTx := &protoevm.Transaction{
-		Ts:       ts,
-		Hash:     tx.Hash().Bytes(),
-		From:     from.Bytes(),
-		To:       to,
-		Size:     tx.Size(),
-		Nonce:    tx.Nonce(),
-		Gas:      tx.Gas(),
-		GasPrice: tx.GasPrice().String(),
-		Value:    tx.Value().String(),
-		Data:     tx.Data(),
-		V:        v.String(),
-		R:        r.String(),
-		S:        s.String(),
+		Ts: &timestamppb.Timestamp{
+			Seconds: int64(header.Time),
+		},
+		BlockHash:   header.Hash().Bytes(),
+		BlockNumber: header.Number.Uint64(),
+		Hash:        tx.Hash().Bytes(),
+		From:        from.Bytes(),
+		To:          to,
+		Size:        tx.Size(),
+		Nonce:       tx.Nonce(),
+		Gas:         tx.Gas(),
+		GasPrice:    tx.GasPrice().String(),
+		Value:       tx.Value().String(),
+		Data:        tx.Data(),
+		V:           v.String(),
+		R:           r.String(),
+		S:           s.String(),
 	}
 
 	return msgTx, nil

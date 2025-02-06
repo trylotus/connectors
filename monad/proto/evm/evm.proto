@@ -11,12 +11,12 @@ message Block {
   google.protobuf.Timestamp ts = 1;
   bytes hash = 2 [
     (lotus.bytes) = {format: FORMAT_TYPE_HEX},
-    (lotus.index) = {}
+    (lotus.index) = {unique: true}
   ]; // Hash
-  string number = 3 [
+  uint64 number = 3 [
     (lotus.numeric) = {},
     (lotus.index) = {}
-  ]; // bigint
+  ];
   string difficulty = 4 [(lotus.numeric) = {}]; // bigint
   uint64 gas_limit = 5;
   uint64 gas_used = 6;
@@ -25,25 +25,30 @@ message Block {
 
 message Transaction {
   google.protobuf.Timestamp ts = 1;
-  bytes hash = 2 [
+  bytes block_hash = 2 [
     (lotus.bytes) = {format: FORMAT_TYPE_HEX},
     (lotus.index) = {}
   ]; // Hash
-  bytes from = 3 [
+  uint64 block_number = 3 [(lotus.index) = {}];
+  bytes hash = 4 [
+    (lotus.bytes) = {format: FORMAT_TYPE_HEX},
+    (lotus.index) = {unique: true}
+  ]; // Hash
+  bytes from = 5 [
     (lotus.bytes) = {format: FORMAT_TYPE_HEX},
     (lotus.index) = {}
   ]; // Address
-  bytes to = 4 [
+  bytes to = 6 [
     (lotus.bytes) = {format: FORMAT_TYPE_HEX},
     (lotus.index) = {}
   ]; // Address
-  uint64 size = 5;
-  uint64 nonce = 6;
-  uint64 gas = 7;
-  string gas_price = 8 [(lotus.numeric) = {}]; // bigint
-  string value = 9 [(lotus.numeric) = {}]; // bigint
-  bytes data = 10;
-  string v = 11 [(lotus.numeric) = {}]; // bigint
-  string r = 12 [(lotus.numeric) = {}]; // bigint
-  string s = 13 [(lotus.numeric) = {}]; // bigint
+  uint64 size = 7;
+  uint64 nonce = 8;
+  uint64 gas = 9;
+  string gas_price = 10 [(lotus.numeric) = {}]; // bigint
+  string value = 11 [(lotus.numeric) = {}]; // bigint
+  bytes data = 12;
+  string v = 13 [(lotus.numeric) = {}]; // bigint
+  string r = 14 [(lotus.numeric) = {}]; // bigint
+  string s = 15 [(lotus.numeric) = {}]; // bigint
 }
