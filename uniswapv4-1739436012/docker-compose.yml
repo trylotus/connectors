@@ -1,0 +1,7 @@
+version: '3'
+services:
+  connector:
+    build: .
+    container_name: uniswapv4-1739436012-connector
+    image: lotus/uniswapv4-1739436012-connector
+    restart: always

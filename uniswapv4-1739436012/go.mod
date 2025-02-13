@@ -1,4 +1,4 @@
-module github.com/trylotus/connectors/{{.ConnectorName}}
+module github.com/trylotus/connectors/uniswapv4-1739436012
 
 go 1.23.0
 
