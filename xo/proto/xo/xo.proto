@@ -5,7 +5,7 @@ package xo;
 import "google/protobuf/timestamp.proto";
 import "lotus/lotus.proto";
 
-option go_package = "github.com/trylotus/connectors/xo/xo";
+option go_package = "github.com/trylotus/connectors/xo/x/xo";
 
 message PaidDM {
   option (lotus.composite).index = {
@@ -27,7 +27,7 @@ message PaidDM {
   uint64 log_index = 5;
   bytes user_id = 6 [(lotus.bytes).format = FORMAT_TYPE_HEX]; // Hash
   bytes denom = 7 [(lotus.bytes).format = FORMAT_TYPE_HEX]; // Hash
-  string amount = 8 [(lotus.numeric) = {precision: 78}]; // uint256
+  string amount = 8 [(lotus.numeric) = {}]; // uint256
 }
 
 message RoleAdminChanged {
@@ -248,7 +248,7 @@ message Streak {
   ]; // Hash
   uint64 log_index = 5;
   bytes user_id = 6 [(lotus.bytes).format = FORMAT_TYPE_HEX]; // Hash
-  string streak = 7 [(lotus.numeric) = {precision: 78}]; // uint256
+  string streak = 7 [(lotus.numeric) = {}]; // uint256
 }
 
 message SaveStreak {
@@ -270,5 +270,5 @@ message SaveStreak {
   ]; // Hash
   uint64 log_index = 5;
   bytes user_id = 6 [(lotus.bytes).format = FORMAT_TYPE_HEX]; // Hash
-  string streak = 7 [(lotus.numeric) = {precision: 78}]; // uint256
+  string streak = 7 [(lotus.numeric) = {}]; // uint256
 }

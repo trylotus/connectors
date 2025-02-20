@@ -7,7 +7,7 @@ import (
 	ethcommon "github.com/ethereum/go-ethereum/common"
 	"github.com/joho/godotenv"
 	"github.com/spf13/pflag"
-	"github.com/trylotus/connectors/xo/xo"
+	"github.com/trylotus/connectors/xo/x/xo"
 	"github.com/trylotus/go-connector"
 	"github.com/trylotus/go-connector/common"
 	"github.com/trylotus/go-connector/log"
