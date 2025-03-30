@@ -1,8 +1,0 @@
-{
-    "bootstrap.servers": "localhost:9092",
-    "linger.ms": "1000",
-    "request.timeout.ms": "6000",
-    "transaction.timeout.ms": "600000",
-    "queue.buffering.max.ms": "2000",
-    "compression.codec": "snappy"
-}

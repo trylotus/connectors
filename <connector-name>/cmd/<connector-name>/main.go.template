@@ -7,15 +7,17 @@ import (
 	ethcommon "github.com/ethereum/go-ethereum/common"
 	"github.com/joho/godotenv"
 	"github.com/spf13/pflag"
-	"github.com/trylotus/go-connector"
-	"github.com/trylotus/go-connector/common"
-	"github.com/trylotus/go-connector/log"
-	"github.com/trylotus/go-connector/manager"
-	"github.com/trylotus/go-connector/registry"
-	"github.com/trylotus/go-connector/source/evm"
+
+	"github.com/starbloom-ai/go-connector"
+	"github.com/starbloom-ai/go-connector/common"
+	"github.com/starbloom-ai/go-connector/kafka"
+	"github.com/starbloom-ai/go-connector/log"
+	"github.com/starbloom-ai/go-connector/manager"
+	"github.com/starbloom-ai/go-connector/registry"
+	"github.com/starbloom-ai/go-connector/source/evm"
 
     {{range $idx, $contractData := .ContractList }}
-	"github.com/trylotus/connectors/{{$.ConnectorName}}/contracts/{{$contractData.ContractName}}"{{end}}
+	"github.com/starbloom-ai/connectors/{{$.ConnectorName}}/x/{{$contractData.ContractName}}"{{end}}
 )
 
 var ContractList = []evm.SmartContract{
@@ -48,6 +50,7 @@ func main() {
 		evm.NewSource(client, ContractList...),
 		manager.NewManager(os.Getenv("MANAGER_URL")),
 		registry.NewRegistry(os.Getenv("REGISTRY_URL")),
+		kafka.NewProducerFromFile(common.EnvString("KAFKA_CONFIG", "kafka.json")),
 		connector.WithDefaultOptions(),
 	)
 
@@ -56,18 +59,5 @@ func main() {
             {{$contractData.ContractName}}.File_{{$contractData.ContractName}}_contract_proto,{{end}}
 	)
 
-	if subscribe {
-		c.Subscribe(ctx)
-	}
-
-	if backfill > 0 {
-		c.Backfill(ctx, backfill)
-	}
-
-	if err := c.Run(ctx); err != nil {
-		log.Error().Err(err).Msg("Connector shutdown")
-		return
-	}
-
-	log.Info().Msg("Connector shutdown")
+	c.Run(ctx, backfill, subscribe)
 }
