@@ -1,6 +1,6 @@
-.PHONY: default clean gen_abi gen_proto
+.PHONY: default clean gen-abi gen-proto
 
-default: install_tools gen_abi gen_proto
+default: install_tools gen-abi gen-proto build
 
 install_tools:
 	go install github.com/ethereum/go-ethereum/cmd/abigen@latest
@@ -20,3 +20,7 @@ gen-proto:
 	buf lint
 	buf format -w
 	buf generate
+
+build:
+	go mod tidy
+	go build cmd/
