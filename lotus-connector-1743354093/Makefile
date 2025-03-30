@@ -23,4 +23,4 @@ gen-proto:
 
 build:
 	go mod tidy
-	go build cmd/{{.ConnectorName}}/main.go
+	go build cmd/lotus-connector-1743354093/main.go
