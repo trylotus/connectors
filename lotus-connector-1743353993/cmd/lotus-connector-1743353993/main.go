@@ -16,13 +16,13 @@ import (
 	"github.com/starbloom-ai/go-connector/registry"
 	"github.com/starbloom-ai/go-connector/source/evm"
 
-    {{range $idx, $contractData := .ContractList }}
-	"github.com/starbloom-ai/connectors/{{$.ConnectorName}}/x/{{$contractData.ContractName}}"{{end}}
+    
+	"github.com/starbloom-ai/connectors/lotus-connector-1743353993/x/stake_stone_layer_zero_adapter"
 )
 
 var ContractList = []evm.SmartContract{
-    {{range $idx, $contractData := .ContractList }}
-        {{$contractData.ContractName}}.NewContract(ethcommon.HexToAddress("{{$contractData.ContractAddress}}")),{{end}}
+    
+        stake_stone_layer_zero_adapter.NewContract(ethcommon.HexToAddress("0x219Fcc806358a8fcD5E207B37DB0f5B6f5F7c1Ef")),
 }
 
 func main() {
@@ -55,8 +55,8 @@ func main() {
 	)
 
 	go c.RegisterDescriptor(ctx,
-        {{range $idx, $contractData := .ContractList }}
-            {{$contractData.ContractName}}.File_{{$contractData.ContractName}}_contract_proto,{{end}}
+        
+            stake_stone_layer_zero_adapter.File_stake_stone_layer_zero_adapter_contract_proto,
 	)
 
 	c.Run(ctx, backfill, subscribe)
