@@ -1,4 +1,4 @@
-module github.com/starbloom-ai/connectors/{{.ConnectorName}}
+module github.com/starbloom-ai/connectors/lotus-connector-1743351512
 
 go 1.23.0
 
