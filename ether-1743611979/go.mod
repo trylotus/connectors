@@ -1,4 +1,4 @@
-module github.com/starbloom-ai/connectors/{{.ConnectorName}}
+module github.com/starbloom-ai/connectors/ether-1743611979
 
 go 1.23.0
 
