@@ -16,13 +16,13 @@ import (
 	"github.com/starbloom-ai/go-connector/registry"
 	"github.com/starbloom-ai/go-connector/source/evm"
 
-    {{range $idx, $contractData := .ContractList }}
-	"github.com/starbloom-ai/connectors/{{$.ConnectorName}}/x/{{$contractData.ContractName}}"{{end}}
+    
+	"github.com/starbloom-ai/connectors/ether-1743613311/x/anon_bank_authority"
 )
 
 var ContractList = []evm.SmartContract{
-    {{range $idx, $contractData := .ContractList }}
-        {{$contractData.ContractName}}.NewContract(ethcommon.HexToAddress("{{$contractData.ContractAddress}}")),{{end}}
+    
+        anon_bank_authority.NewContract(ethcommon.HexToAddress("0x36b0f8F5B789114C9Eb773822BFf69160C016700")),
 }
 
 func main() {
@@ -55,8 +55,8 @@ func main() {
 	)
 
 	go c.RegisterDescriptor(ctx,
-        {{range $idx, $contractData := .ContractList }}
-            {{$contractData.ContractName}}.File_{{$contractData.ContractName}}_contract_proto,{{end}}
+        
+            anon_bank_authority.File_anon_bank_authority_contract_proto,
 	)
 
 	c.Run(ctx, backfill, subscribe)

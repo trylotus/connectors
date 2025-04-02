@@ -23,4 +23,4 @@ gen-proto:
 
 build:
 	go mod tidy
-	go build cmd/{{.ConnectorName}}/main.go
+	go build cmd/ether-1743613311/main.go
